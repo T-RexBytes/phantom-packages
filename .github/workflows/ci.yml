@@ -1,0 +1,27 @@
+# Runs the test suite on every push and pull request.
+# Action versions verified 2026-10-28 (docs/api_notes/ollama_pypi_hooks.md):
+# setup-uv has no floating major tag since v8, so it is pinned exactly.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: uv sync --locked
+
+      - name: Test
+        run: uv run pytest -q

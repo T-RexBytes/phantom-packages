@@ -1,0 +1,16 @@
+{
+  "_comment": "Put this in <project>/.claude/settings.json (or merge into it). VERIFY against the current Claude Code hooks docs: PreToolUse receives JSON on stdin (tool_name, tool_input.command for Bash); exit code 2 blocks the call and stderr is shown to Claude. Replace the path with your absolute path.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --project C:/Users/Soumya/Desktop/DEV/phantom-packages python C:/Users/Soumya/Desktop/DEV/phantom-packages/hooks/claude_pretooluse_guard.py"
+          }
+        ]
+      }
+    ]
+  }
+}

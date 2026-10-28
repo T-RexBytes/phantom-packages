@@ -1,0 +1,32 @@
+# Secrets
+.env
+
+# Never public: raw generations, caches, unregistered hallucinated names
+data/
+private/
+
+# Model pickles are ignored everywhere except the shipped guard model
+*.pkl
+!results/model/*.pkl
+
+# Per-row predictions can contain private names; publish aggregates only
+results/oof_predictions.parquet
+
+# Python / tooling
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+.ruff_cache/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Claude Code local settings
+.claude/settings.local.json

@@ -1,0 +1,42 @@
+# .github/workflows/phantom-guard.yml
+# Fails a PR if it adds a dependency that does not exist on PyPI (GHOST),
+# and warns on SUSPECT. Verify action versions before use.
+name: phantom-guard
+
+on:
+  pull_request:
+    paths:
+      - "**/requirements*.txt"
+      - "**/pyproject.toml"
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Install phantom-packages
+        run: uv tool install git+https://github.com/${{ github.repository }}
+
+      - name: Find changed dependency files
+        id: changed
+        run: |
+          files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- '**/requirements*.txt' '**/pyproject.toml' | tr '\n' ' ')
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+
+      - name: Check for ghost packages
+        if: steps.changed.outputs.files != ''
+        run: |
+          set +e
+          phantom check ${{ steps.changed.outputs.files }}
+          code=$?
+          if [ "$code" -eq 2 ]; then echo "::error::Ghost package(s) found: they do not exist on PyPI."; exit 1; fi
+          if [ "$code" -eq 1 ]; then echo "::warning::Suspect package(s) found: review before merging."; fi
+          exit 0
