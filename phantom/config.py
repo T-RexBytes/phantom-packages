@@ -39,6 +39,9 @@ PROMPT_TEMPLATE = (
 )
 TEMPERATURE = 0.7
 NUM_PREDICT = 350
+# ~90 prompt + 350 output tokens fit easily; a small KV cache keeps 4 GB-VRAM models
+# on the GPU (measured: qwen3:4b 21 -> 30 tok/s, phi4-mini 25 -> 35 tok/s).
+NUM_CTX = 1024
 ETA_BUDGET_HOURS = 4.0
 
 # Registry access: metadata GETs only (CLAUDE.md hard rule 1)

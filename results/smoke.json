@@ -1,0 +1,53 @@
+{
+  "budget_hours": 4.0,
+  "checked_at": "2026-10-28T18:28:34Z",
+  "eta_hours": {
+    "1_samples": 1.88,
+    "2_samples": 3.77,
+    "3_samples": 5.65
+  },
+  "n_prompts": 200,
+  "per_model": {
+    "gemma4:e4b": {
+      "done_reasons": {
+        "length": 4,
+        "stop": 1
+      },
+      "logprobs_returned": true,
+      "max_load_s": 16.26,
+      "mean_eval_count": 331.6,
+      "mean_latency_s": 18.86,
+      "n": 5,
+      "thinking_chars_total": 0
+    },
+    "phi4-mini:3.8b": {
+      "done_reasons": {
+        "stop": 5
+      },
+      "logprobs_returned": true,
+      "max_load_s": 6.25,
+      "mean_eval_count": 113.6,
+      "mean_latency_s": 6.54,
+      "n": 5,
+      "thinking_chars_total": 0
+    },
+    "qwen3:4b-instruct": {
+      "done_reasons": {
+        "stop": 5
+      },
+      "logprobs_returned": true,
+      "max_load_s": 3.95,
+      "mean_eval_count": 229.8,
+      "mean_latency_s": 8.5,
+      "n": 5,
+      "thinking_chars_total": 0
+    }
+  },
+  "prompt_ids": [
+    "p158",
+    "p039",
+    "p007",
+    "p101",
+    "p089"
+  ]
+}

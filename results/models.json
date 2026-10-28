@@ -1,0 +1,84 @@
+{
+  "checked_at": "2026-10-28T18:56:54Z",
+  "installed": [
+    {
+      "capabilities": [
+        "tools",
+        "thinking",
+        "completion"
+      ],
+      "digest": "0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
+      "family": "qwen3",
+      "modified_at": "2026-10-28T23:57:43.0268092+05:30",
+      "parameter_size": "4.0B",
+      "quantization": "Q4_K_M",
+      "size_bytes": 2497293803,
+      "tag": "qwen3:4b-instruct"
+    },
+    {
+      "capabilities": [
+        "completion",
+        "tools"
+      ],
+      "digest": "78fad5d182a7c33065e153a5f8ba210754207ba9d91973f57dffa7f487363753",
+      "family": "phi3",
+      "modified_at": "2026-10-28T23:43:36.2839728+05:30",
+      "parameter_size": "3.8B",
+      "quantization": "Q4_K_M",
+      "size_bytes": 2491876774,
+      "tag": "phi4-mini:3.8b"
+    },
+    {
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking"
+      ],
+      "digest": "359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7",
+      "family": "qwen3",
+      "modified_at": "2026-10-22T17:09:42.2877507+05:30",
+      "parameter_size": "4.0B",
+      "quantization": "Q4_K_M",
+      "size_bytes": 2497293931,
+      "tag": "qwen3:4b"
+    },
+    {
+      "capabilities": [
+        "completion",
+        "vision",
+        "audio",
+        "tools",
+        "thinking"
+      ],
+      "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+      "family": "gemma4",
+      "modified_at": "2026-10-22T17:06:36.1976193+05:30",
+      "parameter_size": "4.6B",
+      "quantization": "Q4_K_M",
+      "size_bytes": 4587156505,
+      "tag": "gemma4:e2b"
+    },
+    {
+      "capabilities": [
+        "completion",
+        "vision",
+        "audio",
+        "tools",
+        "thinking"
+      ],
+      "digest": "dc35e8d9c6061baa6f0fa870975ab6932e2542b579b13ea0f199fa4bb7300c9c",
+      "family": "gemma4",
+      "modified_at": "2026-10-22T15:45:41.9104175+05:30",
+      "parameter_size": "7.5B",
+      "quantization": "Q4_K_M",
+      "size_bytes": 6583656505,
+      "tag": "gemma4:e4b"
+    }
+  ],
+  "ollama_version": "0.40.11",
+  "selected": [
+    "gemma4:e4b",
+    "qwen3:4b-instruct",
+    "phi4-mini:3.8b"
+  ]
+}

@@ -1,7 +1,32 @@
 {
-  "cuts": [],
+  "cuts": [
+    {
+      "cut": "qwen3:4b replaced by qwen3:4b-instruct (same 4B Qwen3-2507 weights size, Q4_K_M)",
+      "phase": "2",
+      "reason": "qwen3:4b is the thinking-only 2507 build: with think=false it still reasons in plain text and used all 350 tokens; 0/5 smoke replies contained a pip command",
+      "ts": "2026-10-28T18:54:45Z"
+    },
+    {
+      "cut": "models 2-3 are general instruct models (qwen3:4b-instruct, phi4-mini:3.8b), not coder-specific models",
+      "phase": "2",
+      "reason": "must fit a 4 GB-VRAM laptop GPU at the same size class as gemma4:e4b and span three families (Google, Alibaba, Microsoft); user-approved",
+      "ts": "2026-10-28T18:54:45Z"
+    },
+    {
+      "cut": "2 samples per prompt; optional sample 3 skipped",
+      "phase": "2",
+      "reason": "smoke ETA: 2 samples about 3.7 h (within 4 h budget), 3 samples about 5.5 h",
+      "ts": "2026-10-28T18:54:45Z"
+    },
+    {
+      "cut": "Ultramarine hosted arm deferred",
+      "phase": "2",
+      "reason": "PAPERINSTRUMENTS_API_KEY pending (provider waitlist); code ready, dry-run only until key + spend approval",
+      "ts": "2026-10-28T18:54:45Z"
+    }
+  ],
   "env": {
-    "checked_at": "2026-10-28T17:51:27Z",
+    "checked_at": "2026-10-28T18:09:40Z",
     "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU, 4096 MiB",
     "ollama": {
       "models": [
@@ -38,7 +63,7 @@
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.12.10",
     "tabpfn_no_browser": true,
-    "tabpfn_token_set": false,
+    "tabpfn_token_set": true,
     "user_agent": "phantom-packages/0.1 (+https://github.com/T-RexBytes/phantom-packages; research, metadata-only)"
   },
   "prompts": {
@@ -56,5 +81,28 @@
     "sha256": "383c7f96b289b9bab93ab3b3ef6d5e95adecad865759aab588862461fded3ce1",
     "system_prompt": "You are a helpful Python developer. Reply with one bash code block containing the pip install command, then one python code block.",
     "template": "Write a short Python script that {task}. Begin with the exact `pip install` command it needs."
+  },
+  "summon": {
+    "models": [
+      "gemma4:e4b",
+      "qwen3:4b-instruct",
+      "phi4-mini:3.8b"
+    ],
+    "n_prompts": 200,
+    "num_ctx": 1024,
+    "num_predict": 350,
+    "resume_test": {
+      "duplicate_keys": 0,
+      "killed_after": 4,
+      "resumed_with": "4 already done, 1196 to go",
+      "ts": "2026-10-28T18:56:47Z"
+    },
+    "samples": [
+      1,
+      2
+    ],
+    "started_at": "2026-10-28T18:56:52Z",
+    "temperature": 0.7,
+    "think": false
   }
 }
