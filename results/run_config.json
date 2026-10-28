@@ -40,5 +40,21 @@
     "tabpfn_no_browser": true,
     "tabpfn_token_set": false,
     "user_agent": "phantom-packages/0.1 (+https://github.com/T-RexBytes/phantom-packages; research, metadata-only)"
+  },
+  "prompts": {
+    "by_level": {
+      "L1": 50,
+      "L2": 70,
+      "L3": 80
+    },
+    "by_origin": {
+      "seed": 150,
+      "variant": 50
+    },
+    "n_domains": 15,
+    "n_prompts": 200,
+    "sha256": "383c7f96b289b9bab93ab3b3ef6d5e95adecad865759aab588862461fded3ce1",
+    "system_prompt": "You are a helpful Python developer. Reply with one bash code block containing the pip install command, then one python code block.",
+    "template": "Write a short Python script that {task}. Begin with the exact `pip install` command it needs."
   }
 }

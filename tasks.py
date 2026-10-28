@@ -38,7 +38,7 @@ def run_script(name: str, extra: list[str]) -> int:
     if not path.exists():
         print(f"[{name}] not implemented yet (Phase {phase}): experiments/{script}")
         return 1
-    print(f"[{name}] experiments/{script} {' '.join(extra)}".rstrip())
+    print(f"[{name}] experiments/{script} {' '.join(extra)}".rstrip(), flush=True)
     return subprocess.call([sys.executable, str(path), *extra], cwd=ROOT)
 
 
