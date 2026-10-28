@@ -52,6 +52,15 @@ PYPI_JSON_URL = "https://pypi.org/pypi/{name}/json"
 PYPISTATS_RECENT_URL = "https://pypistats.org/api/packages/{name}/recent"
 TOP_PACKAGES_URL = "https://hugovk.dev/top-pypi-packages/top-pypi-packages.min.json"
 
+# Model release dates for `born_after_summoning` (BUILD_SPEC §5.3). Source: the
+# official Hugging Face repo's `createdAt` (https://huggingface.co/api/models/<repo>,
+# fetched 2026-10-28). Repos can predate public launch, so this is an early proxy.
+MODEL_RELEASE_DATE = {
+    "gemma4:e4b": "2026-03-02",  # google/gemma-4-E4B-it
+    "qwen3:4b-instruct": "2025-08-05",  # Qwen/Qwen3-4B-Instruct-2507
+    "phi4-mini:3.8b": "2025-02-19",  # microsoft/Phi-4-mini-instruct
+}
+
 # Squat rules (BUILD_SPEC §5.6)
 SQUAT_MAX_RELEASES = 3
 SQUAT_MAX_AGE_MONTHS = 24
