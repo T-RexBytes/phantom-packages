@@ -4,7 +4,7 @@ Running notes for the post (`docs/05_BLOG_POST_BLUEPRINT.md`). Facts only, each 
 Numbers here are working copies; the post must quote `results/summary.json` / `results/*.json`.
 **No unregistered ghost names in this file** (it is public). Ghost names live in `private/` only.
 
-Last updated: 2026-10-29 (after the full generation run, before Phase 5).
+Last updated: 2026-10-30 (after Phase 5).
 
 ---
 
@@ -86,9 +86,33 @@ From `results/label_summary.json` (subtypes excluded from the ghost rate):
 
 ---
 
-## 6. Still {{TODO}}
+## 6. Phase 5 findings (evaluation, 2026-10-30)
 
-- Phase 5: arm × split metrics, CIs, calibration, τ, TabPFN timing, LLM self-check.
+Sources: `results/eval.csv`, `loo.csv`, `auroc_diff.csv`, `calibration.csv`, `rates.csv`, `model/threshold.json`, `summary.json`.
+
+**Ghost rates with 95% CIs** (bootstrap by prompt): all 15.1% (12.0–18.5); gemma4 8.1% (5.0–11.3); phi4-mini 16.7% (12.5–21.0); qwen3 20.9% (16.1–26.3); L1 2.0% (0.3–4.2); L2 8.8% (4.9–13.6); L3 30.0% (23.7–36.5). gemma4's CI does not overlap qwen3's.
+
+**AUROC, split A (by prompt, 888 rows, 173 ghosts):** TabPFN 0.974 (0.964–0.983), gradient boosting 0.969, logistic regression 0.967, edit-distance rule 0.966, top-15k rule 0.946, gemma self-check 0.849.
+
+- **TabPFN wins, but narrowly.** Paired bootstrap, TabPFN minus gradient boosting: +0.006 (0.001–0.012) on A; +0.006 (0.000–0.012) on B.
+- **On unseen names (split C) TabPFN's lead is not significant:** vs gradient boosting +0.010 (−0.001–0.022), vs the edit-distance rule +0.013 (−0.001–0.028).
+- **A one-line rule is almost as good.** "Edit distance ≥ 2 from any top-15k name" (τ tuned on train) catches 94.8% of ghosts at 71.9% precision. TabPFN at the guard threshold: 90.2% recall, 75.7% precision.
+- **Where TabPFN loses:** precision at 90% recall. On A it is 0.757 vs gradient boosting's 0.758; on C, 0.757 vs logistic regression's 0.763 and gradient boosting's 0.766; on B, 0.760 vs gradient boosting's 0.770. These are ties, not wins.
+- **Speed: TabPFN loses badly.** About 20 s per test fold on CPU vs under 0.1 s for gradient boosting. Total TabPFN predict time was about 160 s for 8 folds, because the work happens at prediction time.
+- **Where TabPFN clearly wins: calibration.** ECE 0.017 vs 0.05–0.06 for gradient boosting and logistic regression; Brier 0.049 vs 0.061–0.064. When it says 80–90% it is a ghost 88.7% of the time (62 rows). 639 of 888 rows get p < 0.1, and none of those are ghosts.
+- **Nobody is precise.** Recall at 95% precision is ≤ 4% for every arm on A. The best pre-registry detector still raises ~1 false alarm per 3 flags at 90% recall. That's why the registry decides.
+- **"Ask the model if it's lying" fails in the opposite way from the one you'd expect.** gemma4 said a ghost exists for only 2 of 162 ghost names. But it said 143 of 271 *real* packages (53%) don't exist. AUROC 0.849, precision at 90% recall 0.45. It isn't a detector; it's a "no" machine.
+- **Ghosts never cross prompts.** 0 of 162 ghost names appear under more than one prompt (51 of 271 real names do). Every repeat is the same task summoning the same ghost again. So the unseen-names split has all 173 ghosts, and the real test is the 348 unseen real rows.
+- **Leave-one-model-out is not harder than by-prompt** (TabPFN 0.978 pooled; held-out gemma4 0.985, phi4-mini 0.975, qwen3 0.972). One honest caveat: B shares prompts between train and test, so it tests a new *model*, not new tasks.
+- **Guard threshold:** τ = 0.506 on out-of-fold TabPFN probabilities, giving recall 0.902 and precision 0.757 (206 flagged of 888).
+- **TabPFN details:** v9.2.0, TabPFN-3.5 weights, CPU (torch CPU build), max 726 training rows, no subsampling, `ignore_pretraining_limits` not needed.
+
+**More "What went wrong" material:**
+- **The first TabPFN fit failed with a license error even though the key was set.** The project only loaded `.env` on demand, so TabPFN never saw `TABPFN_TOKEN`. It fell back to a browser login, which crashed on Windows (`WinError 10038`). Fix: load `.env` before importing TabPFN.
+
+---
+
+## 7. Still {{TODO}}
 - Phase 6: how many invented names are registered today / match the squat rules.
 - Phase 7: real hook demo (time, the blocked command) for the post's opening scene.
 - Ultramarine arm: needs the key and spend approval.
