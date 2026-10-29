@@ -1,0 +1,52 @@
+# Fails a pull request that adds a dependency that does not exist on PyPI (GHOST)
+# and warns on SUSPECT (exists, but matches the squat rules). BUILD_SPEC §9.4.
+# Action tags verified 2026-10-30 via the GitHub API: actions/checkout@v7 (latest v7.0.1),
+# astral-sh/setup-uv@v10.3.3 (no floating major tag, so pinned exactly).
+# Only PyPI metadata is fetched; nothing named in the changed files is ever installed.
+name: phantom-guard
+
+on:
+  pull_request:
+    paths:
+      - "**/requirements*.txt"
+      - "**/pyproject.toml"
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: "3.12"
+
+      # Base install only: no torch/TabPFN in CI, so verdicts come from PyPI facts
+      # (P(ghost) is shown only where the optional model extra is installed).
+      - name: Install phantom-packages
+        run: uv sync --locked
+
+      - name: Check changed dependency files
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          # git pathspec "*" also matches "/", so these cover every directory.
+          mapfile -t files < <(git diff --name-only --diff-filter=d "origin/${BASE_REF}...HEAD" -- \
+            '*requirements*.txt' '*pyproject.toml')
+          if [ "${#files[@]}" -eq 0 ]; then echo "No dependency files changed."; exit 0; fi
+          printf 'Checking: %s\n' "${files[@]}"
+          set +e
+          uv run phantom check "${files[@]}"
+          code=$?
+          set -e
+          case "$code" in
+            0) echo "All dependencies exist on PyPI." ;;
+            1) echo "::warning::Suspect package(s): they exist but match the squat rules. Review before merging." ;;
+            2) echo "::error::Ghost package(s): they do not exist on PyPI. Do not install them."; exit 1 ;;
+            *) echo "::error::phantom check failed with exit code $code."; exit 1 ;;
+          esac

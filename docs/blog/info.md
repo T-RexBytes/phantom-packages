@@ -4,7 +4,7 @@ Running notes for the post (`docs/05_BLOG_POST_BLUEPRINT.md`). Facts only, each 
 Numbers here are working copies; the post must quote `results/summary.json` / `results/*.json`.
 **No unregistered ghost names in this file** (it is public). Ghost names live in `private/` only.
 
-Last updated: 2026-10-30 (after Phase 6).
+Last updated: 2026-10-30 (after Phase 7).
 
 ---
 
@@ -130,8 +130,25 @@ Sources: `results/squat_summary.json`, `results/squat_public.csv`.
 
 ---
 
-## 8. Still {{TODO}}
+## 8. Phase 7 findings (guard, hook, Action; 2026-10-30)
 
-- Phase 7: real hook demo (time, the blocked command) for the post's opening scene.
+- **The guard uses its own TabPFN model.** It is TabPFN-3.5-fast trained on the 10 name features only, because a hook sees just a name, never how it was generated. Out-of-fold AUROC is 0.973 (0.963-0.982), not different from the Phase 5 context model (diff -0.001, CI -0.006 to +0.002). ECE is 0.011. τ = 0.506 gives recall 90.2% and precision 75.0%. (`summary.json` → `guard_model`)
+- **Why not the spec's design:** the Phase 5 model fed default context values scored AUROC 0.971 and ECE 0.029, and took 17 s per prediction. Name-only 3.5-fast does as well and takes ~3.5 s. That is a good "What went wrong / what I changed" beat: the spec's design was slower *and* no better.
+- **Hook latency** (cold process, CPU laptop), measured end to end with the JSON Claude Code sends:
+  - a command with no install: ~1.1 s (mostly `uv run` startup; TabPFN is never imported);
+  - installing real, established packages: ~1.8 s (one PyPI request per name, no model);
+  - a ghost: ~12.7 s (blocked; ~5 s of that is importing torch, the rest is TabPFN computing P(ghost) for the message).
+- **The model only runs when it can matter:** for ghosts, young packages, offline mode, or when PyPI can't be reached. Real packages never wait for it.
+- **Offline mode works with the Wi-Fi off:** `phantom check --offline` gives the demo ghost P(ghost) = 0.997 (GHOST_LIKELY, exit 2) and gives `requests` and `holidays` 0.00.
+- **Suggestion fix found in the demo:** the first suggestion for a `python-`-prefixed ghost was an unrelated name (edit distance 5). It now prefers the affix match (the real package without the prefix). That's a small "what went wrong".
+- **Docs verified for the hook** (code.claude.com/docs/en/hooks, 2026-10-30): exit 2 blocks and stderr goes to Claude as the reason; on exit 0 Claude never sees stderr; `Bash|PowerShell` is an exact-name matcher; a timed-out PreToolUse hook does not block.
+- **The Action runs without TabPFN** (base install). PyPI facts decide, and the reasons say "P(ghost) unavailable".
+- **Demo ghost choice:** use a ghost that was suggested **once** (not a repeated one, rule 3). Keep its name out of the post *text*: the CI leak test hashes all 162 unregistered ghosts and will fail on it.
+
+---
+
+## 9. Still {{TODO}}
+
+- Phase 7 demo: record the GIF; note the real time and day for the post's opening scene.
 - Ultramarine arm: needs the key and spend approval.
 - A real reaction from someone else: `{{TODO: real reaction}}`.

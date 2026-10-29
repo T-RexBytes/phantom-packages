@@ -94,6 +94,57 @@
       "url": "https://hugovk.dev/top-pypi-packages/top-pypi-packages.min.json"
     }
   },
+  "guard_model": {
+    "auroc_diff_vs_phase5_tabpfn": {
+      "diff": -0.0014794454100812704,
+      "hi": 0.002266965281763139,
+      "lo": -0.0055201216581092895,
+      "share_a_better": 0.227
+    },
+    "deviation": "BUILD_SPEC \u00a79.1 feeds the Phase-5 context model with default context (consistency=1, cross_model=1, niche=2). The guard never knows the generation context, so it uses TabPFN-3.5-fast on name features only. Measured on the same folds: context model + defaults AUROC 0.971, ECE 0.029, 17 s per prediction (TabPFN-3.5, CPU); name-only TabPFN-3.5 AUROC 0.973, ECE 0.014, 17 s; name-only 3.5-fast (this model) about 3.5 s per prediction.",
+    "features": [
+      "len",
+      "n_parts",
+      "has_digit",
+      "in_top15k",
+      "nn_lev",
+      "nn_jw",
+      "nn_rank_log",
+      "affix_of_real",
+      "char_lp",
+      "char_lp_z"
+    ],
+    "model": "TabPFN-3.5-fast (ModelVersion.V3_5_FAST), package defaults",
+    "oof_split_a": {
+      "auprc": 0.8665132212514318,
+      "auroc": 0.9729900157645822,
+      "auroc_hi": 0.9821759572581348,
+      "auroc_lo": 0.9625970079772926,
+      "brier": 0.05039751128499667,
+      "ece": 0.01093656988430191,
+      "n": 888,
+      "n_ghost": 173,
+      "precision_at_recall90": 0.7523809523809524,
+      "recall_at_precision95": 0.15028901734104047
+    },
+    "run_at": "2026-10-29T19:18:58Z",
+    "tabpfn_version": "9.2.0",
+    "threshold": {
+      "n": 888,
+      "n_flagged": 208,
+      "precision": 0.75,
+      "recall": 0.9017341040462428,
+      "rule": "flag ghost if p >= tau",
+      "source": "out-of-fold guard-model probabilities, split A folds",
+      "target_recall": 0.9,
+      "tau": 0.5061126351356506
+    },
+    "timing_s": {
+      "final_fit": 0.10836020007263869,
+      "fit_total": 0.7593591000186279,
+      "predict_total": 21.377461500116624
+    }
+  },
   "label_fixes": [
     {
       "after": {
