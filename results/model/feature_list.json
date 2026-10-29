@@ -1,0 +1,21 @@
+[
+  "len",
+  "n_parts",
+  "has_digit",
+  "in_top15k",
+  "nn_lev",
+  "nn_jw",
+  "nn_rank_log",
+  "affix_of_real",
+  "char_lp",
+  "char_lp_z",
+  "consistency",
+  "cross_model",
+  "global_freq",
+  "position",
+  "source",
+  "niche_level",
+  "domain",
+  "model",
+  "name_logprob"
+]

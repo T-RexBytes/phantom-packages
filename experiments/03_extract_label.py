@@ -19,6 +19,7 @@ from phantom import config, generate, label, prompts, registry, runconfig
 from phantom.http import MetadataError
 
 LABELLED_PATH = config.DATA / "labelled.parquet"
+GENERATIONS_PATH = config.DATA / "generations.parquet"  # the grid this run analysed (for stage 04)
 GHOST_COUNTS_PATH = config.PRIVATE / "ghost_counts.csv"
 SUMMARY_PATH = config.RESULTS / "label_summary.json"
 console = Console(highlight=False)
@@ -48,17 +49,23 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--fast", action="store_true", help="(cache is always used; kept for tasks.py)")
     parser.add_argument("--refresh", action="store_true", help="re-check every name on PyPI")
+    parser.add_argument("--pilot", type=int, default=0,
+                        help="analyse the balanced N-prompt pilot grid instead of run_config's plan")
     args = parser.parse_args()
 
     all_records = list(generate.read_records(config.RAW_GENERATIONS_PATH))
-    summon = runconfig.load()["summon"]
+    summon = dict(runconfig.load()["summon"])
+    if args.pilot:
+        ids = prompts.pilot_ids(prompts.load_prompts(), args.pilot)
+        summon.update(prompt_ids=ids, n_prompts=len(ids), pilot=args.pilot)
     records = generate.in_plan(all_records, summon)
     console.print(f"{len(records)} generations in the planned grid "
                   f"({len(summon['models'])} models x {summon['n_prompts']} prompts x "
                   f"{len(summon['samples'])} samples); {len(all_records) - len(records)} rows outside it ignored")
-    gens = pd.DataFrame(records)[["key", "model"]]
+    gens = pd.DataFrame(records)[["key", "model", "prompt_id", "sample", "arm"]]
     mentions, dropped = label.build_mentions(records)
     config.DATA.mkdir(parents=True, exist_ok=True)
+    gens.to_parquet(GENERATIONS_PATH, index=False)
     mentions.to_parquet(config.MENTIONS_PATH, index=False)
 
     names = sorted(mentions.loc[mentions["source"].isin(label.LABEL_SOURCES), "name"].unique())

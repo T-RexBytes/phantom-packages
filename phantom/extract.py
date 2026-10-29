@@ -169,7 +169,7 @@ def subtype(name: str, raw_token: str | None = None) -> str | None:
     n = normalize(name)
     if n in _MODULE_CONFUSION:
         return "module_name_confusion"
-    first = _to_name(raw_token).split(".")[0] if raw_token else None
+    first = requirement_name(raw_token).split(".")[0] if raw_token else None
     if n in _STDLIB_NORMALIZED or (first and first in STDLIB):
         return "stdlib_confusion"
     return None
@@ -271,8 +271,9 @@ def _tokens(args: str) -> list[str]:
         return [t.strip("'\"") for t in args.split()]
 
 
-def _to_name(token: str) -> str:
-    """Strip extras, version specifiers, markers and trailing punctuation from a token."""
+def requirement_name(token: str) -> str:
+    """Distribution-name part of a requirement token: strips extras, version
+    specifiers, markers and trailing punctuation."""
     token = token.strip().strip("'\"")
     m = _NAME_END.search(token)
     base = token[: m.start()] if m else token
@@ -309,7 +310,7 @@ def _command_names(line: str) -> list[tuple[str, str, list[tuple[str, str]], lis
                     break
                 if _is_location(tok):
                     continue
-                name = _to_name(tok)
+                name = requirement_name(tok)
                 if not name and not tok.strip("'\""):
                     continue
                 if not _VALID.match(name) or len(name) > 80 or name != tok.strip("'\"")[: len(name)]:
@@ -375,7 +376,7 @@ def extract(text: str) -> Extraction:
             s = line.split("#", 1)[0].strip()
             if not s or s.startswith("-"):
                 continue
-            name = _to_name(s)
+            name = requirement_name(s)
             if _VALID.match(name) and len(name) <= 80:
                 add(s, "requirements_block", name, pos)
                 pos += 1

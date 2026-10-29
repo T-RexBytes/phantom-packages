@@ -1,0 +1,38 @@
+{
+  "source": [
+    "pip_line",
+    "uv_line",
+    "requirements_block",
+    "import_mapped"
+  ],
+  "domain": [
+    "data-files",
+    "web-scraping",
+    "images-media",
+    "pdfs-documents",
+    "lab-instruments",
+    "bioinformatics",
+    "geospatial",
+    "hardware-iot",
+    "finance-regional",
+    "calendars-locale",
+    "legacy-formats",
+    "saas-apis",
+    "audio-music",
+    "games-retro",
+    "devops-security"
+  ],
+  "model": [
+    "gemma4:e4b",
+    "phi4-mini:3.8b",
+    "qwen3:4b-instruct"
+  ],
+  "categorical": [
+    "source",
+    "domain",
+    "model"
+  ],
+  "per_fold": [
+    "global_freq"
+  ]
+}
