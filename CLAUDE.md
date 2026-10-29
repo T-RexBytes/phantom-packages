@@ -15,7 +15,7 @@ The authoritative spec is `docs/03_BUILD_SPEC.md`. The blog needs are in `docs/0
 ## Hard rules (never break)
 1. NEVER `pip install`, `uv add`, download, or import any package name produced by a model, in code, tests or the shell. Metadata GETs only (PyPI JSON, pypistats). Cache under `data/cache/`. At most 5 requests per second, with the User-Agent from `.env`.
 2. NEVER register packages anywhere.
-3. Unregistered names that models repeat go ONLY to `private/` (gitignored). They must never appear in `results/`, `web/`, `README.md`, `POST_DRAFT.md`, commit messages or test fixtures. Use anonymised `sha256(name)[:8]` publicly.
+3. Unregistered names that models repeat go ONLY to `private/` (gitignored). They must never appear in `results/`, `web/`, `README.md`, `POST_DRAFT.md`, commit messages or test fixtures. Use anonymised keyed ids publicly: `HMAC-SHA256(PHANTOM_ANON_KEY, name)[:8]` (`phantom.privacy.anon_id`).
 4. NEVER invent numbers, results or user reactions. If something hasn't been run, write `{{TODO}}`.
 5. Ask before anything that costs money, needs a new key, pushes to GitHub, or publishes anywhere.
 6. Verify current library and API docs before use (TabPFN v9 / TabPFN-3.5, Ollama, Ultramarine, Claude Code hooks). Don't trust memory.

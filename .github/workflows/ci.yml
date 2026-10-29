@@ -24,4 +24,7 @@ jobs:
         run: uv sync --locked
 
       - name: Test
+        env:
+          # keyed ids for the public-leak test; without this secret that test skips
+          PHANTOM_ANON_KEY: ${{ secrets.PHANTOM_ANON_KEY }}
         run: uv run pytest -q

@@ -6,14 +6,20 @@ import importlib.util
 from datetime import datetime, timezone
 
 import pandas as pd
+import pytest
 
-from phantom import config
+from phantom import config, privacy
 
 spec = importlib.util.spec_from_file_location("squat_stage", config.ROOT / "experiments" / "06_squat_check.py")
 stage = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(stage)
 
 NOW = datetime(2026, 10, 30, tzinfo=timezone.utc)
+
+
+@pytest.fixture(autouse=True)
+def test_key(monkeypatch):
+    monkeypatch.setenv(privacy.ANON_KEY_ENV, "test-key-not-a-secret")
 
 
 def candidates() -> pd.DataFrame:
@@ -69,7 +75,8 @@ def test_squat_flags_follow_the_rules():
 
 def test_public_frame_never_contains_unregistered_names():
     pub = stage.public_frame(assessed())
-    assert set(pub["name"]) == {"zz-new-body", "zz-real-young"}
+    assert "name" not in pub.columns  # no names at all, not even registered ones
+    assert set(pub["anon_id"]) == {privacy.anon_id("zz-new-body"), privacy.anon_id("zz-real-young")}
     assert pub["first_release"].tolist() == ["2026-09-01", "2026-09-01"]
 
 

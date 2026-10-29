@@ -189,6 +189,13 @@
       "ts": "2026-10-29T15:04:46Z"
     }
   ],
+  "privacy": {
+    "anon_id": "HMAC-SHA256(PHANTOM_ANON_KEY, normalized name)[:8]",
+    "changed_at": "2026-10-29T20:36:26Z",
+    "reason": "plain sha256[:8] ids are confirmable: anyone who guesses a name, or reruns the same open models, can hash it and check the list; a keyed hash cannot be checked without the secret",
+    "site_hosting": "not hosted (user decision); pages workflow removed, web/ kept for local viewing",
+    "squat_public": "registered candidates published by keyed id only; the two squat-rule matches are not named (user decision)"
+  },
   "prompts": {
     "by_level": {
       "L1": 50,
@@ -213,7 +220,7 @@
         "ghost_at_label": 162,
         "p_ghost>=0.5": 42
       },
-      "checked_at": "2026-10-29T19:00:30Z",
+      "checked_at": "2026-10-29T20:35:51Z",
       "failed_lookups": 0,
       "n_born_after_summoning_names": 7,
       "n_candidates": 211,
@@ -234,7 +241,7 @@
       "recent_downloads_month < 500",
       "summoned by >= 2 independent (model, sample) pairs"
     ],
-    "run_at": "2026-10-29T19:00:30Z"
+    "run_at": "2026-10-29T20:35:51Z"
   },
   "summon": {
     "aborted": [

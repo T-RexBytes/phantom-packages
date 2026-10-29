@@ -2,9 +2,26 @@
 
 from __future__ import annotations
 
-from phantom import privacy
+import pytest
+
+from phantom import config, privacy
 
 FAKE = "zzq-ghostlib"  # invented; not a study name
+TEST_KEY = "test-key-not-a-secret"
+
+
+@pytest.fixture(autouse=True)
+def test_key(monkeypatch):
+    monkeypatch.setenv(privacy.ANON_KEY_ENV, TEST_KEY)
+
+
+def test_ids_are_keyed_and_need_a_key(monkeypatch):
+    assert privacy.anon_id(FAKE, b"one") != privacy.anon_id(FAKE, b"two")
+    assert privacy.anon_id(FAKE) == privacy.anon_id(FAKE, TEST_KEY.encode())
+    monkeypatch.delenv(privacy.ANON_KEY_ENV)
+    monkeypatch.setattr(config, "load_dotenv", lambda *a, **k: None)
+    with pytest.raises(privacy.MissingAnonKey):
+        privacy.anon_id(FAKE)
 
 
 def test_anon_id_is_stable_and_normalisation_insensitive():

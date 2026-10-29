@@ -151,7 +151,7 @@ Sources: `results/squat_summary.json`, `results/squat_public.csv`.
 
 - **Figures** (`results/*.png`, dark Halloween palette validated for colour-blind separation): rates by model and by niche with 95% CIs, calibration, precision-recall curves, repeat histogram.
 - **Repeat histogram facts** (`results/repeat_counts.csv`): 122 ghost names were suggested once, 32 twice, 6 three times, 1 four times, 1 five times. Every name suggested 3+ times came from two or more models; at 2x it was mostly one model.
-- **The site** (`web/`) reads every number from `web/data.json`, which is built from `results/summary.json`. The graveyard has 162 anonymised stones (sha256[:8], domain, niche, count, models). There are no registered ghosts to name, because none got a body.
+- **The site** (`web/`) reads every number from `web/data.json`, which is built from `results/summary.json`. The graveyard has 162 anonymised stones (keyed HMAC id, domain, niche, count, models). There are no registered ghosts to name, because none got a body.
 - **Honest box on the site:** where TabPFN wins (AUROC, calibration) and where it loses (precision at 90% recall, speed, not significant on unseen names).
 - **Accessibility:** every text colour ≥ 4.6:1 on its surface, alt text built from the real numbers, a table view next to each chart, keyboard focus styles, `prefers-reduced-motion` respected, and no horizontal scroll at a true 360 px viewport (measured with an iframe; headless Chrome can't size a window that small).
 - **What went wrong:** the first local preview server started in the repo root instead of `web/`. It was bound to localhost only, and I stopped it at once. A good reminder that `.env` and `private/` live next to the site.

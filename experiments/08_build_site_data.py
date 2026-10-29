@@ -1,6 +1,6 @@
 """Stage 08: public-safe site data (BUILD_SPEC §5.8) -> web/data.json and web/assets/.
 
-Unregistered ghosts appear only as anonymised tombstones: sha256(normalized name)[:8] plus
+Unregistered ghosts appear only as anonymised tombstones: keyed HMAC-SHA256 id (8 hex) plus
 domain, niche level, mention count and models (CLAUDE.md rule 3). Registered ghosts (names
 that were 404 at labelling but exist at the Phase 6 re-check) would be listed by name; the
 squat-rule matches are published as a count only. tests/test_public_leak.py checks the output.

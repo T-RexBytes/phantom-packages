@@ -144,7 +144,8 @@ uv run phantom check requirements.txt --offline
 - **The hook sends nothing anywhere else:** only the package names it finds, to PyPI's JSON API.
 - **No packages are registered.**
 - **Repeated ghost names are never published.** Unregistered names that models repeat stay in a
-  private, gitignored folder; public outputs use `sha256(name)[:8]`. A CI test fails if a public file
+  private, gitignored folder; public outputs use a keyed hash (HMAC-SHA256 with the secret
+  `PHANTOM_ANON_KEY`), so a guessed name cannot be checked against them. A CI test fails if a public file
   contains one of those names.
 - **A SUSPECT verdict is not an accusation.** It means "young, rarely downloaded and suggested by a
   model": check by hand.

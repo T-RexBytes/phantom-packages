@@ -9,8 +9,8 @@ Outputs:
   private/squat_full.csv               every candidate, all columns (never public)
   private/unregistered_repeated.csv    still-unregistered names summoned >= 2 times (never public)
   private/disclosure_draft.md          DRAFT email to security@pypi.org (not sent; the human decides)
-  results/squat_public.csv             registered-now names only
-  results/anon_ghost_ids.txt           sha256(name)[:8] of still-unregistered ghosts (CI leak check)
+  results/squat_public.csv             registered-now candidates, keyed ids instead of names
+  results/anon_ghost_ids.txt           keyed HMAC ids of still-unregistered ghosts (CI leak check)
   results/squat_summary.json           counts; also merged into results/summary.json["squat"]
 """
 
@@ -93,14 +93,15 @@ def assess(candidates: pd.DataFrame, now_rows: dict[str, dict[str, Any] | None],
 
 
 def public_frame(df: pd.DataFrame) -> pd.DataFrame:
-    """Registered-now names only (never a currently unregistered name)."""
+    """Registered-now candidates only, identified by keyed id: a squat-rule match is not evidence
+    against a real package, so even registered names are not published."""
     reg = df[df["exists_now"].eq(True)].copy()
     reg["first_release"] = pd.to_datetime(reg["first_release"], utc=True).dt.strftime("%Y-%m-%d")
     reg["p_ghost_oof"] = reg["p_ghost_oof"].round(3)
-    cols = ["name", "why_candidate", "registered_during_study", "born_after_summoning", "first_release",
+    cols = ["anon_id", "why_candidate", "registered_during_study", "born_after_summoning", "first_release",
             "n_releases", "recent_downloads_month", "summons", "n_models", *squat.CHECKS,
             "possible_slopsquat", "p_ghost_oof"]
-    return reg[cols].sort_values(["possible_slopsquat", "summons", "name"], ascending=[False, False, True])
+    return reg[cols].sort_values(["possible_slopsquat", "summons", "anon_id"], ascending=[False, False, True])
 
 
 def still_unregistered_ghosts(df: pd.DataFrame) -> pd.DataFrame:
