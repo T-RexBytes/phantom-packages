@@ -116,13 +116,17 @@ def main() -> None:
         console.print(f"  {name:<32} {row.mentions:>3} mentions  {row.models} model(s)  {row.prompts} prompt(s)")
 
     expected = len(summon["models"]) * len(summon["samples"]) * summon["n_prompts"]
+    planned = {generate.generation_key(m, p, s)
+               for s, m, p in generate.plan(summon["models"], summon["prompt_ids"], summon["samples"])}
+    aborted = [a["key"] for a in summon.get("aborted", []) if a["key"] in planned]  # model failures, not resumable
     summary = {
         "checked_at": runconfig.utc_now(),
         "scope": "pilot" if summon.get("pilot") else "full",
         "n_prompts": summon["n_prompts"],
         "n_generations": len(records),
         "n_generations_planned": expected,
-        "complete": len(records) >= expected,
+        "n_generations_aborted": len(aborted),
+        "complete": len(records) + len(aborted) >= expected,
         "n_mentions_extracted": len(mentions),
         "n_labelled_mentions": len(lab),
         "n_unique_labelled_names": int(lab["name"].nunique()),

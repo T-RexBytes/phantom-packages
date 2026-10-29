@@ -73,10 +73,10 @@
     "user_agent": "phantom-packages/0.1 (+https://github.com/T-RexBytes/phantom-packages; research, metadata-only)"
   },
   "features": {
-    "built_at": "2026-10-29T15:37:35Z",
-    "n_generations": 300,
-    "n_ghost": 31,
-    "n_rows": 230,
+    "built_at": "2026-10-29T18:08:10Z",
+    "n_generations": 1199,
+    "n_ghost": 173,
+    "n_rows": 888,
     "name_logprob_missing_share": 0.0,
     "top_list": {
       "last_update": "2026-10-01 12:40:51",
@@ -145,6 +145,14 @@
     "template": "Write a short Python script that {task}. Begin with the exact `pip install` command it needs."
   },
   "summon": {
+    "aborted": [
+      {
+        "error": "Ollama 500: prediction aborted, token repeat limit reached",
+        "key": "phi4-mini:3.8b|p112|s2",
+        "note": "deterministic (fixed seed 1002); reproduced with and without logprobs; excluded, not re-seeded",
+        "ts": "2026-10-29T18:03:30Z"
+      }
+    ],
     "models": [
       "gemma4:e4b",
       "qwen3:4b-instruct",
@@ -379,6 +387,11 @@
         "n_prompts": 200,
         "pilot": null,
         "started_at": "2026-10-29T15:33:59Z"
+      },
+      {
+        "n_prompts": 200,
+        "pilot": null,
+        "started_at": "2026-10-29T18:00:49Z"
       }
     ],
     "samples": [
