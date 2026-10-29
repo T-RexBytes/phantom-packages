@@ -1,28 +1,47 @@
-"""No private ghost name may appear in a public file (CLAUDE.md rule 3, BUILD_SPEC §12).
+"""No unregistered ghost name may appear in a public file (CLAUDE.md rule 3, BUILD_SPEC §12).
 
-Runs only where private/ exists (the author's machine); CI has no private data.
+Two checks over the same public globs (``phantom.privacy.PUBLIC_GLOBS``):
+- CI-safe: hash every name-like token and compare with ``results/anon_ghost_ids.txt``
+  (written by stage 06, committed). Failures name file, line and id only.
+- Plaintext: only where ``private/`` exists (the author's machine).
 """
 
 from __future__ import annotations
 
 import csv
-import re
 
 import pytest
 
-from phantom import config
+from phantom import config, privacy
 
 PRIVATE_LISTS = [config.PRIVATE / "ghost_counts.csv", config.PRIVATE / "unregistered_repeated.csv"]
-PUBLIC_GLOBS = ["results/**/*.json", "results/**/*.csv", "web/**/*.html", "web/**/*.json",
-                "README.md", "POST_DRAFT.md", "docs/blog/**/*.md"]
+SQUAT_FULL = config.PRIVATE / "squat_full.csv"
+
+
+def test_no_anonymised_ghost_in_public_files():
+    if not privacy.ANON_IDS_PATH.exists():
+        pytest.skip("results/anon_ghost_ids.txt not written yet (stage 06 creates it)")
+    ids = privacy.load_anon_ids()
+    leaks = privacy.find_leaks(config.ROOT, ids)
+    assert not leaks, "unregistered ghost names in public files (path:line id): " + ", ".join(
+        f"{loc} {i}" for loc, i in leaks[:20])
+
+
+def _falsy(value: str | None) -> bool:
+    return str(value).strip().lower() in {"", "0", "false", "no", "none", "nan"}
 
 
 def private_names() -> set[str]:
+    """Plaintext names from the private lists (squat_full: only rows not registered now)."""
     names: set[str] = set()
     for path in PRIVATE_LISTS:
         if path.exists():
             with path.open(encoding="utf-8") as f:
                 names |= {row["name"] for row in csv.DictReader(f) if row.get("name")}
+    if SQUAT_FULL.exists():
+        with SQUAT_FULL.open(encoding="utf-8") as f:
+            names |= {row["name"] for row in csv.DictReader(f)
+                      if row.get("name") and _falsy(row.get("exists_now"))}
     return names
 
 
@@ -30,10 +49,6 @@ def test_no_private_ghost_names_in_public_files():
     names = private_names()
     if not names:
         pytest.skip("no private ghost lists on this machine")
-    pattern = re.compile(r"(?<![\w-])(" + "|".join(map(re.escape, sorted(names))) + r")(?![\w-])", re.I)
-    leaks = []
-    for glob in PUBLIC_GLOBS:
-        for path in config.ROOT.glob(glob):
-            for m in pattern.finditer(path.read_text(encoding="utf-8", errors="ignore")):
-                leaks.append(f"{path.relative_to(config.ROOT)}: {m.group(0)}")
-    assert not leaks, f"private ghost names in public files: {leaks[:10]}"
+    leaks = privacy.find_leaks(config.ROOT, {privacy.anon_id(n) for n in names})
+    assert not leaks, "private ghost names in public files (path:line id): " + ", ".join(
+        f"{loc} {i}" for loc, i in leaks[:20])

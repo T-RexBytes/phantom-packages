@@ -583,6 +583,25 @@
     "real_names_said_missing": 143,
     "total_latency_s": 302.24
   },
+  "squat": {
+    "by_why_candidate": {
+      "born_after_summoning": 3,
+      "born_after_summoning;p_ghost>=0.5": 4,
+      "ghost_at_label": 162,
+      "p_ghost>=0.5": 42
+    },
+    "checked_at": "2026-10-29T19:00:30Z",
+    "failed_lookups": 0,
+    "n_born_after_summoning_names": 7,
+    "n_candidates": 211,
+    "n_ghosts_at_label": 162,
+    "n_possible_slopsquat": 2,
+    "n_registered_candidates": 49,
+    "n_registered_during_study": 0,
+    "n_still_unregistered": 162,
+    "n_unregistered_repeated": 40,
+    "rule": "possible_slopsquat if ALL hold: exists on PyPI now; n_releases <= 3; first_release within the last 24 months; recent_downloads_month < 500; summoned by >= 2 independent (model, sample) pairs"
+  },
   "study": {
     "generation_hours_by_model": {
       "gemma4:e4b": 2.0758694444444443,

@@ -85,14 +85,22 @@ def test_downloads_fetched_for_existing_names(tmp_path):
     assert stats_calls == ["/api/packages/demo/recent"]
 
 
-def test_squat_candidate_window():
-    now = datetime(2026, 10, 29, tzinfo=timezone.utc)
-    young = {"exists": True, "first_release": datetime(2026, 1, 1, tzinfo=timezone.utc), "n_releases": 9}
-    mature = {"exists": True, "first_release": datetime(2010, 1, 1, tzinfo=timezone.utc), "n_releases": 9}
-    few = {**mature, "n_releases": 2}
-    ghost = {"exists": False, "first_release": None, "n_releases": None}
-    assert registry.is_squat_candidate(young, now) and registry.is_squat_candidate(few, now)
-    assert not registry.is_squat_candidate(mature, now) and not registry.is_squat_candidate(ghost, now)
+def test_recheck_namespace_uses_separate_nested_cache(tmp_path):
+    calls = []
+
+    def handler(req):
+        calls.append(req.url.host)
+        if req.url.host == "pypi.org":
+            return httpx.Response(200, json=OLD)
+        return httpx.Response(200, json={"data": {"last_month": 7}})
+
+    pypi, stats = client(tmp_path, handler), client(tmp_path, handler)
+    registry.lookup("demo", pypi, stats)
+    registry.lookup("demo", pypi, stats, namespace="recheck/")
+    assert (tmp_path / "pypi" / "demo.json").exists() and (tmp_path / "pypistats" / "demo.json").exists()
+    assert (tmp_path / "recheck" / "pypi" / "demo.json").exists()
+    assert (tmp_path / "recheck" / "pypistats" / "demo.json").exists()
+    assert len(calls) == 4  # the re-check never reads the labelling-time cache
 
 
 def test_pypistats_404_gives_none(tmp_path):

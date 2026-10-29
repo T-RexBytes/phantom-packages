@@ -4,7 +4,7 @@ Running notes for the post (`docs/05_BLOG_POST_BLUEPRINT.md`). Facts only, each 
 Numbers here are working copies; the post must quote `results/summary.json` / `results/*.json`.
 **No unregistered ghost names in this file** (it is public). Ghost names live in `private/` only.
 
-Last updated: 2026-10-30 (after Phase 5).
+Last updated: 2026-10-30 (after Phase 6).
 
 ---
 
@@ -112,8 +112,26 @@ Sources: `results/eval.csv`, `loo.csv`, `auroc_diff.csv`, `calibration.csv`, `ra
 
 ---
 
-## 7. Still {{TODO}}
-- Phase 6: how many invented names are registered today / match the squat rules.
+## 7. Phase 6 findings (squat check, re-checked 2026-10-29 18:57 UTC)
+
+Sources: `results/squat_summary.json`, `results/squat_public.csv`.
+
+- **No ghost got a body during the study.** Of 162 ghost names that returned 404 at labelling, 0 were registered by the re-check, so all 162 are still unregistered. The "{{N_REGISTERED}} of them now do" title (option A) doesn't apply; use title B (or another).
+- **40 unregistered ghosts were summoned ≥2 times.** They are kept private; the public files carry only 8-character hashes (`results/anon_ghost_ids.txt`), and a CI test fails if any public file contains one of those names.
+- **211 names re-checked:** 162 label-time ghosts, 42 real names TabPFN scored ≥ 0.5, 3 names first released after the suggesting model's release, and 4 that are both.
+- **2 registered packages match all five squat rules** (≤3 releases, first release in the last 24 months, <500 downloads/month, suggested by ≥2 (model, sample) pairs).
+  - Both have a normal description and project links: they look like legitimate small libraries. A rule match is not an accusation.
+  - One was first published *after* the model that suggested it was released, so the model could not have learned it from that package.
+  - TabPFN scored both as ghost-like (p ≈ 0.94–0.95) before knowing they exist. That is the "still flags it after a squatter gives it a body" angle, and it is also a false alarm on a probably-legit package. Say both.
+  - Decide before publishing whether to name them in the post (the spec allows registered names). Safer: describe them without names.
+- **7 names were "born after summoning"** (registered, but first released after the suggesting model's release date).
+- **Disclosure:** a draft email to security@pypi.org is in `private/` and **not sent**. Only mention it in the post if it is actually sent.
+- Nothing was installed, downloaded or executed; only metadata GETs, 211 to PyPI and 49 to pypistats.
+
+---
+
+## 8. Still {{TODO}}
+
 - Phase 7: real hook demo (time, the blocked command) for the post's opening scene.
 - Ultramarine arm: needs the key and spend approval.
 - A real reaction from someone else: `{{TODO: real reaction}}`.

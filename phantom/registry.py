@@ -8,7 +8,7 @@ existing name, as in the §4.4 schema.
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from typing import Any
 
 from phantom import config
@@ -46,36 +46,32 @@ def parse_pypi(name: str, data: dict[str, Any] | None) -> dict[str, Any]:
     return row
 
 
-def is_squat_candidate(row: dict[str, Any], now: datetime | None = None) -> bool:
-    """Existing name with few releases or a first release in the squat age window."""
-    if not row["exists"]:
-        return False
-    now = now or datetime.now(timezone.utc)
-    young = row["first_release"] is not None and (
-        now - row["first_release"] <= timedelta(days=30.44 * config.SQUAT_MAX_AGE_MONTHS)
-    )
-    few = row["n_releases"] is not None and row["n_releases"] <= config.SQUAT_MAX_RELEASES
-    return young or few
+def recent_downloads(name: str, client: MetadataClient, namespace: str = "") -> int | None:
+    """``last_month`` downloads from pypistats ``/recent``; None if pypistats has no data.
 
-
-def recent_downloads(name: str, client: MetadataClient) -> int | None:
-    """``last_month`` downloads from pypistats ``/recent``; None if pypistats has no data."""
-    res = client.get_json(config.PYPISTATS_RECENT_URL.format(name=name), "pypistats", name)
+    ``namespace`` prefixes the cache namespace (e.g. ``"recheck/"`` keeps a re-check apart).
+    """
+    res = client.get_json(config.PYPISTATS_RECENT_URL.format(name=name), f"{namespace}pypistats", name)
     if res.status == 404:
         return None
     return int(res.data["data"]["last_month"])
 
 
 def lookup(
-    name: str, pypi: MetadataClient, stats: MetadataClient | None = None, refresh: bool = False
+    name: str, pypi: MetadataClient, stats: MetadataClient | None = None, refresh: bool = False,
+    namespace: str = "",
 ) -> dict[str, Any]:
-    """Registry row for one name; monthly downloads added for existing names if ``stats`` given."""
+    """Registry row for one name; monthly downloads added for existing names if ``stats`` given.
+
+    ``namespace`` prefixes the cache namespaces (``"recheck/"`` -> ``recheck/pypi``,
+    ``recheck/pypistats``) so a later re-check never overwrites the labelling-time cache.
+    """
     n = normalize(name)
-    res = pypi.get_json(config.PYPI_JSON_URL.format(name=n), "pypi", n, refresh=refresh)
+    res = pypi.get_json(config.PYPI_JSON_URL.format(name=n), f"{namespace}pypi", n, refresh=refresh)
     row = parse_pypi(n, res.data if res.status == 200 else None)
     if stats is not None and row["exists"]:
         try:
-            row["recent_downloads_month"] = recent_downloads(n, stats)
+            row["recent_downloads_month"] = recent_downloads(n, stats, namespace)
         except MetadataError:
             row["recent_downloads_month"] = None
     return row

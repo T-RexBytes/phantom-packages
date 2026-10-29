@@ -117,7 +117,8 @@ class MetadataClient:
         self._client.close()
 
     def _paths(self, namespace: str, key: str) -> tuple[Path, Path]:
-        base = self.cache_dir / cache_key(namespace) / cache_key(key)
+        parts = [cache_key(p) for p in namespace.split("/") if p]  # "recheck/pypi" -> recheck/pypi/
+        base = self.cache_dir.joinpath(*parts) / cache_key(key)
         return base.with_name(base.name + ".json"), base.with_name(base.name + ".404")
 
     def get_json(self, url: str, namespace: str, key: str, refresh: bool = False) -> CachedResponse:
