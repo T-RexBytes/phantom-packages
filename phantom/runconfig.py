@@ -22,10 +22,17 @@ def load(path: Path = config.RUN_CONFIG_PATH) -> dict[str, Any]:
     return {"cuts": []}
 
 
+def _scalar(value: Any) -> Any:
+    """JSON fallback for numpy scalars (anything with ``.item()``)."""
+    if hasattr(value, "item"):
+        return value.item()
+    raise TypeError(f"not JSON serializable: {type(value).__name__}")
+
+
 def save(data: dict[str, Any], path: Path = config.RUN_CONFIG_PATH) -> None:
     """Write the run config as pretty, key-sorted JSON."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(data, indent=2, sort_keys=True, default=_scalar) + "\n", encoding="utf-8")
 
 
 def update(section: str, values: Any, path: Path = config.RUN_CONFIG_PATH) -> dict[str, Any]:

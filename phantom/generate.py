@@ -69,14 +69,13 @@ def ollama_chat(
     temperature: float = config.TEMPERATURE,
     num_predict: int = config.NUM_PREDICT,
     num_ctx: int = config.NUM_CTX,
+    system: str | None = config.SYSTEM_PROMPT,
 ) -> dict[str, Any]:
     """Call ``/api/chat`` once (non-streaming) and return the generation fields."""
+    messages = [{"role": "system", "content": system}] if system else []
     body: dict[str, Any] = {
         "model": model,
-        "messages": [
-            {"role": "system", "content": config.SYSTEM_PROMPT},
-            {"role": "user", "content": prompt},
-        ],
+        "messages": [*messages, {"role": "user", "content": prompt}],
         "stream": False,
         "options": {
             "temperature": temperature, "seed": seed, "num_predict": num_predict, "num_ctx": num_ctx,

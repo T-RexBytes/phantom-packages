@@ -72,6 +72,16 @@
     "tabpfn_token_set": true,
     "user_agent": "phantom-packages/0.1 (+https://github.com/T-RexBytes/phantom-packages; research, metadata-only)"
   },
+  "eval": {
+    "notes": [
+      "TabPFN saved with tabpfn.model_loading.save_fitted_tabpfn_model as .tabpfn_fit (documented method) instead of the spec's tabpfn_model.pkl",
+      "threshold: the highest tau whose out-of-fold recall is still >= 0.90 (spec wording: smallest tau reaching recall >= 0.90)",
+      "split B: cross_model and global_freq recomputed from the training models only; the model feature is dropped; prompts are shared between train and test, so B tests model shift, not new prompts",
+      "no subsampling: max 726 training rows, ignore_pretraining_limits=False",
+      "llm_selfcheck: gemma4:e4b, temperature 0, seed 42, max 8 tokens, no system prompt; unique names only (433)"
+    ],
+    "run_at": "2026-10-29T18:44:13Z"
+  },
   "features": {
     "built_at": "2026-10-29T18:08:10Z",
     "n_generations": 1199,
