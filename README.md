@@ -153,10 +153,22 @@ uv run phantom check requirements.txt --offline
 ## Reproduce the study
 
 ```powershell
-copy .env.example .env   # fill TABPFN_TOKEN; Ultramarine key optional
+copy .env.example .env   # fill TABPFN_TOKEN and PHANTOM_ANON_KEY (any long random string); Ultramarine key optional
 uv run tasks.py env      # check Ollama, models, keys
 uv run tasks.py test     # pytest
-uv run tasks.py <stage>  # prompts | summon | extract | features | eval | guard-model | squat | figures | site | all
+uv run tasks.py <stage>  # prompts | summon | extract | features | eval | guard-model | squat | figures | halloween | site | all
+uv run tasks.py all --fast   # every stage from the cache, no model calls (about 6 minutes on a laptop CPU)
+```
+
+`--fast` needs the gitignored `data/` cache from a real run (generations, PyPI lookups, self-check answers).
+Without it, the committed `results/` are the record.
+
+## The Ghost Registry (local site)
+
+`web/` is a static page that reads `web/data.json`; it is not hosted. To view it:
+
+```powershell
+python -m http.server 8000 --bind 127.0.0.1 --directory web   # then open http://127.0.0.1:8000
 ```
 
 Spec: [docs/03_BUILD_SPEC.md](docs/03_BUILD_SPEC.md).

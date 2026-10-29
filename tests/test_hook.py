@@ -91,13 +91,25 @@ def test_empty_or_missing_command_is_allowed():
 
 
 def test_ghost_blocks_with_the_spec_message():
-    g = FakeGuard([FakeVerdict(GHOST, "GHOST", p_ghost=0.97, nearest="requests", nearest_lev=6,
+    g = FakeGuard([FakeVerdict(GHOST, "GHOST", p_ghost=0.97, nearest="ghostlib", nearest_lev=4,
                                reasons=["404 on PyPI"])])
     code, msg = run(payload(f"pip install {GHOST}"), g)
     assert code == 2
     assert msg == (f"phantom-packages: blocked `pip install {GHOST}`: {GHOST} does not exist on PyPI "
-                   f"(P(ghost)=0.97). Did you mean `requests`? Never install unverified names.")
+                   f"(P(ghost)=0.97). Did you mean `ghostlib`? Never install unverified names.")
     assert g.calls == [{"names": [GHOST], "offline": False, "prob": "auto"}]
+
+
+@pytest.mark.parametrize("nearest,lev,expected", [
+    ("ghostlib", 4, "ghostlib"),        # affix: the name contains the real one
+    ("zzq-ghostlab", 1, "zzq-ghostlab"),  # one typo away
+    ("requests", 11, None),             # nearest exists but is unrelated: no "did you mean"
+    (None, None, None),
+])
+def test_did_you_mean_only_when_plausible(nearest, lev, expected):
+    v = FakeVerdict(GHOST, "GHOST", nearest=nearest, nearest_lev=lev)
+    assert hook.plausible_suggestion(v) == expected
+    assert ("Did you mean" in hook.ghost_message(v)) == (expected is not None)
 
 
 def test_ghost_message_without_probability_or_nearest():

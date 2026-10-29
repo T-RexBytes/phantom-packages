@@ -46,23 +46,25 @@ def ask_all(names: Iterable[str], model: str = MODEL,
     names = sorted(set(names))
     folder = cache_dir(model)
     folder.mkdir(parents=True, exist_ok=True)
+    paths = {n: folder / f"{cache_key(n)}.json" for n in names}
+    out = {n: json.loads(p.read_text(encoding="utf-8")) for n, p in paths.items() if p.exists()}
+    missing = [n for n in names if n not in out]
+    if not missing:  # fully cached: no Ollama needed (``tasks.py all --fast`` works with it off)
+        if progress:
+            progress(len(names), len(names))
+        return out
     host = config.get_settings().ollama_host
     tags = {m["tag"]: m for m in generate.ollama_tags(host)}
     thinking = "thinking" in tags[model]["capabilities"]
-    out: dict[str, dict[str, Any]] = {}
     with httpx.Client(timeout=120.0) as client:
-        for i, name in enumerate(names, 1):
-            path = folder / f"{cache_key(name)}.json"
-            if path.exists():
-                out[name] = json.loads(path.read_text(encoding="utf-8"))
-            else:
-                r = generate.ollama_chat(client, host, model, PROMPT.format(name=name), SEED, thinking,
-                                         temperature=TEMPERATURE, num_predict=NUM_PREDICT, system=None)
-                rec = {"name": name, "model": model, "digest": tags[model]["digest"], "reply": r["output"],
-                       "answer": parse_answer(r["output"]), "latency_s": r["latency_s"]}
-                path.write_text(json.dumps(rec), encoding="utf-8")
-                out[name] = rec
+        for i, name in enumerate(missing, 1):
+            r = generate.ollama_chat(client, host, model, PROMPT.format(name=name), SEED, thinking,
+                                     temperature=TEMPERATURE, num_predict=NUM_PREDICT, system=None)
+            rec = {"name": name, "model": model, "digest": tags[model]["digest"], "reply": r["output"],
+                   "answer": parse_answer(r["output"]), "latency_s": r["latency_s"]}
+            paths[name].write_text(json.dumps(rec), encoding="utf-8")
+            out[name] = rec
             if progress:
-                progress(i, len(names))
+                progress(len(names) - len(missing) + i, len(names))
         client.post(f"{host}/api/generate", json={"model": model, "keep_alive": 0})  # free VRAM/RAM
     return out

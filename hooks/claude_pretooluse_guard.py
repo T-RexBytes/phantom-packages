@@ -39,9 +39,21 @@ def _p(v: Any) -> str:
     return f" (P(ghost)={v.p_ghost:.2f})" if v.p_ghost is not None else ""
 
 
+def plausible_suggestion(v: Any) -> str | None:
+    """The nearest real name only if it is plausibly what was meant: one name contains the other
+    (``python-foo`` vs ``foo``) or the edit distance is small for the name's length."""
+    name, near, lev = getattr(v, "normalized", v.name), v.nearest, v.nearest_lev
+    if not near or near == name:
+        return None
+    if near in name or name in near:
+        return near
+    return near if lev is not None and lev <= max(2, len(name) // 4) else None
+
+
 def ghost_message(v: Any) -> str:
     """The §9.3 block message for a name PyPI does not know."""
-    hint = f" Did you mean `{v.nearest}`?" if v.nearest and v.nearest != v.normalized else ""
+    near = plausible_suggestion(v)
+    hint = f" Did you mean `{near}`?" if near else ""
     return (f"{PREFIX} blocked `pip install {v.name}`: {v.name} does not exist on PyPI{_p(v)}.{hint} "
             "Never install unverified names.")
 

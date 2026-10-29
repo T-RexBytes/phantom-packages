@@ -24,6 +24,7 @@ STAGES: dict[str, tuple[str, int]] = {
     "guard-model": ("05b_guard_model.py", 7),
     "squat": ("06_squat_check.py", 6),
     "figures": ("07_figures.py", 8),
+    "halloween": ("07b_halloween_figures.py", 8),
     "site": ("08_build_site_data.py", 8),
 }
 UTILITY = {

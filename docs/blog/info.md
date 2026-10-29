@@ -4,7 +4,7 @@ Running notes for the post (`docs/05_BLOG_POST_BLUEPRINT.md`). Facts only, each 
 Numbers here are working copies; the post must quote `results/summary.json` / `results/*.json`.
 **No unregistered ghost names in this file** (it is public). Ghost names live in `private/` only.
 
-Last updated: 2026-10-30 (after Phase 8).
+Last updated: 2026-10-30 (pre-Phase-9 audit).
 
 ---
 
@@ -155,11 +155,20 @@ Sources: `results/squat_summary.json`, `results/squat_public.csv`.
 - **Honest box on the site:** where TabPFN wins (AUROC, calibration) and where it loses (precision at 90% recall, speed, not significant on unseen names).
 - **Accessibility:** every text colour ≥ 4.6:1 on its surface, alt text built from the real numbers, a table view next to each chart, keyboard focus styles, `prefers-reduced-motion` respected, and no horizontal scroll at a true 360 px viewport (measured with an iframe; headless Chrome can't size a window that small).
 - **What went wrong:** the first local preview server started in the repo root instead of `web/`. It was bound to localhost only, and I stopped it at once. A good reminder that `.env` and `private/` live next to the site.
-- **Open question for the post:** the 8-character hashes are confirmable. Anyone who guesses a name (or runs the same open models) can hash it and check the list. See the decision in the Phase 8 status.
+- **Resolved: keyed ids.** Plain 8-character SHA-256 ids were confirmable: anyone who guesses a name, or reruns the same open models, could hash it and check the list. Public ids are now HMAC-SHA256 with a secret key, so a guess can't be checked. The two registered squat-rule matches are no longer named anywhere public. Good "what went wrong" beat: the spec's own anonymisation was the leak.
+- **Site not hosted** (decision): `web/` stays in the repo for local viewing; screenshots can go in the post.
 
 ---
 
-## 10. Still {{TODO}}
+## 10. Pre-Phase-9 audit (2026-10-30)
+
+- `uv run tasks.py all --fast` reran every non-generation stage from the cache in 345 s (spec target: < 10 min). Every result file came back identical except timings and timestamps: the pipeline is deterministic.
+- Found and fixed: the gemma self-check contacted Ollama even when every answer was cached (`--fast` would fail with Ollama off), and the hook offered an unrelated "Did you mean" name for ghosts with no close real name (e.g. edit distance 11). It now suggests only affix matches or near-typos.
+- Added `tests/test_results_consistency.py`: every headline number agrees across summary, CSVs, model files, site data and README (CI-safe).
+
+---
+
+## 11. Still {{TODO}}
 
 - Phase 7 demo: record the GIF; note the real time and day for the post's opening scene.
 - Ultramarine arm: needs the key and spend approval.
