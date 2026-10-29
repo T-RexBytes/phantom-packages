@@ -8,6 +8,7 @@ derived from them deterministically.
 from __future__ import annotations
 
 import json
+import random
 import re
 from collections import Counter
 from dataclasses import dataclass
@@ -94,6 +95,31 @@ def build_prompts(tasks: list[Task]) -> list[dict]:
         }
         for i, (_, t) in enumerate(ordered, 1)
     ]
+
+
+def pilot_ids(rows: list[dict], n: int, seed: int = config.GLOBAL_SEED) -> list[str]:
+    """Pick ``n`` prompt ids keeping the full set's niche-level mix and spreading each
+    level round-robin over domains (seeded, deterministic). Returned in id order."""
+    rng = random.Random(seed)
+    levels = Counter(r["niche_level"] for r in rows)
+    exact = {lvl: n * c / len(rows) for lvl, c in levels.items()}
+    quota = {lvl: int(x) for lvl, x in exact.items()}
+    for lvl in sorted(exact, key=lambda lvl: (-(exact[lvl] - quota[lvl]), lvl))[: n - sum(quota.values())]:
+        quota[lvl] += 1
+    picked: list[str] = []
+    for lvl in sorted(quota):
+        by_domain: dict[str, list[str]] = {}
+        for r in rows:
+            if r["niche_level"] == lvl:
+                by_domain.setdefault(r["domain"], []).append(r["id"])
+        pools = [rng.sample(ids, len(ids)) for _, ids in sorted(by_domain.items())]
+        rng.shuffle(pools)
+        while quota[lvl] > 0 and any(pools):
+            for pool in pools:
+                if pool and quota[lvl] > 0:
+                    picked.append(pool.pop())
+                    quota[lvl] -= 1
+    return sorted(picked)
 
 
 def default_prompts() -> list[dict]:

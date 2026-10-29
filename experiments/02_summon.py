@@ -24,6 +24,7 @@ from phantom import config, generate, prompts, runconfig
 
 SMOKE_PATH = config.DATA / "smoke_generations.jsonl"
 SMOKE_SUMMARY = config.RESULTS / "smoke.json"
+MAX_FAILURES_IN_A_ROW = 3  # each already retried 3x; then assume Ollama is down
 console = Console(highlight=False)
 
 
@@ -86,14 +87,20 @@ def execute(models: list[str], prompt_ids: list[str], samples: list[int], path) 
     ]
     total = len(todo)
     console.print(f"{len(done)} already done, {total} to go -> {path.relative_to(config.ROOT)}")
-    eta, failures = generate.Eta(), Counter()
+    eta, failures, in_a_row = generate.Eta(), Counter(), 0
     with httpx.Client(timeout=httpx.Timeout(600.0)) as client:
         for i, (sample, model, pid) in enumerate(todo, 1):
             seed = config.SAMPLE_SEED_BASE + sample
             result = call_with_retry(client, host, model, info[model], by_id[pid]["text"], seed)
             if result is None:
                 failures[model] += 1
+                in_a_row += 1
+                if in_a_row >= MAX_FAILURES_IN_A_ROW:
+                    console.print(f"[red]{in_a_row} calls failed in a row (is Ollama running?); "
+                                  "stopping. Re-run the same command to resume.")
+                    break
                 continue
+            in_a_row = 0
             generate.append_record(
                 path, generate.local_record(model, info[model]["digest"], pid, sample, seed, result)
             )
@@ -151,9 +158,11 @@ def cmd_run(args) -> int:
     if not models:
         sys.exit("no models: pass --models or run `tags --select ...` first")
     rows = prompts.load_prompts()
-    ids = [r["id"] for r in rows][: args.prompt_limit or None]
+    ids = prompts.pilot_ids(rows, args.pilot) if args.pilot else [r["id"] for r in rows]
+    ids = ids[: args.prompt_limit or None]
     samples = list(range(1, args.samples + 1))
     runconfig.update("summon", {"models": models, "samples": samples, "n_prompts": len(ids),
+                                "pilot": args.pilot or None,
                                 "temperature": config.TEMPERATURE, "num_predict": config.NUM_PREDICT,
                                 "num_ctx": config.NUM_CTX, "think": False,
                                 "started_at": runconfig.utc_now()})
@@ -221,6 +230,7 @@ def main() -> int:
     p.add_argument("--models")
     p.add_argument("--samples", type=int, default=2)
     p.add_argument("--prompt-limit", type=int, default=0, help="first N prompts only (scope cut)")
+    p.add_argument("--pilot", type=int, default=0, help="balanced subset of N prompts (prompts.pilot_ids)")
     p = sub.add_parser("hosted", help="Ultramarine arm (sample 1); dry run unless --confirm-spend")
     p.add_argument("--confirm-spend", action="store_true")
     p.add_argument("--prompt-limit", type=int, default=0)

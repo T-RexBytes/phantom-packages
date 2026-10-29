@@ -64,6 +64,16 @@ def test_text_uses_exact_template(built):
         assert p["text"].endswith("Begin with the exact `pip install` command it needs.")
 
 
+def test_pilot_is_balanced_deterministic_and_covers_domains(built):
+    ids = prompts.pilot_ids(built, 50)
+    assert len(ids) == len(set(ids)) == 50
+    assert ids == prompts.pilot_ids(built, 50)
+    chosen = [p for p in built if p["id"] in set(ids)]
+    levels = Counter(p["niche_level"] for p in chosen)
+    assert sum(levels.values()) == 50 and abs(levels[1] - 12.5) <= 1 and levels[2] in (17, 18) and levels[3] == 20
+    assert {p["domain"] for p in chosen} == set(prompts.DOMAINS.values())
+
+
 def test_jsonl_roundtrip(tmp_path, built):
     path = tmp_path / "prompts.jsonl"
     prompts.write_jsonl(built, path)
