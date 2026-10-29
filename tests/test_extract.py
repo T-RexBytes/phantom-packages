@@ -228,6 +228,17 @@ def test_subtype(name, expected):
     assert subtype(name) == expected
 
 
+@pytest.mark.parametrize("name", ["google-auth", "google_auth", "evtx"])
+def test_correct_dist_names_are_not_module_confusion(name):
+    # google.auth normalizes to the real dist google-auth; evtx is a legitimate dist.
+    assert subtype(name) is None
+
+
+def test_dotted_stdlib_path_is_stdlib_confusion():
+    assert subtype("xml-etree-elementtree", "xml.etree.ElementTree") == "stdlib_confusion"
+    assert subtype("zope-interface", "zope.interface") is None
+
+
 def test_module_name_in_pip_line_is_labelled_as_is():
     # `pip install cv2` keeps the name cv2 (it is a real mistake, tagged later).
     assert names(fence("pip install cv2 sklearn")) == ["cv2", "sklearn"]

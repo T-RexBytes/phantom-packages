@@ -72,23 +72,27 @@ def test_cache_hit_avoids_network(tmp_path):
     assert pypi.network_calls == 1
 
 
-def test_downloads_fetched_only_for_squat_candidates(tmp_path):
-    young = pypi_doc({"0.1": [file(datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))]})
-    mature = pypi_doc({v: [file(f"201{i}-01-01T00:00:00Z")] for i, v in enumerate(["1", "2", "3", "4"])})
-    docs = {"/pypi/young/json": young, "/pypi/demo/json": mature}
+def test_downloads_fetched_for_existing_names(tmp_path):
     stats_calls = []
-
-    def pypi_handler(req):
-        return httpx.Response(200, json=docs[req.url.path])
 
     def stats_handler(req):
         stats_calls.append(req.url.path)
         return httpx.Response(200, json={"data": {"last_day": 1, "last_week": 5, "last_month": 42}})
 
-    pypi, stats = client(tmp_path, pypi_handler), client(tmp_path / "s", stats_handler)
-    assert registry.lookup("young", pypi, stats)["recent_downloads_month"] == 42
-    assert registry.lookup("demo", pypi, stats)["recent_downloads_month"] is None
-    assert stats_calls == ["/api/packages/young/recent"]
+    pypi = client(tmp_path, lambda r: httpx.Response(200, json=OLD))
+    stats = client(tmp_path / "s", stats_handler)
+    assert registry.lookup("demo", pypi, stats)["recent_downloads_month"] == 42
+    assert stats_calls == ["/api/packages/demo/recent"]
+
+
+def test_squat_candidate_window():
+    now = datetime(2026, 10, 29, tzinfo=timezone.utc)
+    young = {"exists": True, "first_release": datetime(2026, 1, 1, tzinfo=timezone.utc), "n_releases": 9}
+    mature = {"exists": True, "first_release": datetime(2010, 1, 1, tzinfo=timezone.utc), "n_releases": 9}
+    few = {**mature, "n_releases": 2}
+    ghost = {"exists": False, "first_release": None, "n_releases": None}
+    assert registry.is_squat_candidate(young, now) and registry.is_squat_candidate(few, now)
+    assert not registry.is_squat_candidate(mature, now) and not registry.is_squat_candidate(ghost, now)
 
 
 def test_pypistats_404_gives_none(tmp_path):

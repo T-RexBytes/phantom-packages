@@ -15,7 +15,7 @@ import pandas as pd
 from rich.console import Console
 from rich.table import Table
 
-from phantom import config, generate, label, registry, runconfig
+from phantom import config, generate, label, prompts, registry, runconfig
 from phantom.http import MetadataError
 
 LABELLED_PATH = config.DATA / "labelled.parquet"
@@ -50,7 +50,12 @@ def main() -> None:
     parser.add_argument("--refresh", action="store_true", help="re-check every name on PyPI")
     args = parser.parse_args()
 
-    records = list(generate.read_records(config.RAW_GENERATIONS_PATH))
+    all_records = list(generate.read_records(config.RAW_GENERATIONS_PATH))
+    summon = runconfig.load()["summon"]
+    records = generate.in_plan(all_records, summon)
+    console.print(f"{len(records)} generations in the planned grid "
+                  f"({len(summon['models'])} models x {summon['n_prompts']} prompts x "
+                  f"{len(summon['samples'])} samples); {len(all_records) - len(records)} rows outside it ignored")
     gens = pd.DataFrame(records)[["key", "model"]]
     mentions, dropped = label.build_mentions(records)
     config.DATA.mkdir(parents=True, exist_ok=True)
@@ -72,6 +77,13 @@ def main() -> None:
         table.add_row(str(model), f"{int(row.mentions)}", f"{int(row.ghosts)}", f"{row.ghost_rate:.1%}",
                       f"{int(row.generations)}", f"{row.gen_ghost_share:.1%}")
     console.print(table)
+
+    niche = {p["id"]: p["niche_level"] for p in prompts.load_prompts()}
+    main_lab = lab[lab["category"].isin(["real", "ghost"])].assign(niche=lambda d: d["prompt_id"].map(niche))
+    by_niche = main_lab.groupby("niche")["y_ghost"].agg(mentions="size", ghosts="sum")
+    by_niche["ghost_rate"] = by_niche["ghosts"] / by_niche["mentions"]
+    console.print("by niche level: " + " | ".join(
+        f"L{lvl}: {int(r.ghosts)}/{int(r.mentions)} = {r.ghost_rate:.1%}" for lvl, r in by_niche.iterrows()))
 
     ghosts = lab[lab["y_ghost"]]
     unique_ghosts = ghosts["name"].nunique()
@@ -96,13 +108,14 @@ def main() -> None:
     for name, row in per_ghost.head(15).iterrows():
         console.print(f"  {name:<32} {row.mentions:>3} mentions  {row.models} model(s)  {row.prompts} prompt(s)")
 
-    planned = runconfig.load().get("summon", {})
-    expected = len(planned.get("models", [])) * len(planned.get("samples", [])) * planned.get("n_prompts", 0)
+    expected = len(summon["models"]) * len(summon["samples"]) * summon["n_prompts"]
     summary = {
         "checked_at": runconfig.utc_now(),
+        "scope": "pilot" if summon.get("pilot") else "full",
+        "n_prompts": summon["n_prompts"],
         "n_generations": len(records),
         "n_generations_planned": expected,
-        "complete": expected > 0 and len(records) >= expected,
+        "complete": len(records) >= expected,
         "n_mentions_extracted": len(mentions),
         "n_labelled_mentions": len(lab),
         "n_unique_labelled_names": int(lab["name"].nunique()),
@@ -111,6 +124,7 @@ def main() -> None:
         "ghost_rate_overall": float(r.loc["ALL", "ghost_rate"]),
         "gen_ghost_share_overall": float(r.loc["ALL", "gen_ghost_share"]),
         "per_model": {m: {k: float(v) for k, v in row.items()} for m, row in r.drop(index="ALL").iterrows()},
+        "per_niche_level": {f"L{lvl}": {k: float(v) for k, v in row.items()} for lvl, row in by_niche.iterrows()},
         "subtypes": {k: {kk: int(vv) for kk, vv in v.items()} for k, v in subtypes.to_dict("index").items()},
         "unmapped_imports": unmapped,
         "dropped_tokens": dropped,

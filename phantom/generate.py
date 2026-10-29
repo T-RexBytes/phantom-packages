@@ -29,13 +29,20 @@ def generation_key(model: str, prompt_id: str, sample: int) -> str:
     return f"{model}|{prompt_id}|s{sample}"
 
 
+def sha256_digest(digest: str | None) -> str | None:
+    """Ollama returns bare hex digests; store them as ``sha256:<hex>`` (BUILD_SPEC §4.2)."""
+    if not digest or digest.startswith("sha256:"):
+        return digest
+    return f"sha256:{digest}"
+
+
 def ollama_tags(host: str, timeout: float = 10.0) -> list[dict[str, Any]]:
     """Return installed models from ``GET /api/tags`` in the ``models.json`` shape."""
     models = httpx.get(f"{host}/api/tags", timeout=timeout).raise_for_status().json()["models"]
     return [
         {
             "tag": m["name"],
-            "digest": m.get("digest"),
+            "digest": sha256_digest(m.get("digest")),
             "size_bytes": m.get("size"),
             "family": m.get("details", {}).get("family"),
             "parameter_size": m.get("details", {}).get("parameter_size"),
@@ -145,6 +152,13 @@ def append_record(path: Path, record: dict[str, Any]) -> None:
 def plan(models: list[str], prompt_ids: list[str], samples: Iterable[int]) -> list[tuple[int, str, str]]:
     """Work order: samples outermost, then models, then prompts (balanced partial runs)."""
     return [(s, m, p) for s in samples for m in models for p in prompt_ids]
+
+
+def in_plan(records: Iterable[dict[str, Any]], summon: dict[str, Any]) -> list[dict[str, Any]]:
+    """Keep local records inside the planned grid of ``run_config.summon`` (plus hosted rows),
+    so extra rows from earlier partial runs cannot unbalance per-model statistics."""
+    keys = {generation_key(m, p, s) for s, m, p in plan(summon["models"], summon["prompt_ids"], summon["samples"])}
+    return [r for r in records if r.get("arm") == "hosted" or r["key"] in keys]
 
 
 class Eta:

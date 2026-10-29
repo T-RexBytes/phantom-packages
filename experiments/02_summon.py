@@ -161,11 +161,13 @@ def cmd_run(args) -> int:
     ids = prompts.pilot_ids(rows, args.pilot) if args.pilot else [r["id"] for r in rows]
     ids = ids[: args.prompt_limit or None]
     samples = list(range(1, args.samples + 1))
-    runconfig.update("summon", {"models": models, "samples": samples, "n_prompts": len(ids),
-                                "pilot": args.pilot or None,
-                                "temperature": config.TEMPERATURE, "num_predict": config.NUM_PREDICT,
-                                "num_ctx": config.NUM_CTX, "think": False,
-                                "started_at": runconfig.utc_now()})
+    old = runconfig.load().get("summon", {})
+    plan = {"models": models, "samples": samples, "n_prompts": len(ids), "prompt_ids": ids,
+            "pilot": args.pilot or None, "temperature": config.TEMPERATURE,
+            "num_predict": config.NUM_PREDICT, "num_ctx": config.NUM_CTX, "think": False}
+    run = {"started_at": runconfig.utc_now(), "pilot": args.pilot or None, "n_prompts": len(ids)}
+    # Merge so earlier facts (e.g. resume_test) and the run history survive.
+    runconfig.update("summon", {**old, **plan, "runs": [*old.get("runs", []), run]})
     failures = execute(models, ids, samples, config.RAW_GENERATIONS_PATH)
     return 1 if failures else 0
 
@@ -213,7 +215,7 @@ def cmd_tags(args) -> int:
     data = write_models_json(args.select.split(",") if args.select else None)
     for m in data["installed"]:
         console.print(f"{m['tag']:<18} {m['family']:<8} {m['parameter_size']:<6} {m['quantization']} "
-                      f"{m['digest'][:12]} {m['capabilities']}")
+                      f"{m['digest'].removeprefix('sha256:')[:12]} {m['capabilities']}")
     console.print(f"selected: {data.get('selected')}")
     return 0
 

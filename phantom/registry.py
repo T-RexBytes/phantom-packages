@@ -2,8 +2,8 @@
 
 ``first_release`` is the earliest ``upload_time_iso_8601`` over every file of
 every version; ``n_releases`` counts versions that have at least one file.
-Monthly downloads (pypistats, ~1 req/s) are fetched only for squat candidates:
-existing names that are young or have few releases (the only place they are used).
+Monthly downloads (pypistats ``last_month``, ~1 req/s) are fetched for every
+existing name, as in the §4.4 schema.
 """
 
 from __future__ import annotations
@@ -69,11 +69,11 @@ def recent_downloads(name: str, client: MetadataClient) -> int | None:
 def lookup(
     name: str, pypi: MetadataClient, stats: MetadataClient | None = None, refresh: bool = False
 ) -> dict[str, Any]:
-    """Registry row for one name; downloads added for squat candidates if ``stats`` given."""
+    """Registry row for one name; monthly downloads added for existing names if ``stats`` given."""
     n = normalize(name)
     res = pypi.get_json(config.PYPI_JSON_URL.format(name=n), "pypi", n, refresh=refresh)
     row = parse_pypi(n, res.data if res.status == 200 else None)
-    if stats is not None and is_squat_candidate(row):
+    if stats is not None and row["exists"]:
         try:
             row["recent_downloads_month"] = recent_downloads(n, stats)
         except MetadataError:

@@ -23,6 +23,12 @@
       "phase": "2",
       "reason": "PAPERINSTRUMENTS_API_KEY pending (provider waitlist); code ready, dry-run only until key + spend approval",
       "ts": "2026-10-28T18:54:45Z"
+    },
+    {
+      "cut": "pilot first: 50/200 prompts (25%) x 3 models x 2 samples = 300 generations; remaining 75% pending",
+      "phase": "2",
+      "reason": "user asked to run ~25% before building later phases; rows are reused when the full run resumes",
+      "ts": "2026-10-29T15:00:27Z"
     }
   ],
   "env": {
@@ -66,6 +72,50 @@
     "tabpfn_token_set": true,
     "user_agent": "phantom-packages/0.1 (+https://github.com/T-RexBytes/phantom-packages; research, metadata-only)"
   },
+  "label_fixes": [
+    {
+      "after": {
+        "ghost_rate_overall": 0.10833333333333334,
+        "n_ghost_mentions": 39,
+        "n_labelled_mentions": 365,
+        "n_unique_ghost_names": 30,
+        "subtypes": {
+          "module_name_confusion": {
+            "mentions": 2,
+            "unique": 2
+          },
+          "stdlib_confusion": {
+            "mentions": 3,
+            "unique": 2
+          }
+        }
+      },
+      "before": {
+        "ghost_rate_overall": 0.1151685393258427,
+        "n_ghost_mentions": 41,
+        "n_labelled_mentions": 366,
+        "n_unique_ghost_names": 32,
+        "subtypes": {
+          "module_name_confusion": {
+            "mentions": 8,
+            "unique": 4
+          },
+          "stdlib_confusion": {
+            "mentions": 2,
+            "unique": 1
+          }
+        }
+      },
+      "bugs": [
+        "truncated last line: a reply cut at num_predict=350 mid-name produced a false ghost",
+        "import key google.auth normalized to the real dist google-auth and was tagged module_name_confusion; evtx (a real EVTX parser) likewise",
+        "dotted stdlib path in pip (xml.etree.ElementTree) was counted as a ghost instead of stdlib_confusion"
+      ],
+      "phase": "3",
+      "scope": "pilot (300 generations)",
+      "ts": "2026-10-29T15:04:46Z"
+    }
+  ],
   "prompts": {
     "by_level": {
       "L1": 50,
@@ -88,20 +138,86 @@
       "qwen3:4b-instruct",
       "phi4-mini:3.8b"
     ],
-    "n_prompts": 200,
+    "n_prompts": 50,
     "num_ctx": 1024,
     "num_predict": 350,
+    "pilot": 50,
+    "prompt_ids": [
+      "p005",
+      "p008",
+      "p011",
+      "p017",
+      "p020",
+      "p022",
+      "p023",
+      "p025",
+      "p028",
+      "p030",
+      "p033",
+      "p034",
+      "p040",
+      "p042",
+      "p043",
+      "p047",
+      "p056",
+      "p062",
+      "p064",
+      "p066",
+      "p071",
+      "p073",
+      "p074",
+      "p080",
+      "p081",
+      "p086",
+      "p100",
+      "p104",
+      "p105",
+      "p107",
+      "p110",
+      "p111",
+      "p116",
+      "p120",
+      "p122",
+      "p129",
+      "p134",
+      "p140",
+      "p148",
+      "p153",
+      "p159",
+      "p165",
+      "p170",
+      "p172",
+      "p182",
+      "p184",
+      "p186",
+      "p189",
+      "p191",
+      "p194"
+    ],
     "resume_test": {
       "duplicate_keys": 0,
       "killed_after": 4,
       "resumed_with": "4 already done, 1196 to go",
       "ts": "2026-10-28T18:56:47Z"
     },
+    "runs": [
+      {
+        "n_prompts": 200,
+        "note": "sequential full run; stopped at 73 generations when Ollama went offline",
+        "pilot": null,
+        "started_at": "2026-10-28T18:55:00Z"
+      },
+      {
+        "n_prompts": 50,
+        "note": "balanced 25% pilot, exit 0",
+        "pilot": 50,
+        "started_at": "2026-10-29T14:08:23Z"
+      }
+    ],
     "samples": [
       1,
       2
     ],
-    "started_at": "2026-10-28T18:56:52Z",
     "temperature": 0.7,
     "think": false
   }

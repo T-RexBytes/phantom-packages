@@ -1,0 +1,74 @@
+{
+  "born_after_summoning_mentions": 1,
+  "checked_at": "2026-10-29T15:04:32Z",
+  "complete": true,
+  "dropped_tokens": 0,
+  "failed_lookups": 0,
+  "gen_ghost_share_overall": 0.13,
+  "ghost_rate_overall": 0.10833333333333334,
+  "ghosts_multi_model": 1,
+  "ghosts_repeated_2plus": 8,
+  "n_generations": 300,
+  "n_generations_planned": 300,
+  "n_ghost_mentions": 39,
+  "n_labelled_mentions": 365,
+  "n_mentions_extracted": 432,
+  "n_prompts": 50,
+  "n_unique_ghost_names": 30,
+  "n_unique_labelled_names": 134,
+  "per_model": {
+    "gemma4:e4b": {
+      "gen_ghost_share": 0.07,
+      "generations": 100.0,
+      "ghost_rate": 0.05785123966942149,
+      "ghosts": 7.0,
+      "mentions": 121.0,
+      "with_ghost": 7.0
+    },
+    "phi4-mini:3.8b": {
+      "gen_ghost_share": 0.12,
+      "generations": 100.0,
+      "ghost_rate": 0.10084033613445378,
+      "ghosts": 12.0,
+      "mentions": 119.0,
+      "with_ghost": 12.0
+    },
+    "qwen3:4b-instruct": {
+      "gen_ghost_share": 0.2,
+      "generations": 100.0,
+      "ghost_rate": 0.16666666666666666,
+      "ghosts": 20.0,
+      "mentions": 120.0,
+      "with_ghost": 20.0
+    }
+  },
+  "per_niche_level": {
+    "L1": {
+      "ghost_rate": 0.053763440860215055,
+      "ghosts": 5.0,
+      "mentions": 93.0
+    },
+    "L2": {
+      "ghost_rate": 0.07633587786259542,
+      "ghosts": 10.0,
+      "mentions": 131.0
+    },
+    "L3": {
+      "ghost_rate": 0.17647058823529413,
+      "ghosts": 24.0,
+      "mentions": 136.0
+    }
+  },
+  "scope": "pilot",
+  "subtypes": {
+    "module_name_confusion": {
+      "mentions": 2,
+      "unique": 2
+    },
+    "stdlib_confusion": {
+      "mentions": 3,
+      "unique": 2
+    }
+  },
+  "unmapped_imports": 67
+}

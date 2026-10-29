@@ -56,6 +56,16 @@ def test_born_after_summoning_uses_model_release_date(mentions):
     assert not lab.loc[lab["name"] == "requests", "born_after_summoning"].any()
 
 
+def test_truncated_last_line_is_ignored():
+    rec = {"key": "m|p1|s1", "model": "m", "prompt_id": "p1", "sample": 1, "done_reason": "length",
+           "output": "```bash\npip install requests\npip install opencv-python-head"}
+    df, _ = build_mentions([rec])
+    assert list(df["name"]) == ["requests"]
+    # a reply that finished normally keeps its last line
+    df, _ = build_mentions([{**rec, "done_reason": "stop"}])
+    assert "opencv-python-head" in set(df["name"])
+
+
 def test_rates(mentions):
     lab = label(mentions[0], REGISTRY)
     gens = pd.DataFrame(RECORDS)[["key", "model"]]

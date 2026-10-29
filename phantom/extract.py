@@ -146,16 +146,31 @@ def normalize(name: str) -> str:
     return re.sub(r"[-_.]+", "-", name).lower()
 
 
-_MODULE_CONFUSION = frozenset(normalize(k) for k in IMPORT_TO_DIST)
+# Import keys that are also the correct, established distribution for the same job
+# (e.g. `evtx` is a real EVTX parser), so using them in pip is not a confusion.
+LEGIT_MODULE_DISTS = frozenset({"evtx"})
+
+# A key whose normalized form equals a real target dist (google.auth -> google-auth) is not
+# a confusion either.
+_MODULE_CONFUSION = (
+    frozenset(normalize(k) for k in IMPORT_TO_DIST)
+    - frozenset(normalize(v) for v in IMPORT_TO_DIST.values())
+    - LEGIT_MODULE_DISTS
+)
 _STDLIB_NORMALIZED = frozenset(normalize(m) for m in STDLIB)
 
 
-def subtype(name: str) -> str | None:
-    """Return ``module_name_confusion``, ``stdlib_confusion`` or None for a pip name."""
+def subtype(name: str, raw_token: str | None = None) -> str | None:
+    """Return ``module_name_confusion``, ``stdlib_confusion`` or None for a pip name.
+
+    ``raw_token`` (as written) lets dotted stdlib paths such as
+    ``xml.etree.ElementTree`` count as stdlib confusion via their first segment.
+    """
     n = normalize(name)
     if n in _MODULE_CONFUSION:
         return "module_name_confusion"
-    if n in _STDLIB_NORMALIZED:
+    first = _to_name(raw_token).split(".")[0] if raw_token else None
+    if n in _STDLIB_NORMALIZED or (first and first in STDLIB):
         return "stdlib_confusion"
     return None
 

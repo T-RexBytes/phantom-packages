@@ -67,6 +67,19 @@ def test_append_and_resume_tolerates_torn_line(tmp_path):
     assert generate.done_keys(path) == {"m|p001|s1"}
 
 
+def test_in_plan_drops_rows_outside_the_grid():
+    summon = {"models": ["a"], "prompt_ids": ["p1"], "samples": [1, 2]}
+    recs = [{"key": "a|p1|s1"}, {"key": "a|p1|s2"}, {"key": "a|p9|s1"}, {"key": "b|p1|s1"},
+            {"key": "u|p1|s1", "arm": "hosted"}]
+    assert [r["key"] for r in generate.in_plan(recs, summon)] == ["a|p1|s1", "a|p1|s2", "u|p1|s1"]
+
+
+def test_sha256_digest_prefix_is_idempotent():
+    assert generate.sha256_digest("abc") == "sha256:abc"
+    assert generate.sha256_digest("sha256:abc") == "sha256:abc"
+    assert generate.sha256_digest(None) is None
+
+
 @pytest.mark.parametrize("text,expected", [("a <THINK>x\ny</think>\nb", "a b"), ("plain", "plain")])
 def test_strip_thinking(text, expected):
     assert generate.strip_thinking(text) == expected

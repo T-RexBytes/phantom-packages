@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-28T18:56:54Z",
+  "checked_at": "2026-10-29T15:00:30Z",
   "installed": [
     {
       "capabilities": [
@@ -7,7 +7,7 @@
         "thinking",
         "completion"
       ],
-      "digest": "0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
+      "digest": "sha256:0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
       "family": "qwen3",
       "modified_at": "2026-10-28T23:57:43.0268092+05:30",
       "parameter_size": "4.0B",
@@ -20,7 +20,7 @@
         "completion",
         "tools"
       ],
-      "digest": "78fad5d182a7c33065e153a5f8ba210754207ba9d91973f57dffa7f487363753",
+      "digest": "sha256:78fad5d182a7c33065e153a5f8ba210754207ba9d91973f57dffa7f487363753",
       "family": "phi3",
       "modified_at": "2026-10-28T23:43:36.2839728+05:30",
       "parameter_size": "3.8B",
@@ -34,7 +34,7 @@
         "tools",
         "thinking"
       ],
-      "digest": "359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7",
+      "digest": "sha256:359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7",
       "family": "qwen3",
       "modified_at": "2026-10-22T17:09:42.2877507+05:30",
       "parameter_size": "4.0B",
@@ -50,7 +50,7 @@
         "tools",
         "thinking"
       ],
-      "digest": "b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
+      "digest": "sha256:b37049369adfe3d2b653af0ab301a062ca5cbe96ace6aa0d3f2559ee9b563fc2",
       "family": "gemma4",
       "modified_at": "2026-10-22T17:06:36.1976193+05:30",
       "parameter_size": "4.6B",
@@ -66,7 +66,7 @@
         "tools",
         "thinking"
       ],
-      "digest": "dc35e8d9c6061baa6f0fa870975ab6932e2542b579b13ea0f199fa4bb7300c9c",
+      "digest": "sha256:dc35e8d9c6061baa6f0fa870975ab6932e2542b579b13ea0f199fa4bb7300c9c",
       "family": "gemma4",
       "modified_at": "2026-10-22T15:45:41.9104175+05:30",
       "parameter_size": "7.5B",
