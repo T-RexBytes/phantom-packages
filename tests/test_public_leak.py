@@ -14,7 +14,7 @@ from phantom import config
 
 PRIVATE_LISTS = [config.PRIVATE / "ghost_counts.csv", config.PRIVATE / "unregistered_repeated.csv"]
 PUBLIC_GLOBS = ["results/**/*.json", "results/**/*.csv", "web/**/*.html", "web/**/*.json",
-                "README.md", "POST_DRAFT.md"]
+                "README.md", "POST_DRAFT.md", "docs/blog/**/*.md"]
 
 
 def private_names() -> set[str]:
