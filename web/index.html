@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Ghost Registry · Phantom Packages</title>
+<meta name="description" content="Local open-weight coding models invent pip packages that don't exist. This is the registry of the ghosts I found, and the offline TabPFN guard I built to stop them.">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;700&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #15121c; --card: #221c2c; --stone: #2b2536; --line: #3a3247;
+    --ink: #f0ece4; --ink-2: #c9c2d3; --muted: #a39bb0;
+    --marigold: #e8a33d; --pumpkin: #e0703f;
+    --gemma: #d95926; --phi: #9085e9; --qwen: #199e70;
+    --radius: 14px; --gutter: 16px; --max: 1080px;
+    --sans: "Barlow Semi Condensed", "Segoe UI", system-ui, sans-serif;
+    --mono: "Martian Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 500 1.125rem/1.55 var(--sans); }
+  a { color: var(--marigold); text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--marigold); outline-offset: 3px; border-radius: 6px; }
+  img { max-width: 100%; height: auto; display: block; border-radius: 10px; }
+  code, .mono { font-family: var(--mono); font-size: .86em; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding-inline: var(--gutter); }
+  section { padding-block: 56px 8px; }
+  h1, h2, h3 { font-weight: 700; line-height: 1.12; margin: 0 0 .5em; letter-spacing: .005em; }
+  h1 { font-size: clamp(2.1rem, 6.5vw, 3.7rem); }
+  h2 { font-size: clamp(1.6rem, 4.2vw, 2.3rem); }
+  h3 { font-size: 1.3rem; }
+  p { margin: 0 0 1em; color: var(--ink-2); max-width: 68ch; }
+  .lede { font-size: 1.25rem; color: var(--ink-2); }
+  .eyebrow { font: 600 .78rem/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--marigold); margin-bottom: 14px; }
+  .accent { color: var(--marigold); }
+  .skip { position: absolute; left: -999px; top: 8px; background: var(--marigold); color: var(--bg); padding: 8px 12px; border-radius: 8px; z-index: 9; }
+  .skip:focus { left: 8px; }
+
+  /* hero */
+  header.hero { padding-block: 64px 24px; position: relative; overflow: hidden; }
+  .hero .ghost { position: absolute; right: max(4vw, 12px); top: 34px; width: clamp(70px, 14vw, 150px); opacity: .9; animation: float 6s ease-in-out infinite; }
+  .hero h1, .hero .lede, .hero .eyebrow { padding-right: clamp(0px, 16vw, 170px); }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+  .rule { margin-top: 22px; padding: 14px 18px; border-left: 4px solid var(--marigold); background: var(--card); border-radius: 0 var(--radius) var(--radius) 0; max-width: 60ch; }
+  .rule p { margin: 0; color: var(--ink); }
+
+  /* stat tiles */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 30px; }
+  .tile { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+  .tile .num { font: 700 clamp(2.4rem, 7vw, 3.2rem)/1 var(--sans); color: var(--marigold); }
+  .tile .what { margin-top: 8px; color: var(--ink); }
+  .tile .sub { margin-top: 6px; font-size: .95rem; color: var(--muted); }
+
+  /* figures + tables */
+  figure { margin: 22px 0; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
+  figcaption { margin-top: 10px; font-size: .98rem; color: var(--muted); }
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+  .two figure { margin: 0; }
+  .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); margin: 16px 0; }
+  table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 1rem; }
+  caption { text-align: left; padding: 12px 14px 0; color: var(--muted); font-size: .95rem; }
+  th, td { padding: 10px 14px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { color: var(--muted); font-weight: 600; font-size: .9rem; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tr.hl td { color: var(--ink); font-weight: 700; }
+  td { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 8px; vertical-align: 0; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 4px; }
+  .tabs button { font: 600 .98rem/1 var(--sans); color: var(--ink-2); background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 10px 16px; cursor: pointer; min-height: 44px; }
+  .tabs button[aria-selected="true"] { background: var(--marigold); color: var(--bg); border-color: var(--marigold); }
+  .note { background: var(--card); border: 1px dashed var(--line); border-radius: var(--radius); padding: 16px 18px; margin: 16px 0; }
+  .note p { margin: 0 0 .5em; } .note p:last-child { margin: 0; }
+  ul.plain { padding-left: 1.1em; color: var(--ink-2); max-width: 68ch; } ul.plain li { margin: .35em 0; }
+
+  /* graveyard */
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 16px 0; }
+  .filters label { color: var(--muted); font-size: .95rem; }
+  select { font: 500 1rem var(--sans); color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; min-height: 44px; }
+  .yard { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin: 12px 0 4px; padding: 0; list-style: none; }
+  .stone { position: relative; background: linear-gradient(180deg, var(--stone), var(--card)); border: 1px solid var(--line); border-radius: 70px 70px 10px 10px; padding: 26px 12px 14px; text-align: center; min-height: 172px; }
+  .stone::after { content: ""; position: absolute; left: -6px; right: -6px; bottom: -7px; height: 8px; background: #3a2f22; border-radius: 6px; }
+  .stone .rip { font: 600 .7rem/1 var(--mono); letter-spacing: .14em; color: var(--muted); }
+  .stone .id { font: 600 1rem/1.2 var(--mono); color: var(--ink); margin: 10px 0 6px; }
+  .stone .dom { font-size: .95rem; color: var(--ink-2); }
+  .stone .count { margin-top: 8px; font: 700 1.05rem/1 var(--sans); color: var(--marigold); }
+  .stone .models { margin-top: 10px; display: flex; justify-content: center; gap: 6px; }
+  .stone .models .dot { margin: 0; width: 12px; height: 12px; }
+  .stone.repeat { border-color: #6b5530; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; color: var(--ink-2); font-size: .95rem; margin: 8px 0; }
+  .more { margin: 18px 0 0; }
+  .more button { font: 600 1rem/1 var(--sans); color: var(--bg); background: var(--marigold); border: 0; border-radius: 999px; padding: 12px 20px; cursor: pointer; min-height: 44px; }
+
+  /* guard */
+  pre { background: #0c0a10; border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; overflow-x: auto; color: var(--ink); font: 400 .85rem/1.6 var(--mono); margin: 14px 0; }
+  footer { margin-top: 64px; padding-block: 28px 48px; border-top: 1px solid var(--line); color: var(--muted); font-size: .98rem; }
+  footer p { color: var(--muted); }
+
+  @media (max-width: 480px) {
+    body { font-size: 1.06rem; }
+    section { padding-block-start: 44px; }
+    .yard { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .stone { min-height: 160px; padding: 22px 8px 12px; }
+    .hero .ghost { opacity: .35; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="hero wrap">
+  <svg class="ghost" viewBox="0 0 120 140" aria-hidden="true" focusable="false">
+    <path d="M60 6c-29 0-50 23-50 53v70l14-12 13 12 12-12 11 12 11-12 12 12 13-12 14 12V59C110 29 89 6 60 6z" fill="#f0ece4" opacity=".92"/>
+    <circle cx="44" cy="58" r="8" fill="#15121c"/><circle cx="76" cy="58" r="8" fill="#15121c"/>
+    <ellipse cx="60" cy="86" rx="9" ry="12" fill="#15121c"/>
+  </svg>
+  <div class="eyebrow">Phantom Packages · The Ghost Registry</div>
+  <h1>My local AI summoned <span class="accent" data-k="n_ghost_names">162</span> Python packages that don't exist.</h1>
+  <p class="lede">Open-weight coding models invent package names. Attackers can register them. This is the registry of the ghosts I found, and the offline guard I built to stop an agent from installing one.</p>
+  <div class="rule"><p><strong>The rule:</strong> the model can dream a package. Only the registry can make it real.</p></div>
+
+  <div class="tiles" role="list">
+    <div class="tile" role="listitem">
+      <div class="num" data-k="ghost_rate_pct">15.1%</div>
+      <div class="what">of the packages they told me to <code>pip install</code> don't exist on PyPI</div>
+      <div class="sub" data-k="ghost_rate_detail">213 of 1,410 install suggestions · 95% CI 12.0–18.5%</div>
+    </div>
+    <div class="tile" role="listitem">
+      <div class="num" data-k="repeat_pct">25%</div>
+      <div class="what">of the ghosts came back: the same name, suggested again</div>
+      <div class="sub" data-k="repeat_detail">40 of 162 names · 10 suggested by two or more models</div>
+    </div>
+    <div class="tile" role="listitem">
+      <div class="num" data-k="n_registered">0</div>
+      <div class="what">ghosts got a body during the study</div>
+      <div class="sub" data-k="registered_detail">all 162 still unregistered at the last check · 2 registered look-alikes match the squat rules</div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="wrap" aria-labelledby="h-rates">
+  <div class="eyebrow">The summoning</div>
+  <h2 id="h-rates">Three small models, 200 coding tasks</h2>
+  <p data-k="study_text">I asked three open-weight models, running locally through Ollama, to write short Python scripts that start with the exact <code>pip install</code> command they need. Every name was checked against PyPI with metadata requests only. Nothing was installed.</p>
+  <figure>
+    <img src="assets/rates_by_model.png" width="1346" height="890" loading="lazy" data-alt="rates_by_model"
+         alt="Bar chart of ghost rate by model with 95% confidence intervals.">
+    <figcaption>Ghost rate = install suggestions that return 404 on PyPI ÷ all install suggestions. Standard-library names and import-name mix-ups (the <code>pip install json</code> kind) are counted separately, not as ghosts.</figcaption>
+  </figure>
+  <div class="table-scroll">
+    <table id="t-models"><caption>Ghost rate by model (table view of the chart)</caption>
+      <thead><tr><th scope="col">Model</th><th scope="col">Ghosts</th><th scope="col">Install suggestions</th><th scope="col">Ghost rate</th><th scope="col">95% CI</th><th scope="col">Replies with ≥1 ghost</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <figure>
+    <img src="assets/rates_by_niche.png" width="1216" height="890" loading="lazy" data-alt="rates_by_niche"
+         alt="Bar chart of ghost rate by how niche the task was.">
+    <figcaption data-k="niche_caption">The more obscure the task, the more the models invent.</figcaption>
+  </figure>
+</section>
+
+<section class="wrap" aria-labelledby="h-eval">
+  <div class="eyebrow">The medium</div>
+  <h2 id="h-eval">Can you see a ghost before PyPI does?</h2>
+  <p>A TabPFN-3.5 model looks only at things known when the name was generated (how close it is to a real package, whether the model repeats it, how niche the task was) and never at registry data. I compared it with five baselines on identical folds.</p>
+  <div class="tabs" role="tablist" aria-label="Evaluation split">
+    <button role="tab" id="tab-A" aria-selected="true" aria-controls="t-eval" data-split="A">By prompt</button>
+    <button role="tab" id="tab-B" aria-selected="false" aria-controls="t-eval" data-split="B">Unseen model</button>
+    <button role="tab" id="tab-C" aria-selected="false" aria-controls="t-eval" data-split="C">Unseen names</button>
+  </div>
+  <p id="split-help" class="mono" style="font-size:.85rem;color:var(--muted)"></p>
+  <div class="table-scroll">
+    <table id="t-eval" role="tabpanel" aria-labelledby="tab-A"><caption>Higher AUROC/AUPRC is better; lower Brier/ECE is better. 95% CI by prompt bootstrap.</caption>
+      <thead><tr><th scope="col">Method</th><th scope="col">AUROC (95% CI)</th><th scope="col">AUPRC</th><th scope="col">Precision @ 90% recall</th><th scope="col">Brier</th><th scope="col">ECE</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="note" id="honest">
+    <p><strong>Where TabPFN wins and where it loses</strong></p>
+    <ul class="plain" id="honest-list"></ul>
+  </div>
+  <div class="two">
+    <figure>
+      <img src="assets/calibration.png" width="1097" height="1114" loading="lazy" data-alt="calibration"
+           alt="Calibration plot of TabPFN against gradient boosting.">
+      <figcaption>Calibration: predicted probability vs. how often it was really a ghost.</figcaption>
+    </figure>
+    <figure>
+      <img src="assets/pr_curves.png" width="1252" height="1053" loading="lazy" data-alt="pr_curves"
+           alt="Precision-recall curves for TabPFN and the baselines.">
+      <figcaption>Precision vs. recall, out of fold. The dashed line is the guard's 90% recall target.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="wrap" aria-labelledby="h-yard">
+  <div class="eyebrow">The graveyard</div>
+  <h2 id="h-yard">Every stone is a package a model told me to install</h2>
+  <p>Names of unregistered ghosts are hidden so nobody can claim them. Each stone shows an anonymised id (the first 8 hex digits of the name's SHA-256), the kind of task that summoned it, and how many times it was suggested. On Día de los Muertos, marigolds guide the remembered home. These names are better left unremembered.</p>
+  <div class="legend" aria-label="Model colours">
+    <span><span class="dot" style="background:var(--gemma)"></span>gemma4:e4b</span>
+    <span><span class="dot" style="background:var(--phi)"></span>phi4-mini:3.8b</span>
+    <span><span class="dot" style="background:var(--qwen)"></span>qwen3:4b-instruct</span>
+  </div>
+  <div class="filters">
+    <label for="f-domain">Task domain</label>
+    <select id="f-domain"><option value="">All domains</option></select>
+    <label for="f-min">Suggested</label>
+    <select id="f-min"><option value="1">any number of times</option><option value="2">2+ times</option><option value="3">3+ times</option></select>
+    <span id="yard-count" aria-live="polite" style="color:var(--muted)"></span>
+  </div>
+  <ul class="yard" id="yard"></ul>
+  <div class="more"><button type="button" id="more" hidden>Show all stones</button></div>
+  <figure>
+    <img src="assets/repeat_hist.png" width="1393" height="890" loading="lazy" data-alt="repeat_hist"
+         alt="Histogram of how many times each ghost name was suggested.">
+    <figcaption>Repeats are what make a ghost dangerous: a predictable name is a name worth squatting.</figcaption>
+  </figure>
+  <div id="registered"></div>
+</section>
+
+<section class="wrap" aria-labelledby="h-guard">
+  <div class="eyebrow">The guard</div>
+  <h2 id="h-guard">Stop the install before it happens</h2>
+  <p>A Claude Code <code>PreToolUse</code> hook reads every shell command the agent wants to run. If it installs a name that doesn't exist on PyPI, the hook blocks it and tells the agent why.</p>
+  <figure>
+    <img src="assets/demo-hook.gif" width="960" height="828" loading="lazy"
+         alt="A real Claude Code session: the agent runs pip install for a package my local model invented; the phantom-packages hook blocks it because the name does not exist on PyPI and suggests the real package; the agent checks the real package with phantom check and writes the script with it.">
+    <figcaption>Real session, recorded off-screen. The ghost here was suggested only once in the study.</figcaption>
+  </figure>
+  <pre><code># install (uv)
+git clone https://github.com/T-RexBytes/phantom-packages
+cd phantom-packages &amp;&amp; uv sync --extra model
+
+# check names, requirements files or pyproject.toml
+uv run phantom check requests requirements.txt
+uv run phantom scan-cmd "pip install requests"
+uv run phantom check --offline requests      # no network: TabPFN estimate only</code></pre>
+  <figure>
+    <img src="assets/demo-offline.gif" width="960" height="479" loading="lazy"
+         alt="phantom check --offline in a terminal: the invented package is marked GHOST_LIKELY with P(ghost) 1.00 while two real packages get 0.00, without any network request.">
+    <figcaption>With the Wi-Fi off, the registry can't answer, but the medium still can.</figcaption>
+  </figure>
+  <p data-k="guard_text">The guard model is TabPFN-3.5-fast on name features only.</p>
+</section>
+
+<section class="wrap" aria-labelledby="h-method">
+  <div class="eyebrow">Method and ethics</div>
+  <h2 id="h-method">How this was done</h2>
+  <ul class="plain">
+    <li><strong>Nothing a model suggested was installed or downloaded,</strong> not even during the study. Lookups were metadata-only (PyPI JSON and pypistats), cached and rate-limited.</li>
+    <li><strong>No names were registered.</strong> Unregistered names the models repeat are withheld from every public file; a CI test fails if one leaks.</li>
+    <li><strong>Models propose, code decides.</strong> TabPFN gives a probability; the verdict comes from deterministic rules over registry facts. No LLM writes a reason.</li>
+    <li data-k="method_study">Splits: GroupKFold by prompt, leave-one-model-out and unseen names, the same folds for every method.</li>
+    <li>Every number on this page is read from <code>results/summary.json</code> in the repository.</li>
+  </ul>
+</section>
+</main>
+
+<footer class="wrap">
+  <p>Built for the Hacktoberfest 2026 Open-Source AI Challenge on DEV. Code: Apache-2.0. <a href="https://github.com/T-RexBytes/phantom-packages">Source on GitHub</a>.</p>
+  <p class="mono" style="font-size:.8rem" id="generated"></p>
+</footer>
+
+<noscript><p class="wrap" style="color:#c9c2d3">The tables and the graveyard need JavaScript; every number is also in results/summary.json.</p></noscript>
+
+<script>
+(() => {
+  const COLORS = {"gemma4:e4b": "var(--gemma)", "phi4-mini:3.8b": "var(--phi)", "qwen3:4b-instruct": "var(--qwen)"};
+  const SPLIT_HELP = {
+    A: "Split A · GroupKFold(5) by prompt: no task appears in both training and test.",
+    B: "Split B · leave-one-model-out: train on two models, test on the third (prompts are shared).",
+    C: "Split C · rows of split A whose name never appears in its training fold (all ghosts, plus unseen real names)."
+  };
+  const pct = (v, d = 1) => (v * 100).toFixed(d) + "%";
+  const f3 = v => v == null ? "–" : v.toFixed(3);
+  const int = v => Math.round(v).toLocaleString("en-US");
+  const set = (k, text) => document.querySelectorAll(`[data-k="${k}"]`).forEach(el => { el.textContent = text; });
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+
+  fetch("data.json").then(r => r.json()).then(d => {
+    const h = d.headline;
+    set("n_ghost_names", int(h.n_ghost_names));
+    set("ghost_rate_pct", pct(h.ghost_rate));
+    set("ghost_rate_detail", `${int(h.n_ghost_mentions)} of ${int(h.n_mentions)} install suggestions · 95% CI ${pct(h.ghost_rate_lo)}–${pct(h.ghost_rate_hi)}`);
+    set("repeat_pct", pct(h.repeat_share, 0));
+    set("repeat_detail", `${h.repeated_2plus} of ${h.n_ghost_names} names · ${h.multi_model} suggested by two or more models`);
+    set("n_registered", int(h.n_registered_during_study));
+    set("registered_detail", `all ${d.squat.n_still_unregistered} still unregistered at the last check (${d.squat.checked_at.slice(0, 10)}) · ${h.n_squat_rule_matches} registered look-alikes match the squat rules`);
+    const s = d.study;
+    set("study_text", `I asked ${s.models.length} open-weight models (${s.models.join(", ")}), running locally through Ollama, to write short Python scripts for ${s.n_prompts} tasks, ${s.n_samples} samples each: ${int(s.n_generations)} generations in about ${s.generation_hours_total.toFixed(1)} hours on a laptop. Every suggested name was checked against PyPI with metadata requests only. Nothing was installed.`);
+    const n = d.per_niche;
+    set("niche_caption", `Everyday tasks (L1): ${pct(n.L1.ghost_rate)} ghosts. Obscure tasks (L3): ${pct(n.L3.ghost_rate)}, about ${Math.round(h.l3_over_l1)}× as often.`);
+    const g = d.guard_model;
+    set("guard_text", `The guard model is ${g.model.split(" (")[0]} on name features only (a hook never knows how a name was generated): out-of-fold AUROC ${g.auroc.toFixed(3)}, threshold τ = ${g.tau.toFixed(3)} catches ${pct(g.recall)} of ghosts with ${pct(g.precision)} precision. PyPI's answer still decides; the model matters offline and for young packages.`);
+
+    // alt text with the real numbers
+    const pm = d.per_model;
+    const alts = {
+      rates_by_model: `Bar chart of ghost rate by model with 95% confidence intervals: ${Object.entries(pm).map(([m, r]) => `${m} ${pct(r.ghost_rate)}`).join(", ")}; all models ${pct(h.ghost_rate)}.`,
+      rates_by_niche: `Bar chart of ghost rate by task niche level: L1 ${pct(n.L1.ghost_rate)}, L2 ${pct(n.L2.ghost_rate)}, L3 ${pct(n.L3.ghost_rate)}.`,
+      calibration: `Calibration plot: TabPFN's predicted probabilities track the observed ghost share closely (ECE ${f3(d.eval.A[4].ece)}), closer than gradient boosting (ECE ${f3(d.eval.A[3].ece)}).`,
+      pr_curves: `Precision-recall curves, out of fold: TabPFN AUPRC ${d.eval.A[4].auprc.toFixed(2)}, gradient boosting ${d.eval.A[3].auprc.toFixed(2)}, logistic regression ${d.eval.A[2].auprc.toFixed(2)}, edit-distance rule ${d.eval.A[1].auprc.toFixed(2)}.`,
+      repeat_hist: `Histogram: ${h.n_ghost_names - h.repeated_2plus} ghost names were suggested once and ${h.repeated_2plus} were suggested two or more times.`
+    };
+    document.querySelectorAll("img[data-alt]").forEach(img => { img.alt = alts[img.dataset.alt] || img.alt; });
+
+    // per-model table
+    document.querySelector("#t-models tbody").innerHTML = Object.entries(pm).map(([m, r]) =>
+      `<tr><td><span class="dot" style="background:${COLORS[m]}"></span>${esc(m)}</td><td>${int(r.ghosts)}</td><td>${int(r.mentions)}</td><td>${pct(r.ghost_rate)}</td><td>${pct(r.rate_lo)}–${pct(r.rate_hi)}</td><td>${pct(r.gen_share)}</td></tr>`).join("");
+
+    // eval table with split tabs
+    const evalBody = document.querySelector("#t-eval tbody");
+    const showSplit = split => {
+      document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.split === split)));
+      document.getElementById("t-eval").setAttribute("aria-labelledby", "tab-" + split);
+      document.getElementById("split-help").textContent = SPLIT_HELP[split];
+      evalBody.innerHTML = d.eval[split].map(r =>
+        `<tr class="${r.arm === "tabpfn" ? "hl" : ""}"><td>${esc(r.label)}</td><td>${f3(r.auroc)} (${f3(r.auroc_lo)}–${f3(r.auroc_hi)})</td><td>${f3(r.auprc)}</td><td>${f3(r.precision_at_recall90)}</td><td>${f3(r.brier)}</td><td>${f3(r.ece)}</td></tr>`).join("");
+    };
+    document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => showSplit(b.dataset.split)));
+    showSplit("A");
+
+    const vs = d.tabpfn_vs, A = d.eval.A, C = d.eval.C;
+    const diff = k => `${vs[k].diff >= 0 ? "+" : ""}${vs[k].diff.toFixed(3)} (95% CI ${vs[k].lo.toFixed(3)} to ${vs[k].hi.toFixed(3)})`;
+    const best = (rows, key) => rows.filter(r => r.arm !== "tabpfn").reduce((a, b) => (b[key] > a[key] ? b : a));
+    const bA = best(A, "precision_at_recall90"), bC = best(C, "precision_at_recall90");
+    document.getElementById("honest-list").innerHTML = [
+      `<strong>Wins, narrowly:</strong> TabPFN has the best AUROC on every split, but its lead over gradient boosting is ${diff("A|hgb")} by prompt.`,
+      `<strong>Not significant on unseen names:</strong> vs. gradient boosting ${diff("C|hgb")}, vs. the edit-distance rule ${diff("C|rule_editdist")}.`,
+      `<strong>Loses on precision at 90% recall:</strong> ${f3(A[4].precision_at_recall90)} vs. ${esc(bA.label.toLowerCase())} ${f3(bA.precision_at_recall90)} by prompt; ${f3(C[4].precision_at_recall90)} vs. ${esc(bC.label.toLowerCase())} ${f3(bC.precision_at_recall90)} on unseen names.`,
+      `<strong>Loses on speed:</strong> about 20 s per test fold on a laptop CPU, against under 0.1 s for gradient boosting.`,
+      `<strong>Wins clearly on calibration:</strong> ECE ${f3(A[4].ece)} vs. ${f3(A[3].ece)} for gradient boosting, so its probabilities can be read at face value.`,
+      `<strong>Asking the model fails:</strong> gemma4 said ${d.selfcheck.ghost_names_said_exists} of ${d.selfcheck.ghost_names} ghosts exist, but also said ${d.selfcheck.real_names_said_missing} of ${d.selfcheck.real_names} real packages don't.`
+    ].map(t => `<li>${t}</li>`).join("");
+
+    // graveyard
+    const stones = d.tombstones, yard = document.getElementById("yard"), more = document.getElementById("more");
+    const domSel = document.getElementById("f-domain"), minSel = document.getElementById("f-min");
+    [...new Set(stones.map(t => t.domain))].sort().forEach(dm => domSel.insertAdjacentHTML("beforeend", `<option value="${esc(dm)}">${esc(dm)}</option>`));
+    let limit = 48;
+    const render = () => {
+      const list = stones.filter(t => (!domSel.value || t.domain === domSel.value) && t.mentions >= Number(minSel.value));
+      yard.innerHTML = list.slice(0, limit).map(t => {
+        const models = t.models.map(m => `<span class="dot" style="background:${COLORS[m]}" title="${esc(m)}"></span>`).join("");
+        return `<li class="stone${t.mentions >= 2 ? " repeat" : ""}" aria-label="ghost ${t.id}, ${esc(t.domain)}, level ${t.niche_level}, suggested ${t.mentions} time${t.mentions > 1 ? "s" : ""} by ${esc(t.models.join(", "))}">
+          <div class="rip">R.I.P.</div><div class="id">${t.id}</div><div class="dom">${esc(t.domain)} · L${t.niche_level}</div>
+          <div class="count">×${t.mentions}</div><div class="models" aria-hidden="true">${models}</div></li>`;
+      }).join("");
+      document.getElementById("yard-count").textContent = `${list.length} stone${list.length === 1 ? "" : "s"}`;
+      more.hidden = list.length <= limit;
+    };
+    more.addEventListener("click", () => { limit = Infinity; render(); });
+    domSel.addEventListener("change", render); minSel.addEventListener("change", render);
+    render();
+
+    document.getElementById("registered").innerHTML = d.registered_ghosts.length
+      ? `<h3>Ghosts that got a body</h3><ul class="plain">${d.registered_ghosts.map(r => `<li><code>${esc(r.name)}</code>: first release ${esc(r.first_release)}, ${r.n_releases} release(s)</li>`).join("")}</ul>`
+      : `<div class="note"><p><strong>No ghost got a body (yet).</strong> At the last check (${d.squat.checked_at.slice(0, 10)}) all ${d.squat.n_still_unregistered} ghost names were still unregistered. Separately, ${d.squat.n_possible_slopsquat} registered packages that small models suggested match all five squat rules (few releases, young, few downloads, suggested repeatedly). A rule match is not evidence of anything bad, so they are not named here.</p></div>`;
+    document.getElementById("generated").textContent = `data generated ${d.generated_at}`;
+  }).catch(() => {
+    document.getElementById("yard").innerHTML = "<li class='note'>Could not load data.json.</li>";
+  });
+})();
+</script>
+</body>
+</html>

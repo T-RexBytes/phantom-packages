@@ -4,7 +4,7 @@ Running notes for the post (`docs/05_BLOG_POST_BLUEPRINT.md`). Facts only, each 
 Numbers here are working copies; the post must quote `results/summary.json` / `results/*.json`.
 **No unregistered ghost names in this file** (it is public). Ghost names live in `private/` only.
 
-Last updated: 2026-10-30 (after Phase 7).
+Last updated: 2026-10-30 (after Phase 8).
 
 ---
 
@@ -147,7 +147,19 @@ Sources: `results/squat_summary.json`, `results/squat_public.csv`.
 
 ---
 
-## 9. Still {{TODO}}
+## 9. Phase 8 findings (figures + Ghost Registry site; 2026-10-30)
+
+- **Figures** (`results/*.png`, dark Halloween palette validated for colour-blind separation): rates by model and by niche with 95% CIs, calibration, precision-recall curves, repeat histogram.
+- **Repeat histogram facts** (`results/repeat_counts.csv`): 122 ghost names were suggested once, 32 twice, 6 three times, 1 four times, 1 five times. Every name suggested 3+ times came from two or more models; at 2x it was mostly one model.
+- **The site** (`web/`) reads every number from `web/data.json`, which is built from `results/summary.json`. The graveyard has 162 anonymised stones (sha256[:8], domain, niche, count, models). There are no registered ghosts to name, because none got a body.
+- **Honest box on the site:** where TabPFN wins (AUROC, calibration) and where it loses (precision at 90% recall, speed, not significant on unseen names).
+- **Accessibility:** every text colour ≥ 4.6:1 on its surface, alt text built from the real numbers, a table view next to each chart, keyboard focus styles, `prefers-reduced-motion` respected, and no horizontal scroll at a true 360 px viewport (measured with an iframe; headless Chrome can't size a window that small).
+- **What went wrong:** the first local preview server started in the repo root instead of `web/`. It was bound to localhost only, and I stopped it at once. A good reminder that `.env` and `private/` live next to the site.
+- **Open question for the post:** the 8-character hashes are confirmable. Anyone who guesses a name (or runs the same open models) can hash it and check the list. See the decision in the Phase 8 status.
+
+---
+
+## 10. Still {{TODO}}
 
 - Phase 7 demo: record the GIF; note the real time and day for the post's opening scene.
 - Ultramarine arm: needs the key and spend approval.

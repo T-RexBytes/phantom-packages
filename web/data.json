@@ -1,0 +1,2085 @@
+{
+ "generated_at": "2026-10-29T19:58:03Z",
+ "source": "results/summary.json (every number on the site comes from there)",
+ "headline": {
+  "n_ghost_names": 162,
+  "ghost_rate": 0.15106382978723404,
+  "ghost_rate_lo": 0.12027065973309943,
+  "ghost_rate_hi": 0.18534490653025137,
+  "n_ghost_mentions": 213,
+  "n_mentions": 1410,
+  "gen_share": 0.17764804003336113,
+  "repeat_share": 0.24691358024691357,
+  "repeated_2plus": 40,
+  "multi_model": 10,
+  "n_registered_during_study": 0,
+  "n_squat_rule_matches": 2,
+  "l3_over_l1": 15.26668453497722
+ },
+ "study": {
+  "models": [
+   "gemma4:e4b",
+   "qwen3:4b-instruct",
+   "phi4-mini:3.8b"
+  ],
+  "n_prompts": 200,
+  "n_samples": 2,
+  "n_generations": 1199,
+  "n_generations_aborted": 1,
+  "generation_hours_total": 3.6324977777777776
+ },
+ "per_model": {
+  "gemma4:e4b": {
+   "ghost_rate": 0.08074534161490683,
+   "rate_lo": 0.04989998311403224,
+   "rate_hi": 0.11298045161181033,
+   "ghosts": 39,
+   "mentions": 483,
+   "gen_share": 0.0975
+  },
+  "phi4-mini:3.8b": {
+   "ghost_rate": 0.1670235546038544,
+   "rate_lo": 0.1252544363256785,
+   "rate_hi": 0.21019975187274748,
+   "ghosts": 78,
+   "mentions": 467,
+   "gen_share": 0.19548872180451127
+  },
+  "qwen3:4b-instruct": {
+   "ghost_rate": 0.20869565217391303,
+   "rate_lo": 0.16051993786990174,
+   "rate_hi": 0.26349174684236926,
+   "ghosts": 96,
+   "mentions": 460,
+   "gen_share": 0.24
+  }
+ },
+ "per_niche": {
+  "L1": {
+   "ghost_rate": 0.019662921348314606,
+   "rate_lo": 0.0028007303199831467,
+   "rate_hi": 0.042377389109267936,
+   "ghosts": 7,
+   "mentions": 356
+  },
+  "L2": {
+   "ghost_rate": 0.08829174664107485,
+   "rate_lo": 0.04858211185073289,
+   "rate_hi": 0.13564151136596353,
+   "ghosts": 46,
+   "mentions": 521
+  },
+  "L3": {
+   "ghost_rate": 0.300187617260788,
+   "rate_lo": 0.23722627737226276,
+   "rate_hi": 0.36454593391141316,
+   "ghosts": 160,
+   "mentions": 533
+  }
+ },
+ "eval": {
+  "A": [
+   {
+    "arm": "rule_top15k",
+    "label": "\"Not in top 15k\" rule",
+    "auroc": 0.9461538461538461,
+    "auroc_lo": 0.9322490808716932,
+    "auroc_hi": 0.9595897702814153,
+    "auprc": 0.692,
+    "precision_at_recall90": 0.692,
+    "recall_at_precision95": 0.0,
+    "brier": 0.08671171171171171,
+    "ece": 0.08671171171171173
+   },
+   {
+    "arm": "rule_editdist",
+    "label": "Edit-distance rule",
+    "auroc": 0.9662233720037188,
+    "auroc_lo": 0.95386663284968,
+    "auroc_hi": 0.977209061696276,
+    "auprc": 0.8078178013666601,
+    "precision_at_recall90": 0.7192982456140351,
+    "recall_at_precision95": 0.04046242774566474,
+    "brier": null,
+    "ece": null
+   },
+   {
+    "arm": "logreg",
+    "label": "Logistic regression",
+    "auroc": 0.9670237277173692,
+    "auroc_lo": 0.9549044853250032,
+    "auroc_hi": 0.9773982861896612,
+    "auprc": 0.8211712119844943,
+    "precision_at_recall90": 0.7523809523809524,
+    "recall_at_precision95": 0.011560693641618497,
+    "brier": 0.06110559681619385,
+    "ece": 0.05147355981169582
+   },
+   {
+    "arm": "hgb",
+    "label": "Gradient boosting",
+    "auroc": 0.9689073931848499,
+    "auroc_lo": 0.9561944322136091,
+    "auroc_hi": 0.979095622191681,
+    "auprc": 0.8189952172173607,
+    "precision_at_recall90": 0.7584541062801933,
+    "recall_at_precision95": 0.03468208092485549,
+    "brier": 0.06417580474287676,
+    "ece": 0.05563283537206715
+   },
+   {
+    "arm": "tabpfn",
+    "label": "TabPFN-3.5",
+    "auroc": 0.9744694611746635,
+    "auroc_lo": 0.964202035290821,
+    "auroc_hi": 0.9832571235195519,
+    "auprc": 0.8638279501709935,
+    "precision_at_recall90": 0.7572815533980582,
+    "recall_at_precision95": 0.04046242774566474,
+    "brier": 0.04912277474290989,
+    "ece": 0.0167718453089455
+   },
+   {
+    "arm": "llm_selfcheck",
+    "label": "gemma4 asks itself",
+    "auroc": 0.849464408423946,
+    "auroc_lo": 0.8253426225339013,
+    "auroc_hi": 0.8728034377866244,
+    "auprc": 0.4494033670334248,
+    "precision_at_recall90": 0.4523809523809524,
+    "recall_at_precision95": 0.0,
+    "brier": 0.23536036036036037,
+    "ece": 0.2353603603603604
+   }
+  ],
+  "B": [
+   {
+    "arm": "rule_top15k",
+    "label": "\"Not in top 15k\" rule",
+    "auroc": 0.9461538461538461,
+    "auroc_lo": 0.9322490808716932,
+    "auroc_hi": 0.9595897702814153,
+    "auprc": 0.692,
+    "precision_at_recall90": 0.692,
+    "recall_at_precision95": 0.0,
+    "brier": 0.08671171171171171,
+    "ece": 0.08671171171171173
+   },
+   {
+    "arm": "rule_editdist",
+    "label": "Edit-distance rule",
+    "auroc": 0.9662233720037188,
+    "auroc_lo": 0.95386663284968,
+    "auroc_hi": 0.977209061696276,
+    "auprc": 0.8078178013666601,
+    "precision_at_recall90": 0.7192982456140351,
+    "recall_at_precision95": 0.04046242774566474,
+    "brier": null,
+    "ece": null
+   },
+   {
+    "arm": "logreg",
+    "label": "Logistic regression",
+    "auroc": 0.9706536238328146,
+    "auroc_lo": 0.9604532564364655,
+    "auroc_hi": 0.9795255854999182,
+    "auprc": 0.8470707775608237,
+    "precision_at_recall90": 0.7440758293838863,
+    "recall_at_precision95": 0.16184971098265896,
+    "brier": 0.06064230605673697,
+    "ece": 0.053683596839821456
+   },
+   {
+    "arm": "hgb",
+    "label": "Gradient boosting",
+    "auroc": 0.9717531023889404,
+    "auroc_lo": 0.9621272684418216,
+    "auroc_hi": 0.980452031862227,
+    "auprc": 0.8424366358206609,
+    "precision_at_recall90": 0.7696078431372549,
+    "recall_at_precision95": 0.2254335260115607,
+    "brier": 0.06166102414956714,
+    "ece": 0.050870943864662704
+   },
+   {
+    "arm": "tabpfn",
+    "label": "TabPFN-3.5",
+    "auroc": 0.9776951372327094,
+    "auroc_lo": 0.9685941278437479,
+    "auroc_hi": 0.9848528621708601,
+    "auprc": 0.8973821178572431,
+    "precision_at_recall90": 0.7596153846153846,
+    "recall_at_precision95": 0.3815028901734104,
+    "brier": 0.04646977293391953,
+    "ece": 0.01408438897154459
+   },
+   {
+    "arm": "llm_selfcheck",
+    "label": "gemma4 asks itself",
+    "auroc": 0.849464408423946,
+    "auroc_lo": 0.8253426225339013,
+    "auroc_hi": 0.8728034377866244,
+    "auprc": 0.4494033670334248,
+    "precision_at_recall90": 0.4523809523809524,
+    "recall_at_precision95": 0.0,
+    "brier": 0.23536036036036037,
+    "ece": 0.2353603603603604
+   }
+  ],
+  "C": [
+   {
+    "arm": "rule_top15k",
+    "label": "\"Not in top 15k\" rule",
+    "auroc": 0.8951149425287357,
+    "auroc_lo": 0.8695586097528742,
+    "auroc_hi": 0.9197082548280734,
+    "auprc": 0.7032520325203252,
+    "precision_at_recall90": 0.7032520325203252,
+    "recall_at_precision95": 0.0,
+    "brier": 0.1401151631477927,
+    "ece": 0.1401151631477927
+   },
+   {
+    "arm": "rule_editdist",
+    "label": "Edit-distance rule",
+    "auroc": 0.934688725001661,
+    "auroc_lo": 0.909617908074888,
+    "auroc_hi": 0.9579129604502739,
+    "auprc": 0.8151928556099268,
+    "precision_at_recall90": 0.7321428571428571,
+    "recall_at_precision95": 0.04046242774566474,
+    "brier": null,
+    "ece": null
+   },
+   {
+    "arm": "logreg",
+    "label": "Logistic regression",
+    "auroc": 0.9360341505547805,
+    "auroc_lo": 0.9122002742308993,
+    "auroc_hi": 0.9578641634848231,
+    "auprc": 0.828307979999041,
+    "precision_at_recall90": 0.7632850241545893,
+    "recall_at_precision95": 0.011560693641618497,
+    "brier": 0.09920021097900811,
+    "ece": 0.080023084972112
+   },
+   {
+    "arm": "hgb",
+    "label": "Gradient boosting",
+    "auroc": 0.9377450003322039,
+    "auroc_lo": 0.9117585881669565,
+    "auroc_hi": 0.9603038021991016,
+    "auprc": 0.8210241299446247,
+    "precision_at_recall90": 0.7658536585365854,
+    "recall_at_precision95": 0.03468208092485549,
+    "brier": 0.10775144931627262,
+    "ece": 0.09671141677794744
+   },
+   {
+    "arm": "tabpfn",
+    "label": "TabPFN-3.5",
+    "auroc": 0.9477443359245232,
+    "auroc_lo": 0.9279222013206389,
+    "auroc_hi": 0.9671696966021064,
+    "auprc": 0.8640364805068693,
+    "precision_at_recall90": 0.7572815533980582,
+    "recall_at_precision95": 0.04046242774566474,
+    "brier": 0.08323644193652491,
+    "ece": 0.02987205537659809
+   },
+   {
+    "arm": "llm_selfcheck",
+    "label": "gemma4 asks itself",
+    "auroc": 0.7413460899607999,
+    "auroc_lo": 0.7039573019258282,
+    "auroc_hi": 0.7772743862099161,
+    "auprc": 0.49093710412128394,
+    "precision_at_recall90": 0.49279538904899134,
+    "recall_at_precision95": 0.0,
+    "brier": 0.3416506717850288,
+    "ece": 0.3416506717850288
+   }
+  ]
+ },
+ "loo": {
+  "gemma4:e4b|tabpfn": {
+   "auprc": 0.8968280466865177,
+   "auroc": 0.9853041695146959,
+   "auroc_hi": 0.9943218064734977,
+   "auroc_lo": 0.9716427992505579,
+   "n": 299,
+   "n_ghost": 33
+  },
+  "phi4-mini:3.8b|tabpfn": {
+   "auprc": 0.9022914152645348,
+   "auroc": 0.9754581673306773,
+   "auroc_hi": 0.9875443442090507,
+   "auroc_lo": 0.9602891031302129,
+   "n": 326,
+   "n_ghost": 75
+  },
+  "qwen3:4b-instruct|tabpfn": {
+   "auprc": 0.8979393235572574,
+   "auroc": 0.9722610722610723,
+   "auroc_hi": 0.9876486165029392,
+   "auroc_lo": 0.9540418590588783,
+   "n": 263,
+   "n_ghost": 65
+  }
+ },
+ "tabpfn_vs": {
+  "A|hgb": {
+   "diff": 0.005562067989813624,
+   "hi": 0.011731527428850952,
+   "lo": 0.0005002497357071922,
+   "share_a_better": 0.985
+  },
+  "A|llm_selfcheck": {
+   "diff": 0.1250050527507175,
+   "hi": 0.15040804383359055,
+   "lo": 0.10297727014114232,
+   "share_a_better": 1.0
+  },
+  "A|logreg": {
+   "diff": 0.007445733457294268,
+   "hi": 0.013153757781242828,
+   "lo": 0.002072716544127276,
+   "share_a_better": 1.0
+  },
+  "A|rule_editdist": {
+   "diff": 0.008246089170944715,
+   "hi": 0.015653215513793204,
+   "lo": 0.0010454394759551345,
+   "share_a_better": 0.986
+  },
+  "A|rule_top15k": {
+   "diff": 0.028315615020817364,
+   "hi": 0.03900345308088404,
+   "lo": 0.018149464961862278,
+   "share_a_better": 1.0
+  },
+  "B|hgb": {
+   "diff": 0.005942034843768984,
+   "hi": 0.011609383586397404,
+   "lo": 0.0004887606417092157,
+   "share_a_better": 0.984
+  },
+  "B|llm_selfcheck": {
+   "diff": 0.1282307288087634,
+   "hi": 0.15270814862329285,
+   "lo": 0.10635296659605364,
+   "share_a_better": 1.0
+  },
+  "B|logreg": {
+   "diff": 0.007041513399894783,
+   "hi": 0.01326152308278152,
+   "lo": 0.0017815134343060924,
+   "share_a_better": 0.993
+  },
+  "B|rule_editdist": {
+   "diff": 0.011471765228990627,
+   "hi": 0.020940732235709397,
+   "lo": 0.0021837164742489314,
+   "share_a_better": 0.998
+  },
+  "B|rule_top15k": {
+   "diff": 0.031541291078863276,
+   "hi": 0.0433982244138976,
+   "lo": 0.020444049830533946,
+   "share_a_better": 1.0
+  },
+  "C|hgb": {
+   "diff": 0.009999335592319358,
+   "hi": 0.022171314607845254,
+   "lo": -0.0005115569555152187,
+   "share_a_better": 0.966
+  },
+  "C|llm_selfcheck": {
+   "diff": 0.20639824596372336,
+   "hi": 0.24069485256929463,
+   "lo": 0.17219299157995838,
+   "share_a_better": 1.0
+  },
+  "C|logreg": {
+   "diff": 0.011710185369742776,
+   "hi": 0.021583558708113806,
+   "lo": 0.0015985237443887107,
+   "share_a_better": 0.989
+  },
+  "C|rule_editdist": {
+   "diff": 0.013055610922862226,
+   "hi": 0.028163187138889004,
+   "lo": -0.0011354179368450231,
+   "share_a_better": 0.962
+  },
+  "C|rule_top15k": {
+   "diff": 0.05262939339578754,
+   "hi": 0.07397940849956569,
+   "lo": 0.03207502611313144,
+   "share_a_better": 1.0
+  }
+ },
+ "threshold": {
+  "tau": 0.5062171220779419,
+  "recall": 0.9017341040462428,
+  "precision": 0.7572815533980582
+ },
+ "guard_model": {
+  "model": "TabPFN-3.5-fast (ModelVersion.V3_5_FAST), package defaults",
+  "auroc": 0.9729900157645822,
+  "ece": 0.01093656988430191,
+  "tau": 0.5061126351356506,
+  "recall": 0.9017341040462428,
+  "precision": 0.75
+ },
+ "selfcheck": {
+  "ghost_names": 162,
+  "ghost_names_said_exists": 2,
+  "real_names": 271,
+  "real_names_said_missing": 143
+ },
+ "squat": {
+  "n_candidates": 211,
+  "n_ghosts_at_label": 162,
+  "n_still_unregistered": 162,
+  "n_registered_during_study": 0,
+  "n_possible_slopsquat": 2,
+  "n_born_after_summoning_names": 7,
+  "checked_at": "2026-10-29T19:00:30Z",
+  "rule": "possible_slopsquat if ALL hold: exists on PyPI now; n_releases <= 3; first_release within the last 24 months; recent_downloads_month < 500; summoned by >= 2 independent (model, sample) pairs"
+ },
+ "registered_ghosts": [],
+ "tombstones": [
+  {
+   "id": "c5b2367d",
+   "domain": "images-media",
+   "niche_level": 3,
+   "mentions": 5,
+   "models": [
+    "gemma4:e4b",
+    "phi4-mini:3.8b",
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "56d8a024",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 4,
+   "models": [
+    "gemma4:e4b",
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "1462db2e",
+   "domain": "bioinformatics",
+   "niche_level": 3,
+   "mentions": 3,
+   "models": [
+    "gemma4:e4b",
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "1b868240",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 3,
+   "models": [
+    "phi4-mini:3.8b",
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "1ee1f842",
+   "domain": "hardware-iot",
+   "niche_level": 2,
+   "mentions": 3,
+   "models": [
+    "gemma4:e4b",
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "294ad461",
+   "domain": "lab-instruments",
+   "niche_level": 3,
+   "mentions": 3,
+   "models": [
+    "gemma4:e4b",
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "3f39ce70",
+   "domain": "web-scraping",
+   "niche_level": 3,
+   "mentions": 3,
+   "models": [
+    "phi4-mini:3.8b",
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "6c0dcd30",
+   "domain": "saas-apis",
+   "niche_level": 3,
+   "mentions": 3,
+   "models": [
+    "gemma4:e4b",
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "1151bc09",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "phi4-mini:3.8b",
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "ec0f1eac",
+   "domain": "saas-apis",
+   "niche_level": 2,
+   "mentions": 2,
+   "models": [
+    "phi4-mini:3.8b",
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "03f93c0e",
+   "domain": "geospatial",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "05c37150",
+   "domain": "pdfs-documents",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "0673d8ca",
+   "domain": "legacy-formats",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "0b029107",
+   "domain": "calendars-locale",
+   "niche_level": 2,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "124973f9",
+   "domain": "audio-music",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "14222753",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "14de465c",
+   "domain": "pdfs-documents",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "1541d7fc",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "1d92d9ed",
+   "domain": "web-scraping",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "26882b56",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "2731c365",
+   "domain": "audio-music",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "3164db68",
+   "domain": "hardware-iot",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "384e73e1",
+   "domain": "devops-security",
+   "niche_level": 2,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "410948e4",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "43dfc61c",
+   "domain": "web-scraping",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "4f304f29",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "88f6a2f5",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "93f70ac1",
+   "domain": "lab-instruments",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "93fb7a25",
+   "domain": "audio-music",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "9c34354f",
+   "domain": "games-retro",
+   "niche_level": 2,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "a7d93c44",
+   "domain": "pdfs-documents",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "bc976146",
+   "domain": "web-scraping",
+   "niche_level": 2,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "c100a9bc",
+   "domain": "calendars-locale",
+   "niche_level": 2,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "c18f9ac4",
+   "domain": "finance-regional",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "ce3e8df6",
+   "domain": "geospatial",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "d3367391",
+   "domain": "games-retro",
+   "niche_level": 2,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "dc30cd6d",
+   "domain": "finance-regional",
+   "niche_level": 2,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "e62a6ad4",
+   "domain": "web-scraping",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "ea1bbc61",
+   "domain": "legacy-formats",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "fee28fd2",
+   "domain": "lab-instruments",
+   "niche_level": 3,
+   "mentions": 2,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "042273ec",
+   "domain": "games-retro",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "0747314e",
+   "domain": "images-media",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "09c5e34d",
+   "domain": "data-files",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "0aec67e6",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "0b144c9a",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "0cb2b6d4",
+   "domain": "finance-regional",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "17178372",
+   "domain": "devops-security",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "1779ff53",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "17999884",
+   "domain": "legacy-formats",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "17f0d752",
+   "domain": "finance-regional",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "18a9d5b9",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "190d39b9",
+   "domain": "audio-music",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "19920bf7",
+   "domain": "lab-instruments",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "1a86165f",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "1c1cd77e",
+   "domain": "calendars-locale",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "1c3269a4",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "1ef6f4d0",
+   "domain": "data-files",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "202acc82",
+   "domain": "bioinformatics",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "212ff640",
+   "domain": "legacy-formats",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "21671faa",
+   "domain": "bioinformatics",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "296e40b3",
+   "domain": "lab-instruments",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "297c0619",
+   "domain": "devops-security",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "29cb84c0",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "2ca40102",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "30ae541a",
+   "domain": "geospatial",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "316cf019",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "35c6fc0b",
+   "domain": "calendars-locale",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "3747f4c6",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "3c23eb6c",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "4335dfb8",
+   "domain": "legacy-formats",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "4992a61c",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "4db1c7e7",
+   "domain": "bioinformatics",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "4f469c98",
+   "domain": "audio-music",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "4f6a2ab2",
+   "domain": "devops-security",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "521a32a1",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "5236d81a",
+   "domain": "finance-regional",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "584db1cd",
+   "domain": "hardware-iot",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "5934940b",
+   "domain": "calendars-locale",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "5d6a4ddc",
+   "domain": "games-retro",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "65386279",
+   "domain": "lab-instruments",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "65fd0695",
+   "domain": "geospatial",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "6d460439",
+   "domain": "lab-instruments",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "6ec4fd36",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "700d8526",
+   "domain": "devops-security",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "7016ce35",
+   "domain": "lab-instruments",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "730985b3",
+   "domain": "geospatial",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "732c2d6e",
+   "domain": "audio-music",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "7348a385",
+   "domain": "saas-apis",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "771eae59",
+   "domain": "devops-security",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "78e73e7d",
+   "domain": "finance-regional",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "79664d49",
+   "domain": "legacy-formats",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "79c775f1",
+   "domain": "calendars-locale",
+   "niche_level": 1,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "7c2104f6",
+   "domain": "hardware-iot",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "7cbe9029",
+   "domain": "legacy-formats",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "7e5dad2d",
+   "domain": "geospatial",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "7e9783dc",
+   "domain": "hardware-iot",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "7efc63ad",
+   "domain": "saas-apis",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "7f3bc880",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "7f42f556",
+   "domain": "legacy-formats",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "7f90cb2a",
+   "domain": "legacy-formats",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "805dc5a5",
+   "domain": "legacy-formats",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "807396ff",
+   "domain": "finance-regional",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "8197cd91",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "85a430f4",
+   "domain": "games-retro",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "8ecb235b",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "8ffd6b61",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "940a52ee",
+   "domain": "legacy-formats",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "974c787b",
+   "domain": "legacy-formats",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "99307e28",
+   "domain": "devops-security",
+   "niche_level": 1,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "995fae7a",
+   "domain": "devops-security",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "99655d21",
+   "domain": "saas-apis",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "9d41566b",
+   "domain": "hardware-iot",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "9d452ab3",
+   "domain": "pdfs-documents",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "9f007439",
+   "domain": "finance-regional",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "9ffe8ce1",
+   "domain": "lab-instruments",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "a0701d5b",
+   "domain": "games-retro",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "a7a1ee1e",
+   "domain": "audio-music",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "aad53f37",
+   "domain": "devops-security",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "ad3c29e9",
+   "domain": "pdfs-documents",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "adf97025",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "b02e5a23",
+   "domain": "saas-apis",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "b2141e19",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "b3442bf0",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "b6f16661",
+   "domain": "geospatial",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "b735a980",
+   "domain": "pdfs-documents",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "bd69bad0",
+   "domain": "devops-security",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "bee2a6ad",
+   "domain": "hardware-iot",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "bf7fea9e",
+   "domain": "saas-apis",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "bfa4bfaa",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "bfb5936a",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "bfcf596c",
+   "domain": "finance-regional",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "c13860e2",
+   "domain": "saas-apis",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "c13a6ff1",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "c32b5c8d",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "c467de6a",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "cf3c2b58",
+   "domain": "calendars-locale",
+   "niche_level": 1,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "cf8655da",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "d08aa289",
+   "domain": "data-files",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "d11266e6",
+   "domain": "geospatial",
+   "niche_level": 1,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "d36d5e18",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "d4b31001",
+   "domain": "finance-regional",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "d54d6f87",
+   "domain": "devops-security",
+   "niche_level": 1,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "d5ad9a58",
+   "domain": "pdfs-documents",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "d6d32662",
+   "domain": "data-files",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "da5c57f1",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "da623d9b",
+   "domain": "calendars-locale",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "daa34c59",
+   "domain": "calendars-locale",
+   "niche_level": 1,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "dbc72f57",
+   "domain": "data-files",
+   "niche_level": 1,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "dd1de62a",
+   "domain": "hardware-iot",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "e0049d3e",
+   "domain": "audio-music",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "e0c6d153",
+   "domain": "legacy-formats",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "e43e4daa",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "e5e4c7f2",
+   "domain": "audio-music",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "ebc4e60d",
+   "domain": "audio-music",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "ebf5c0a9",
+   "domain": "saas-apis",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "ec829361",
+   "domain": "games-retro",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "gemma4:e4b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "ef426057",
+   "domain": "bioinformatics",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "f1808498",
+   "domain": "finance-regional",
+   "niche_level": 2,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "f257299f",
+   "domain": "calendars-locale",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "f417ae12",
+   "domain": "audio-music",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "fa3e5f5d",
+   "domain": "lab-instruments",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "phi4-mini:3.8b"
+   ],
+   "n_prompts": 1
+  },
+  {
+   "id": "fba94702",
+   "domain": "audio-music",
+   "niche_level": 3,
+   "mentions": 1,
+   "models": [
+    "qwen3:4b-instruct"
+   ],
+   "n_prompts": 1
+  }
+ ]
+}
