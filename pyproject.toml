@@ -3,7 +3,7 @@ name = "phantom-packages"
 version = "0.1.0"
 description = "Measure, predict and block pip packages that AI coding models hallucinate."
 readme = "README.md"
-license = "Apache-2.0"
+license = "MIT"
 requires-python = ">=3.11,<3.14"
 dependencies = [
     "httpx>=0.27",
