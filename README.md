@@ -9,9 +9,33 @@ don't exist. Attackers can register those names ("slopsquatting"). This repo:
 2. **Trains TabPFN** to flag a ghost name offline, from generation-time features only.
 3. **Ships a guard**: `phantom check`, a Claude Code PreToolUse hook and a GitHub Action.
 
-Work in progress for the DEV Hacktoberfest 2026 Open-Source AI Challenge (Week 4).
+Built for the DEV Hacktoberfest 2026 Open-Source AI Challenge (Week 4, "Ghost in the Machine").
 Headline numbers live in [`results/summary.json`](results/summary.json). For example, 212 of the 1,410
 install suggestions from three local models (15.0%) named packages that don't exist on PyPI.
+
+![My local AI invented 162 Python packages](output/cover.png)
+
+## Results at a glance
+
+All numbers come from [`results/summary.json`](results/summary.json) (run 2). No ghost name appears in any figure.
+
+| Finding | Number | Figure |
+|---|---|---|
+| Install suggestions that don't exist (3 local models) | 15.0% (95% CI 11.9–18.4), 212 of 1,410 | [graveyard](output/halloween_ghost_rate_by_model.png) |
+| Ghost rate on obscure vs everyday tasks | 30.0% vs 1.7% | [candles](output/halloween_ghost_rate_by_niche.png) |
+| Ghost names that restate the task's words | 56.5% of 161 | [cauldron](output/halloween_ghost_types.png) |
+| Ghost names suggested more than once | 40 of 161 | [pumpkins](output/halloween_repeat_ghosts.png) |
+| TabPFN AUROC: by prompt / new model / unseen names | 0.975 / 0.978 / 0.948 | [ouija](output/halloween_precision_recall.png) |
+| TabPFN calibration error (ECE) vs gradient boosting | 0.015 vs 0.056 | [spider web](output/halloween_calibration.png) |
+| "Does it exist?" self-checks: gemma4 / Ultramarine | 143 of 271 real called missing / 60 of 161 ghosts called real | [crystal balls](output/halloween_selfcheck.png) |
+| Ultramarine ghost rate, low vs high reasoning | 3.2% vs 0.4% | [potions](output/halloween_reasoning_potions.png) |
+| Guard replay over all 1,199 generations (online) | 212 of 212 ghosts blocked; 13 of 1,165 real stopped | [gate](output/halloween_guard.png) |
+| Full rerun from scratch | 161 of 162 ghost names back; 98.7% of outputs identical | [mirror](output/halloween_reproducibility.png) |
+
+Where TabPFN loses: gradient boosting has higher precision at 90% recall on every split (0.762 vs 0.749 by
+prompt), and the hosted Ultramarine self-check, scored by P(no), has a higher AUPRC (0.880 vs 0.866) and ties
+on unseen names (0.950 vs 0.948). Demo recordings: [`output/demo_hook_blocks_ghost.gif`](output/demo_hook_blocks_ghost.gif),
+[`output/demo_offline_check.gif`](output/demo_offline_check.gif).
 
 ## Install
 
@@ -161,8 +185,8 @@ uv run phantom check requirements.txt --offline
 copy .env.example .env   # fill TABPFN_TOKEN and PHANTOM_ANON_KEY (any long random string); Ultramarine key optional
 uv run tasks.py env      # check Ollama, models, keys
 uv run tasks.py test     # pytest
-uv run tasks.py <stage>  # prompts | summon | extract | features | eval | guard-model | public-dataset | eval-public | squat | replay | ghost-types | error-analysis | figures | halloween | site | all
-uv run tasks.py all --fast   # every stage from the cache, no model calls (about 6 minutes on a laptop CPU)
+uv run tasks.py <stage>  # prompts | summon | extract | features | eval | guard-model | public-dataset | eval-public | squat | replay | ghost-types | error-analysis | figures | halloween | halloween-more | site | all
+uv run tasks.py all --fast   # every stage from the cache, no model calls (about 9 minutes on a laptop CPU)
 ```
 
 `--fast` needs the gitignored `data/` cache from a real run (generations, PyPI lookups, self-check answers).
@@ -170,7 +194,7 @@ Without it, the committed `results/` are the record.
 
 ### Rerun the evaluation without the private data
 
-`results/public/dataset.csv` is the study's modelling table (888 rows) with every package name replaced by a
+`results/public/dataset.csv` is the study's modelling table (887 rows) with every package name replaced by a
 keyed id (`HMAC-SHA256(PHANTOM_ANON_KEY, name)[:8]`). The id can't be reversed or confirmed without the secret,
 but it is enough to recompute the per-fold `global_freq` and the unseen-name split.
 `uv run python experiments/12b_eval_public.py` reruns split A (by prompt) and split C (unseen names) for
@@ -179,6 +203,33 @@ exactly. Column dictionary: [`results/public/README.md`](results/public/README.m
 
 The self-check baseline is reported two ways: the spec's yes/no answer (`llm_selfcheck`), and P(no) from
 gemma4's top-20 first-token logprobs (`llm_selfcheck_prob`).
+
+### Hosted comparison arm (Ultramarine, not open)
+
+`ultramarine-1-flash` ran the same 200 prompts through the same extraction and labelling. It is a comparison
+arm only: never pooled into the local-model numbers.
+
+| Part | Calls | Cost (USD) | Result |
+|---|---|---|---|
+| A: low reasoning, 2 samples | 400 | 0.0666 | ghost rate 3.2% (1.5–5.2), 16 of 496 |
+| B: high reasoning, 1 sample | 200 | 0.0626 | ghost rate 0.4% (0.0–1.3), 1 of 241 |
+| C: "does it exist?" self-check | 434 | 0.0117 | yes/no AUROC 0.638; P(no) AUROC 0.951, AUPRC 0.880 |
+| **Total** | **1,034** | **0.1409** | |
+
+On the same 200 tasks (sample 1), 8 produced a ghost only at low reasoning, 0 only at high, 1 at both.
+Sources: [`results/rates_hosted.csv`](results/rates_hosted.csv), the `hosted` section of
+[`results/summary.json`](results/summary.json), the `hosted_selfcheck*` arms in [`results/eval.csv`](results/eval.csv),
+and the price sheet in [`results/ultramarine_pricing.json`](results/ultramarine_pricing.json). Raw replies and the
+per-call spending ledger stay in the gitignored `data/`.
+
+Rerunning it costs money, so nothing is spent unless you say so. The evaluation reads cached hosted answers;
+`--hosted-spend` only pays for names that were never asked:
+
+```powershell
+uv run python experiments/02_summon.py hosted                   # dry run: worst-case cost only, no calls
+uv run python experiments/02_summon.py hosted --confirm-spend   # needs the Ultramarine key in .env
+uv run python experiments/05_eval.py --hosted-spend             # paid: only asks self-check names not yet answered
+```
 
 ## The Ghost Registry (local site)
 

@@ -79,3 +79,20 @@ No unregistered ghost names appear here (this folder is public and leak-tested).
 
     `tasks.py all --fast` reruns 15 stages in about 8 minutes and reproduces every result, and it became the integration test.
 30. **A consistency test is worth more than another unit test.** `tests/test_results_consistency.py` checks that every headline number agrees across the summary, the CSVs, the model files, the site data and the README. It caught the README still quoting run 1's numbers after run 2.
+
+## Late lessons (pre-publish)
+
+31. **A validator only knows what it measures.** Matplotlib counts an annotation's arrow as part of its text box,
+    and some display fonts (Eater) report a box twice the height of the glyphs. Both raised false "overlaps".
+    The fix was to draw arrows as separate, unlabelled annotations and to measure each font before spacing it.
+32. **Bold is a claim too.** The results table bolded TabPFN's AUPRC out of habit; a hosted baseline was higher.
+    Check every highlighted cell against the numbers, not just the numbers themselves.
+33. **"Best on every split" needs every arm in the comparison.** Adding the hosted self-check after the post was
+    written quietly broke one sentence (0.950 vs 0.948 on unseen names). Re-read claims when you add an arm.
+34. **Same tasks or it isn't an ablation.** The headline low-reasoning rate (3.2%) pools two samples; the
+    high-reasoning arm ran one. The fair comparison uses sample 1 on the same 200 tasks (3.6% vs 0.4%), and the
+    figure says so.
+35. **Ship the fonts.** Halloween figures that depend on Windows-only fonts don't reproduce elsewhere. The repo now
+    carries OFL/Apache fonts with their licences. Three figures still use Windows display fonts (Chiller,
+    Viner Hand, Jokerman); elsewhere `fp()` falls back to a repo font.
+

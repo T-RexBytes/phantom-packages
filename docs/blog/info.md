@@ -4,7 +4,7 @@ Running notes for the post (`docs/05_BLOG_POST_BLUEPRINT.md`). Facts only, each 
 Numbers here are working copies; the post must quote `results/summary.json` / `results/*.json`.
 **No unregistered ghost names in this file** (it is public). Ghost names live in `private/` only.
 
-Last updated: 2026-10-30 (Ultramarine results + post draft).
+Last updated: 2026-10-30 (figures, judge pass, long-form draft).
 
 ---
 
@@ -206,8 +206,37 @@ Source: `results/summary.json` → `hosted`, `results/rates_hosted.csv`, `result
 
 ---
 
-## 14. Still {{TODO}}
+## 14. Pre-publish pass (2026-10-30, evening UTC)
 
-- Phase 7 demo: record the GIF; note the real time and day for the post's opening scene.
-- Ultramarine arm: needs the key and spend approval.
+Source: `results/summary.json` (run 2), `output/*.png`, `POST_DRAFT.md`, `docs/blog/draft_blog.md`.
+
+- **Figures:** 11 Halloween images plus a cover, all from `summary.json`, none with a ghost name. Each pairs a
+  themed display face with a themed body face (OFL/Apache Google Fonts in `assets/fonts/`). New stage:
+  `uv run tasks.py halloween-more` (`experiments/07c_halloween_more.py`).
+  - `halloween_reproducibility.png`: 161 of 162 ghost names back; 1,183 of 1,199 outputs identical (98.7%);
+    per model 399/400, 393/399, 391/400 identical. **gemma4 was the most reproducible model.**
+  - `halloween_reasoning_potions.png`: Ultramarine on the same 200 tasks (sample 1): 3.6% (9 of 252) at low
+    reasoning vs 0.4% (1 of 241) at high. Note the headline low rate is 3.2% over both samples.
+    Cost per 1,000 generations $0.17 vs $0.31; reasoning tokens 7,326 vs 32,488.
+  - `halloween_selfcheck.png`: opposite biases. gemma4 said NO to 143 of 271 real packages (53%);
+    Ultramarine said YES to 60 of 161 ghosts (37%).
+  - `halloween_ghost_types.png`: **27 of the 40 repeated ghosts are task-word names.**
+  - `halloween_guard.png`: replay plus hook latency (1.2 / 1.7 / 2.2 / 13.0 s).
+  - `cover.png` (2000×840): terminal with a redaction bar, no name.
+- **Number audit (judge pass):** every number in `POST_DRAFT.md` matched `summary.json` / the CSVs. One
+  presentation error was fixed: Table 2 bolded TabPFN's AUPRC (0.866), but the hosted P(no) row is higher (0.880).
+- **Claim fixed in the long draft:** "TabPFN has the best AUROC on every split" is false. On unseen names the
+  hosted P(no) self-check scores 0.950 vs 0.948. The correct wording is "best *offline* method on every split".
+- **Precision at 90% recall, all splits:** TabPFN 0.749 / 0.764 / 0.749 vs gradient boosting 0.762 / 0.772 / 0.773
+  (A / B / C). TabPFN loses on every split.
+- **Word counts:** `POST_DRAFT.md` 2,900 (blueprint target 2,200–2,900); `draft_blog.md` about 3,460 (long-form,
+  in the previous post's format).
+
+---
+
+## 15. Still {{TODO}}
+
 - A real reaction from someone else: `{{TODO: real reaction}}`.
+- DevRelay session embed.
+- Push, then confirm every raw.githubusercontent image URL resolves.
+- Ghost Registry hosting decision (GitHub Pages or local only).

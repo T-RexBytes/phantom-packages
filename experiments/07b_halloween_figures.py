@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 
 import matplotlib
 
@@ -69,12 +70,10 @@ DECOR = "decor"  # gid for decorative text the validator ignores (board letters,
 # ---------------------------------------------------------------- primitives
 
 def fp(key: str, size: float) -> dict:
-    """Font kwargs for a Windows font file (falls back to Segoe UI Bold, then the default)."""
+    """Font kwargs for a font file; a missing file (e.g. a Windows font elsewhere) falls back to the body font."""
     for k in (key, "body"):
-        try:
+        if k in FONTS and Path(FONTS[k]).exists():
             return {"fontproperties": font_manager.FontProperties(fname=FONTS[k], size=size)}
-        except (OSError, KeyError, ValueError):
-            continue
     return {"fontsize": size}
 
 

@@ -105,5 +105,12 @@ def test_readme_numbers_come_from_summary(s):
     assert f"{o['ghosts']} of the {o['mentions']:,}" in readme and f"({o['ghost_rate']:.1%})" in readme
     assert f"τ = {g['tau']:.3f}" in readme
     assert f"{g['recall']:.1%} of ghosts" in readme and f"{g['precision']:.1%} of the names" in readme
+    hosted = s["hosted"]["models"].values()
+    allowed = {f"{v:.1%}" for v in (
+        o["ghost_rate"], g["recall"], g["precision"],
+        *(n["ghost_rate"] for n in s["rates"]["per_niche_level"].values()),
+        s["ghost_types"]["by_type"]["task_words"]["share_of_names"],
+        s["reproducibility"]["generations"]["identical_share"],
+        *(m["ghost_rate"] for m in hosted), *(m["rate_lo"] for m in hosted), *(m["rate_hi"] for m in hosted))}
     for pct in re.findall(r"\d+\.\d%", readme):  # no stray percentages that aren't in the summary
-        assert pct in {f"{o['ghost_rate']:.1%}", f"{g['recall']:.1%}", f"{g['precision']:.1%}"}, pct
+        assert pct in allowed, pct
