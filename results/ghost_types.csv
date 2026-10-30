@@ -1,6 +1,6 @@
 type,n_names,n_mentions,repeated_2plus,by_2plus_models,share_of_names,share_of_mentions,rule
-affix_of_real,14,17,3,1,0.0864,0.0798,"a real package name plus or minus one common affix (python-, py, -py, -api, -sdk, -parser ...)"
-import_or_brand,2,4,2,0,0.0123,0.0188,the import name or bare brand of a real package that is installed under another name
-task_words,92,129,27,8,0.5679,0.6056,every non-generic part of the name is a word of the task (or an abbreviation of one)
-near_real_name,9,12,2,1,0.0556,0.0563,"one or two edits from a real package name (a typo of it, or a coincidence)"
-invented,45,51,6,0,0.2778,0.2394,none of the rules above
+affix_of_real,14,17,3,1,0.087,0.0802,"a real package name plus or minus one common affix (python-, py, -py, -api, -sdk, -parser ...)"
+import_or_brand,2,4,2,0,0.0124,0.0189,the import name or bare brand of a real package that is installed under another name
+task_words,91,128,27,8,0.5652,0.6038,every non-generic part of the name is a word of the task (or an abbreviation of one)
+near_real_name,9,12,2,1,0.0559,0.0566,"one or two edits from a real package name (a typo of it, or a coincidence)"
+invented,45,51,6,0,0.2795,0.2406,none of the rules above

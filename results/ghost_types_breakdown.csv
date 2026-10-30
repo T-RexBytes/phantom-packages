@@ -9,11 +9,11 @@ model,phi4-mini:3.8b,near_real_name,3,3
 model,phi4-mini:3.8b,invented,28,30
 model,qwen3:4b-instruct,affix_of_real,6,6
 model,qwen3:4b-instruct,import_or_brand,2,4
-model,qwen3:4b-instruct,task_words,46,71
+model,qwen3:4b-instruct,task_words,45,70
 model,qwen3:4b-instruct,near_real_name,3,3
 model,qwen3:4b-instruct,invented,8,12
 niche_level,L1,affix_of_real,4,4
-niche_level,L1,task_words,2,2
+niche_level,L1,task_words,1,1
 niche_level,L1,invented,1,1
 niche_level,L2,affix_of_real,7,8
 niche_level,L2,import_or_brand,1,2

@@ -83,10 +83,10 @@
     "run_at": "2026-10-29T18:44:13Z"
   },
   "features": {
-    "built_at": "2026-10-30T13:15:14Z",
+    "built_at": "2026-10-30T17:38:29Z",
     "n_generations": 1199,
-    "n_ghost": 173,
-    "n_rows": 888,
+    "n_ghost": 172,
+    "n_rows": 887,
     "name_logprob_missing_share": 0.0,
     "top_list": {
       "last_update": "2026-10-01 12:40:51",
@@ -96,10 +96,10 @@
   },
   "guard_model": {
     "auroc_diff_vs_phase5_tabpfn": {
-      "diff": -0.0014794454100812704,
-      "hi": 0.002266965281763139,
-      "lo": -0.0055201216581092895,
-      "share_a_better": 0.227
+      "diff": -0.0017482517482517723,
+      "hi": 0.0020971179264031173,
+      "lo": -0.005959604131061352,
+      "share_a_better": 0.202
     },
     "deviation": "BUILD_SPEC \u00a79.1 feeds the Phase-5 context model with default context (consistency=1, cross_model=1, niche=2). The guard never knows the generation context, so it uses TabPFN-3.5-fast on name features only. Measured on the same folds: context model + defaults AUROC 0.971, ECE 0.029, 17 s per prediction (TabPFN-3.5, CPU); name-only TabPFN-3.5 AUROC 0.973, ECE 0.014, 17 s; name-only 3.5-fast (this model) about 3.5 s per prediction.",
     "features": [
@@ -116,33 +116,33 @@
     ],
     "model": "TabPFN-3.5-fast (ModelVersion.V3_5_FAST), package defaults",
     "oof_split_a": {
-      "auprc": 0.8665132212514318,
-      "auroc": 0.9729900157645822,
-      "auroc_hi": 0.9821759572581348,
-      "auroc_lo": 0.9625970079772926,
-      "brier": 0.05039751128499667,
-      "ece": 0.01093656988430191,
-      "n": 888,
-      "n_ghost": 173,
-      "precision_at_recall90": 0.7523809523809524,
-      "recall_at_precision95": 0.15028901734104047
+      "auprc": 0.863804357182118,
+      "auroc": 0.9727923239551146,
+      "auroc_hi": 0.9819952598583829,
+      "auroc_lo": 0.9622676493823178,
+      "brier": 0.05044091992604666,
+      "ece": 0.013283933909024749,
+      "n": 887,
+      "n_ghost": 172,
+      "precision_at_recall90": 0.7511961722488039,
+      "recall_at_precision95": 0.1569767441860465
     },
-    "run_at": "2026-10-30T13:20:11Z",
+    "run_at": "2026-10-30T17:44:50Z",
     "tabpfn_version": "9.2.0",
     "threshold": {
-      "n": 888,
-      "n_flagged": 208,
-      "precision": 0.75,
-      "recall": 0.9017341040462428,
+      "n": 887,
+      "n_flagged": 207,
+      "precision": 0.748792270531401,
+      "recall": 0.9011627906976745,
       "rule": "flag ghost if p >= tau",
       "source": "out-of-fold guard-model probabilities, split A folds",
       "target_recall": 0.9,
-      "tau": 0.5061126351356506
+      "tau": 0.5082217454910278
     },
     "timing_s": {
-      "final_fit": 0.09869110002182424,
-      "fit_total": 0.8075104999588802,
-      "predict_total": 19.091107800020836
+      "final_fit": 0.11145149997901171,
+      "fit_total": 1.0121052998583764,
+      "predict_total": 21.917971600196324
     }
   },
   "label_fixes": [
@@ -217,18 +217,18 @@
       "by_why_candidate": {
         "born_after_summoning": 3,
         "born_after_summoning;p_ghost>=0.5": 4,
-        "ghost_at_label": 162,
+        "ghost_at_label": 161,
         "p_ghost>=0.5": 42
       },
-      "checked_at": "2026-10-30T13:22:07Z",
+      "checked_at": "2026-10-30T17:46:42Z",
       "failed_lookups": 0,
       "n_born_after_summoning_names": 7,
-      "n_candidates": 211,
-      "n_ghosts_at_label": 162,
+      "n_candidates": 210,
+      "n_ghosts_at_label": 161,
       "n_possible_slopsquat": 2,
       "n_registered_candidates": 49,
       "n_registered_during_study": 0,
-      "n_still_unregistered": 162,
+      "n_still_unregistered": 161,
       "n_unregistered_repeated": 40,
       "rule": "possible_slopsquat if ALL hold: exists on PyPI now; n_releases <= 3; first_release within the last 24 months; recent_downloads_month < 500; summoned by >= 2 independent (model, sample) pairs"
     },
@@ -241,7 +241,7 @@
       "recent_downloads_month < 500",
       "summoned by >= 2 independent (model, sample) pairs"
     ],
-    "run_at": "2026-10-30T13:22:07Z"
+    "run_at": "2026-10-30T17:46:42Z"
   },
   "summon": {
     "aborted": [
@@ -491,6 +491,11 @@
         "n_prompts": 200,
         "pilot": null,
         "started_at": "2026-10-29T18:00:49Z"
+      },
+      {
+        "n_prompts": 200,
+        "pilot": null,
+        "started_at": "2026-10-30T13:25:00Z"
       }
     ],
     "samples": [

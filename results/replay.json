@@ -7,26 +7,26 @@
   "overall": {
     "generations": 1199,
     "generations_with_install": 1198,
-    "ghost_mentions": 213,
+    "ghost_mentions": 212,
     "install_mentions": 1413,
     "offline": {
-      "generations_blocked": 262,
-      "ghost_recall": 0.9014084507042254,
-      "ghosts_caught": 192,
+      "generations_blocked": 260,
+      "ghost_recall": 0.9009433962264151,
+      "ghosts_caught": 191,
       "ghosts_missed": 21,
-      "precision": 0.7413127413127413,
-      "real_flagged": 67,
-      "real_flagged_share": 0.05756013745704467
+      "precision": 0.7431906614785992,
+      "real_flagged": 66,
+      "real_flagged_share": 0.05665236051502146
     },
     "online": {
-      "generations_blocked": 232,
-      "generations_blocked_share": 0.19365609348914858,
-      "ghosts_blocked": 213,
+      "generations_blocked": 231,
+      "generations_blocked_share": 0.19282136894824708,
+      "ghosts_blocked": 212,
       "real_blocked": 13,
-      "real_blocked_share": 0.011168384879725086,
+      "real_blocked_share": 0.011158798283261802,
       "suspect_mentions": 13
     },
-    "real_mentions": 1164,
+    "real_mentions": 1165,
     "subtype_mentions": {
       "module_name_confusion": {
         "GHOST": 3,
@@ -111,26 +111,26 @@
     "qwen3:4b-instruct": {
       "generations": 400,
       "generations_with_install": 400,
-      "ghost_mentions": 96,
+      "ghost_mentions": 95,
       "install_mentions": 456,
       "offline": {
-        "generations_blocked": 115,
-        "ghost_recall": 0.9270833333333334,
-        "ghosts_caught": 89,
+        "generations_blocked": 113,
+        "ghost_recall": 0.9263157894736842,
+        "ghosts_caught": 88,
         "ghosts_missed": 7,
-        "precision": 0.7739130434782608,
-        "real_flagged": 26,
-        "real_flagged_share": 0.07407407407407407
+        "precision": 0.7787610619469026,
+        "real_flagged": 25,
+        "real_flagged_share": 0.07102272727272728
       },
       "online": {
-        "generations_blocked": 102,
-        "generations_blocked_share": 0.255,
-        "ghosts_blocked": 96,
+        "generations_blocked": 101,
+        "generations_blocked_share": 0.2525,
+        "ghosts_blocked": 95,
         "real_blocked": 6,
-        "real_blocked_share": 0.017094017094017096,
+        "real_blocked_share": 0.017045454545454544,
         "suspect_mentions": 6
       },
-      "real_mentions": 351,
+      "real_mentions": 352,
       "subtype_mentions": {
         "module_name_confusion": {
           "OK": 2
@@ -143,6 +143,6 @@
     }
   },
   "registry": "label-time PyPI answers (data/registry.parquet)",
-  "run_at": "2026-10-30T13:22:58Z",
-  "tau": 0.5061126351356506
+  "run_at": "2026-10-30T17:47:32Z",
+  "tau": 0.5082217454910278
 }

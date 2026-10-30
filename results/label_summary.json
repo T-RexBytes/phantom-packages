@@ -1,22 +1,44 @@
 {
   "born_after_summoning_mentions": 12,
-  "checked_at": "2026-10-30T13:15:11Z",
+  "checked_at": "2026-10-30T17:38:08Z",
   "complete": true,
   "dropped_tokens": 0,
   "failed_lookups": 0,
-  "gen_ghost_share_overall": 0.17764804003336113,
-  "ghost_rate_overall": 0.15106382978723404,
+  "gen_ghost_share_overall": 0.176814011676397,
+  "ghost_rate_overall": 0.150354609929078,
   "ghosts_multi_model": 10,
   "ghosts_repeated_2plus": 40,
+  "hosted": {
+    "failed_lookups": 0,
+    "models": {
+      "ultramarine-1-flash": {
+        "completion_tokens": 21736,
+        "cost_per_1k_generations_usd": 0.1478512658227848,
+        "cost_usd": 0.01168025,
+        "gen_share": 0.012658227848101266,
+        "generations": 79,
+        "ghost_rate": 0.008695652173913044,
+        "ghosts": 1,
+        "length_capped_share": 0.0,
+        "mentions": 115,
+        "prompt_tokens": 5415,
+        "reasoning_effort": "low",
+        "reasoning_tokens": 1099,
+        "unique_ghost_names": 1,
+        "with_ghost": 1
+      }
+    },
+    "n_generations": 79
+  },
   "n_generations": 1199,
   "n_generations_aborted": 1,
   "n_generations_planned": 1200,
-  "n_ghost_mentions": 213,
+  "n_ghost_mentions": 212,
   "n_labelled_mentions": 1446,
-  "n_mentions_extracted": 1693,
+  "n_mentions_extracted": 1689,
   "n_prompts": 200,
-  "n_unique_ghost_names": 162,
-  "n_unique_labelled_names": 447,
+  "n_unique_ghost_names": 161,
+  "n_unique_labelled_names": 446,
   "per_model": {
     "gemma4:e4b": {
       "gen_ghost_share": 0.0975,
@@ -35,18 +57,18 @@
       "with_ghost": 78.0
     },
     "qwen3:4b-instruct": {
-      "gen_ghost_share": 0.24,
+      "gen_ghost_share": 0.2375,
       "generations": 400.0,
-      "ghost_rate": 0.20869565217391303,
-      "ghosts": 96.0,
+      "ghost_rate": 0.20652173913043478,
+      "ghosts": 95.0,
       "mentions": 460.0,
-      "with_ghost": 96.0
+      "with_ghost": 95.0
     }
   },
   "per_niche_level": {
     "L1": {
-      "ghost_rate": 0.019662921348314606,
-      "ghosts": 7.0,
+      "ghost_rate": 0.016853932584269662,
+      "ghosts": 6.0,
       "mentions": 356.0
     },
     "L2": {
@@ -71,5 +93,5 @@
       "unique": 11
     }
   },
-  "unmapped_imports": 247
+  "unmapped_imports": 243
 }

@@ -1,7 +1,7 @@
 # Public evaluation dataset (no package names)
 
 `dataset.csv` is the modelling table of the study (one row per model × prompt × suggested
-name, 888 rows, 173 ghosts) with every package name replaced by a keyed id.
+name, 887 rows, 172 ghosts) with every package name replaced by a keyed id.
 `uv run python experiments/12b_eval_public.py` reruns split A (by prompt) and split C
 (unseen names) for TabPFN-3.5 and gradient boosting from this file alone.
 

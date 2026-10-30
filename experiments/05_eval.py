@@ -156,7 +156,10 @@ def rate_rows(labelled: pd.DataFrame, gens: pd.DataFrame, niche: dict[str, int])
 # ---------------------------------------------------------------- main
 
 def main() -> None:
-    argparse.ArgumentParser(description=__doc__).parse_known_args()  # accepts --fast
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--hosted-spend", action="store_true",
+                    help="allow paid Ultramarine calls for unanswered self-check names (never by default)")
+    args, _ = ap.parse_known_args()  # also accepts --fast
     config.load_dotenv()  # TABPFN_TOKEN / TABPFN_NO_BROWSER for the first weights download
     import tabpfn
     import torch
@@ -181,7 +184,7 @@ def main() -> None:
     sc = {"llm_selfcheck": ds["selfcheck_answer"].map(selfcheck.score).to_numpy(float),
           "llm_selfcheck_prob": ds["name"].map(lambda n: selfcheck.prob_score(answers_prob[n])).to_numpy(float)}
     selfcheck_s = sum(answers[n]["latency_s"] for n in ds["name"].unique())
-    hosted_answers = hosted_selfcheck_answers(ds["name"])
+    hosted_answers = hosted_selfcheck_answers(ds["name"], allow_spend=args.hosted_spend)
     if hosted_answers is not None:
         sc["hosted_selfcheck"] = ds["name"].map(lambda n: selfcheck.score(hosted_answers[n]["answer"])).to_numpy(float)
         sc["hosted_selfcheck_prob"] = ds["name"].map(lambda n: selfcheck.prob_score(hosted_answers[n])).to_numpy(float)
@@ -288,14 +291,19 @@ def main() -> None:
     print_tables(eval_df, loo_df, timing_df, threshold)
 
 
-def hosted_selfcheck_answers(names) -> dict | None:
+def hosted_selfcheck_answers(names, allow_spend: bool = False) -> dict | None:
     """Ultramarine self-check answers for every name, or None (arms skipped) if any is missing and
-    cannot be asked (no key, or the hosted spend cap would be exceeded)."""
+    cannot be asked. Paid calls happen only with ``--hosted-spend`` (and a key, under the cap):
+    a rebuild must never spend money as a side effect."""
     names = sorted(set(names))
     cached = hosted.cached_selfcheck(names)
     missing = [n for n in names if n not in cached]
     if not missing:
         return cached
+    if not allow_spend:
+        console.print(f"[yellow]hosted_selfcheck skipped: {len(missing)} names unanswered "
+                      "(pass --hosted-spend to ask Ultramarine)")
+        return None
     client = hosted.client_from_env()
     if client is None:
         if cached:
@@ -321,9 +329,15 @@ def add_hosted_summary(niche, ds, hosted_answers) -> None:
     rates_h.to_csv(RATES_HOSTED_PATH, index=False)
     label_summary = json.loads((config.RESULTS / "label_summary.json").read_text(encoding="utf-8"))
     section = dict(label_summary.get("hosted", {}))
+    n_prompts = runconfig.load()["summon"]["n_prompts"]
+    planned = {hosted.MODEL: 2 * n_prompts, f"{hosted.MODEL}@high": n_prompts}  # parts A and B
     for row in rates_h.to_dict("records"):
-        section.setdefault("models", {}).setdefault(row["group"], {}).update(
-            {k: row[k] for k in ("rate_lo", "rate_hi", "gen_share_lo", "gen_share_hi")})
+        m = section.setdefault("models", {}).setdefault(row["group"], {})
+        m["planned"] = planned.get(row["group"])
+        m["complete"] = m["planned"] is not None and row["generations"] >= m["planned"]
+        if m["complete"]:  # a partial (paused) run is reported as partial, never as a result
+            m.update({k: row[k] for k in ("rate_lo", "rate_hi", "gen_share_lo", "gen_share_hi")})
+    section["complete"] = bool(section.get("models")) and all(v.get("complete") for v in section["models"].values())
     ledger = hosted.Ledger()
     section["spend"] = {"ledger_spent_usd": ledger.spent, "cap_usd": ledger.cap_usd,
                         "parts": ledger.data.get("parts", {})}

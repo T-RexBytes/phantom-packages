@@ -10,8 +10,8 @@ don't exist. Attackers can register those names ("slopsquatting"). This repo:
 3. **Ships a guard**: `phantom check`, a Claude Code PreToolUse hook and a GitHub Action.
 
 Work in progress for the DEV Hacktoberfest 2026 Open-Source AI Challenge (Week 4).
-Headline numbers live in [`results/summary.json`](results/summary.json). For example, 213 of the 1,410
-install suggestions from three local models (15.1%) named packages that don't exist on PyPI.
+Headline numbers live in [`results/summary.json`](results/summary.json). For example, 212 of the 1,410
+install suggestions from three local models (15.0%) named packages that don't exist on PyPI.
 
 ## Install
 
@@ -136,7 +136,7 @@ uv run phantom check requirements.txt --offline
   15,000 PyPI names, affixes, a character-level language model and similar. It is flagged when
   P(ghost) ≥ τ.
 - **The threshold:** τ comes from out-of-fold predictions in the study (`results/model/guard_threshold.json`).
-  At τ = 0.506 it caught 90.2% of ghosts, and 75.0% of the names it flagged were ghosts. **Expect about
+  At τ = 0.508 it caught 90.1% of ghosts, and 74.9% of the names it flagged were ghosts. **Expect about
   one false alarm in four flags.**
 - **Online is still the source of truth.** The offline estimate is for planes, firewalls and private
   code, when you can't ask the registry. With the network on, the registry decides.

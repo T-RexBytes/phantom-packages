@@ -46,11 +46,12 @@ def tombstones(labelled: pd.DataFrame, still_unregistered: set[str]) -> list[dic
 def hosted_section(summary: dict) -> dict | None:
     """Ultramarine numbers for the site (aggregates only), or None if the hosted arm wasn't run."""
     h = summary.get("hosted")
-    if not h:
-        return None
+    if not h or not any(v.get("complete") for v in h.get("models", {}).values()):
+        return None  # nothing on the site until a hosted arm has finished (partial runs stay internal)
     keep = ("reasoning_effort", "generations", "mentions", "ghosts", "ghost_rate", "rate_lo", "rate_hi",
             "gen_share", "cost_usd", "cost_per_1k_generations_usd", "reasoning_tokens")
-    return {"models": {m: {k: v[k] for k in keep if k in v} for m, v in h.get("models", {}).items()},
+    return {"models": {m: {k: v[k] for k in keep if k in v} for m, v in h.get("models", {}).items()
+                       if v.get("complete")},
             "ablation": h.get("ablation"), "spent_usd": h.get("spend", {}).get("ledger_spent_usd"),
             "selfcheck": h.get("selfcheck")}
 

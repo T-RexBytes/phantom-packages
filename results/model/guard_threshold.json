@@ -1,10 +1,10 @@
 {
-  "n": 888,
-  "n_flagged": 208,
-  "precision": 0.75,
-  "recall": 0.9017341040462428,
+  "n": 887,
+  "n_flagged": 207,
+  "precision": 0.748792270531401,
+  "recall": 0.9011627906976745,
   "rule": "flag ghost if p >= tau",
   "source": "out-of-fold guard-model probabilities, split A folds",
   "target_recall": 0.9,
-  "tau": 0.5061126351356506
+  "tau": 0.5082217454910278
 }

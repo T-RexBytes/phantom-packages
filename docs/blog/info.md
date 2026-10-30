@@ -4,7 +4,7 @@ Running notes for the post (`docs/05_BLOG_POST_BLUEPRINT.md`). Facts only, each 
 Numbers here are working copies; the post must quote `results/summary.json` / `results/*.json`.
 **No unregistered ghost names in this file** (it is public). Ghost names live in `private/` only.
 
-Last updated: 2026-10-30 (pre-Phase-9 audit).
+Last updated: 2026-10-30 (after run 2).
 
 ---
 
@@ -168,7 +168,20 @@ Sources: `results/squat_summary.json`, `results/squat_public.csv`.
 
 ---
 
-## 11. Still {{TODO}}
+## 11. Run 2: the fresh full run (2026-10-30)
+
+Source: `results/run_comparison.json`, `results/summary.json` (all headline numbers now come from run 2).
+
+- **Same protocol, from scratch:** 3 models × 200 prompts × 2 samples, the same seeds (1001/1002) and temperature 0.7. 1,199/1,200 generations again; the same phi4-mini prompt (p112, sample 2) hit Ollama's token-repeat limit again. 3.87 h of generation vs 3.63 h in run 1.
+- **Reproducible to the byte:** 1,183 of 1,199 generations (98.7%) were byte-identical to run 1 (gemma4 399/400, phi4-mini 393/399, qwen3 391/400).
+- **Ghosts:** 212 ghost mentions vs 213; 161 ghost names vs 162, and all 161 also appeared in run 1. One ghost suggested once in run 1 did not come back. Ghost rate 15.0% (95% CI 11.9–18.4%) vs 15.1%; per model 8.1% / 16.7% / 20.7%; L3 still 30.0%.
+- **Detector unchanged within noise:** TabPFN AUROC 0.975 (A), 0.978 (B), 0.948 (C); gradient boosting 0.966 / 0.973 / 0.934. TabPFN τ = 0.486 at 90% recall (74.9% precision). Guard model AUROC 0.973, τ 0.508.
+- **Blog line:** "I reran the whole study from scratch. 98.7% of the 1,199 generations came back byte-for-byte identical, and so did every ghost but one." That is the open-weights reproducibility argument, measured.
+- **Ultramarine:** paused at 79 of 400 generations ($0.0118) while waiting for Paper Instruments' reply; partial hosted numbers are kept internal (marked incomplete) and not shown anywhere public.
+
+---
+
+## 12. Still {{TODO}}
 
 - Phase 7 demo: record the GIF; note the real time and day for the post's opening scene.
 - Ultramarine arm: needs the key and spend approval.

@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-10-30T17:55:37Z",
+  "generation_hours": {
+    "run1": 3.632497777777778,
+    "run2": 3.871004166666667
+  },
+  "generations": {
+    "common_keys": 1199,
+    "identical_outputs": 1183,
+    "identical_share": 0.9866555462885738,
+    "per_model": {
+      "gemma4:e4b": {
+        "identical": 399,
+        "total": 400
+      },
+      "phi4-mini:3.8b": {
+        "identical": 393,
+        "total": 399
+      },
+      "qwen3:4b-instruct": {
+        "identical": 391,
+        "total": 400
+      }
+    },
+    "run1": 1199,
+    "run2": 1199
+  },
+  "ghosts": {
+    "mentions_run1": 213,
+    "mentions_run2": 212,
+    "names_in_both": 161,
+    "names_run1": 162,
+    "names_run2": 161,
+    "only_run1": 1,
+    "only_run2": 0
+  },
+  "setup": "same 200 prompts, 3 models, seeds 1001/1002, temperature 0.7, Ollama; run 2 started from scratch"
+}
