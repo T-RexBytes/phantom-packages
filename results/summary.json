@@ -843,6 +843,67 @@
       "predict_total": 21.917971600196324
     }
   },
+  "hook_latency": {
+    "cases": {
+      "ghost_install_default": {
+        "command": "pip install zzq-ghostlib-not-real",
+        "env": {},
+        "exit_codes": [
+          2
+        ],
+        "median_s": 2.19,
+        "seconds": [
+          2.36,
+          1.86,
+          2.19
+        ]
+      },
+      "ghost_install_with_p_ghost": {
+        "command": "pip install zzq-ghostlib-not-real",
+        "env": {
+          "PHANTOM_HOOK_PROB": "1"
+        },
+        "exit_codes": [
+          2
+        ],
+        "median_s": 13.0,
+        "seconds": [
+          13.58,
+          13.0,
+          12.85
+        ]
+      },
+      "no_install": {
+        "command": "git status && ls",
+        "env": {},
+        "exit_codes": [
+          0
+        ],
+        "median_s": 1.19,
+        "seconds": [
+          1.2,
+          1.19,
+          1.06
+        ]
+      },
+      "real_install": {
+        "command": "pip install requests",
+        "env": {},
+        "exit_codes": [
+          0
+        ],
+        "median_s": 1.7,
+        "seconds": [
+          1.96,
+          1.7,
+          1.7
+        ]
+      }
+    },
+    "machine": "Windows 11, CPU torch (no CUDA)",
+    "measured_at": "2026-10-30T18:24:21Z",
+    "runs_per_case": 3
+  },
   "hosted": {
     "complete": false,
     "failed_lookups": 0,

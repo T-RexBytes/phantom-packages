@@ -4,7 +4,7 @@ Running notes for the post (`docs/05_BLOG_POST_BLUEPRINT.md`). Facts only, each 
 Numbers here are working copies; the post must quote `results/summary.json` / `results/*.json`.
 **No unregistered ghost names in this file** (it is public). Ghost names live in `private/` only.
 
-Last updated: 2026-10-30 (after run 2).
+Last updated: 2026-10-30 (lessons + late findings).
 
 ---
 
@@ -181,7 +181,17 @@ Source: `results/run_comparison.json`, `results/summary.json` (all headline numb
 
 ---
 
-## 12. Still {{TODO}}
+## 12. Late findings (run 2 numbers)
+
+- **Lessons file:** every surprise and workaround from the build is in [`lessons.md`](lessons.md) (30 items), for "What Went Wrong".
+- **On run 2, TabPFN's unseen-name lead is now (barely) significant:** vs gradient boosting +0.014 (CI 0.002–0.028), vs the edit-distance rule +0.013 (CI 0.0004–0.029). In run 1 both CIs included 0. Say "narrow" either way.
+- **TabPFN still loses precision at 90% recall to gradient boosting on every split:** A 0.749 vs 0.762; B 0.764 vs 0.772; C 0.749 vs 0.773.
+- **Hook latency** (`results/hook_latency.json`, cold process, CPU laptop): no install 1.2 s, real install 1.7 s, ghost blocked 2.2 s by default, and 13.0 s when printing P(ghost) (`PHANTOM_HOOK_PROB=1`).
+- **Ultramarine:** resumed on 2026-10-30 after the email to the provider; finishing parts A, C and B in the background.
+
+---
+
+## 13. Still {{TODO}}
 
 - Phase 7 demo: record the GIF; note the real time and day for the post's opening scene.
 - Ultramarine arm: needs the key and spend approval.

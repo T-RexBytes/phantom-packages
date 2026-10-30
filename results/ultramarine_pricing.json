@@ -2,7 +2,7 @@
   "cached_input_nanodollars_per_token": 30,
   "cached_input_usd": "0.03",
   "effective_at": 1792555882,
-  "fetched_at": "2026-10-30T13:29:28Z",
+  "fetched_at": "2026-10-30T18:24:41Z",
   "model": "ultramarine-1-flash",
   "object": "price_card",
   "output_nanodollars_per_token": 500,
