@@ -21,7 +21,8 @@ jobs:
           python-version: "3.12"
 
       - name: Install
-        run: uv sync --locked
+        # the hosted extra (OpenAI-compatible SDK) is locked; tests/test_hosted.py needs its error classes
+        run: uv sync --locked --extra hosted
 
       - name: Test
         env:
