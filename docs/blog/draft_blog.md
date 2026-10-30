@@ -10,7 +10,7 @@ Format follows the author's previous DEV post (TL;DR callouts, hero image, Why /
 {% github %} embed, {% details %} blocks, What went wrong, Open Innovation, Agent Session, payoff, prizes).
 Every number is from results/summary.json (run 2). Ghost names are never written here: the demo GIF shows
 one ghost that a model suggested only once, and the CI leak test scans this file.
-Open items: {{TODO}} markers below (reaction quote, DevRelay session embed, co-author credits).
+Open items: {{TODO}} markers below (reaction quote, DevRelay session embed).
 -->
 
 *This is a submission for the [Hacktoberfest Open-Source AI Challenge Week 4: Ghost in the Machine](https://dev.to/challenges/hacktoberfest-week4-2026-10-26)*
@@ -311,6 +311,6 @@ My own moment came at the very end. I wiped the generations and reran all 1,200 
 
 ---
 
-Built by @t-rexbytes. {{TODO: confirm co-author credits, as in the previous post}}
+Built by @t-rexbytes, @soumyadeepdey and @subarnamaity.
 
 **If you let an agent run `pip install`, what's the strangest package it has ever tried to install for you?** Try the hook for a day and tell me what it caught.

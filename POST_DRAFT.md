@@ -28,7 +28,7 @@ At 1:16 AM on October 30, my coding agent typed this into my terminal:
 pip install ███████████████
 ```
 
-It looked like a helper library I've installed a hundred times. Except it doesn't exist. Nobody ever wrote it. It lived for one sentence, inside a small model on my laptop that suggested it when I asked for a script listing Germany's public holidays.
+It looked like a helper library I've installed a hundred times. Except it doesn't exist; nobody ever wrote it. It lived for one sentence, inside a small model on my laptop that suggested it when I asked for a script listing Germany's public holidays.
 
 That's the ghost in the machine I went hunting for this week. The scary part isn't the ghost. It's that anyone can give it a body: register the name on PyPI, put whatever they want in `setup.py`, and wait for the next agent to dream it up again.
 
@@ -46,7 +46,7 @@ So I had three open-weight models write 200 small Python scripts, twice each, an
 2. **The Medium**, a ghost detector. A TabPFN-3.5 model looks at a package name *and how it was born*: how close it is to a real package, whether the model repeats it, how niche the task was. It says how likely the name is to be a ghost, **without the internet**.
 3. **The Guard**, a working tool. `phantom check` for requirements files and `pyproject.toml`, a **Claude Code hook** that stops an agent mid-install, and a **GitHub Action** for pull requests.
 
-**How I read the theme:** the ghost in this machine is a name that exists only inside the model's imagination, until someone gives it a body. Halloween is about things that shouldn't be there. Día de los Muertos is about names that refuse to be forgotten. Mine are both: rerun the same model on the same task and the same name comes back.
+**How I read the theme:** the ghost in this machine is a name that exists only inside the model's imagination, until someone gives it a body. Halloween is about things that shouldn't be there; Día de los Muertos, about names that refuse to be forgotten. Mine are both: rerun the same model on the same task and the same name comes back.
 
 ### The rule: the model can dream a package. Only the registry can make it real.
 
@@ -56,7 +56,7 @@ Models only propose. TabPFN gives a probability, not a verdict. The final call i
 
 The GIF is a real Claude Code session, recorded off-screen. The agent runs my local model's install; the hook blocks it, points at the real package, and the agent verifies that one with `phantom check`. Nothing gets installed.
 
-The Ghost Registry (the numbers plus a graveyard of anonymised tombstones): {{TODO: live site URL}}
+The Ghost Registry (the numbers plus a graveyard of anonymised tombstones) runs locally from `web/`.
 
 ```text
 $ phantom check requirements.txt
@@ -217,7 +217,7 @@ Confidence intervals are a bootstrap over prompts; hosted rows from [`rates_host
 - **Where TabPFN clearly wins is calibration:** expected calibration error 0.015 against 0.056.
 - **A big hosted model's own confidence beats it on AUPRC** (0.880 vs 0.866) **and ties it on unseen names** (0.950 vs 0.948, difference CI −0.024 to +0.026). That costs a paid API call per name, though, and its plain yes/no said 60 of 161 ghosts exist.
 
-**A model it has never seen** ([`loo.csv`](https://github.com/T-RexBytes/phantom-packages/blob/main/results/loo.csv)): trained on two models and tested on the third, TabPFN scores 0.986 / 0.975 / 0.972 on gemma4 / phi4-mini / qwen3 (gradient boosting 0.985 / 0.967 / 0.967). **A new model is no harder than a new prompt**, though this split shares tasks, so it tests a new *model*, not new *tasks*.
+**A model it has never seen** ([`loo.csv`](https://github.com/T-RexBytes/phantom-packages/blob/main/results/loo.csv)): trained on two models and tested on the third, TabPFN scores 0.986 / 0.975 / 0.972 on gemma4 / phi4-mini / qwen3 (gradient boosting 0.985 / 0.967 / 0.967). **A new model is no harder than a new prompt**, though this split shares tasks: it tests a new *model*, not new *tasks*.
 
 ![Calibration plot: TabPFN's predicted probability against the share that really were ghosts](https://raw.githubusercontent.com/T-RexBytes/phantom-packages/main/output/halloween_calibration.png)
 *When TabPFN says 70–90%, 79–88% really are ghosts. Source: [`calibration.csv`](https://github.com/T-RexBytes/phantom-packages/blob/main/results/calibration.csv).*
@@ -281,4 +281,6 @@ This isn't a new ghost story. Spracklen et al. found hallucinated packages avera
 
 ---
 
-If you let an agent run `pip install`, try the hook for a day and tell me what it caught. And if you maintain a popular package, have a look at the names one edit away from yours.
+Built by @t-rexbytes, @soumyadeepdey and @subarnamaity.
+
+If you let an agent run `pip install`, try the hook for a day and tell me what it caught. If you maintain a popular package, check the names one edit away from yours.

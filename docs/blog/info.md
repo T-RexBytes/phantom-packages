@@ -238,5 +238,6 @@ Source: `results/summary.json` (run 2), `output/*.png`, `POST_DRAFT.md`, `docs/b
 
 - A real reaction from someone else: `{{TODO: real reaction}}`.
 - DevRelay session embed.
-- Push, then confirm every raw.githubusercontent image URL resolves.
-- Ghost Registry hosting decision (GitHub Pages or local only).
+
+Decided 2026-10-30: the Ghost Registry stays local (`web/`, not hosted); credits name @t-rexbytes,
+@soumyadeepdey and @subarnamaity.
