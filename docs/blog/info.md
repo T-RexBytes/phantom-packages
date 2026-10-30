@@ -4,7 +4,7 @@ Running notes for the post (`docs/05_BLOG_POST_BLUEPRINT.md`). Facts only, each 
 Numbers here are working copies; the post must quote `results/summary.json` / `results/*.json`.
 **No unregistered ghost names in this file** (it is public). Ghost names live in `private/` only.
 
-Last updated: 2026-10-30 (lessons + late findings).
+Last updated: 2026-10-30 (Ultramarine results + post draft).
 
 ---
 
@@ -191,7 +191,22 @@ Source: `results/run_comparison.json`, `results/summary.json` (all headline numb
 
 ---
 
-## 13. Still {{TODO}}
+## 13. Ultramarine results (hosted, not open; 2026-10-30)
+
+Source: `results/summary.json` → `hosted`, `results/rates_hosted.csv`, `results/eval.csv`.
+
+- **Run:** 1,034 calls, **$0.141 total**: 400 low-reasoning generations ($0.067), 200 high-reasoning generations ($0.063) and 434 self-check answers ($0.012). It was sequential, with no errors, and finished in about 50 minutes after the email to the provider.
+- **Far fewer ghosts:** 3.2% (95% CI 1.5–5.2%, 16 of 496) at low reasoning, against 15.0% for the three local models. At high reasoning it was 0.4% (1 of 241).
+- **Reasoning ablation:** on the same 200 tasks (sample 1), 9 produced a ghost at low reasoning and 1 at high. 8 hallucinated only at low effort, 0 only at high.
+- **Its self-check is biased the opposite way from gemma4's:**
+  - its yes/no said 60 of 161 ghosts exist, but only 2 of 271 real packages are missing (AUROC 0.638);
+  - scored by its P(no), it reaches AUROC 0.951, the strongest baseline. It ties TabPFN on unseen names: 0.950 vs 0.948, difference CI −0.024 to +0.026.
+  - TabPFN stays narrowly ahead on the other two splits, but the hosted check needs a paid call per name.
+- **Blog framing:** "Open doesn't mean better here. It means inspectable."
+
+---
+
+## 14. Still {{TODO}}
 
 - Phase 7 demo: record the GIF; note the real time and day for the post's opening scene.
 - Ultramarine arm: needs the key and spend approval.

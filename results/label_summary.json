@@ -1,6 +1,6 @@
 {
   "born_after_summoning_mentions": 12,
-  "checked_at": "2026-10-30T17:38:08Z",
+  "checked_at": "2026-10-30T19:02:18Z",
   "complete": true,
   "dropped_tokens": 0,
   "failed_lookups": 0,
@@ -9,26 +9,66 @@
   "ghosts_multi_model": 10,
   "ghosts_repeated_2plus": 40,
   "hosted": {
+    "ablation": {
+      "both": 1,
+      "n_prompts": 200,
+      "neither": 191,
+      "only_high": 0,
+      "only_low": 8,
+      "prompts_with_ghost": {
+        "ultramarine-1-flash": 9,
+        "ultramarine-1-flash@high": 1
+      },
+      "rates": {
+        "ultramarine-1-flash": {
+          "ghost_rate": 0.03571428571428571,
+          "ghosts": 9,
+          "mentions": 252
+        },
+        "ultramarine-1-flash@high": {
+          "ghost_rate": 0.004149377593360996,
+          "ghosts": 1,
+          "mentions": 241
+        }
+      },
+      "sample": 1
+    },
     "failed_lookups": 0,
     "models": {
       "ultramarine-1-flash": {
-        "completion_tokens": 21736,
-        "cost_per_1k_generations_usd": 0.1478512658227848,
-        "cost_usd": 0.01168025,
-        "gen_share": 0.012658227848101266,
-        "generations": 79,
-        "ghost_rate": 0.008695652173913044,
-        "ghosts": 1,
-        "length_capped_share": 0.0,
-        "mentions": 115,
-        "prompt_tokens": 5415,
+        "completion_tokens": 125141,
+        "cost_per_1k_generations_usd": 0.16660525,
+        "cost_usd": 0.06664210000000001,
+        "gen_share": 0.04,
+        "generations": 400,
+        "ghost_rate": 0.03225806451612903,
+        "ghosts": 16,
+        "length_capped_share": 0.01,
+        "mentions": 496,
+        "prompt_tokens": 27144,
         "reasoning_effort": "low",
-        "reasoning_tokens": 1099,
+        "reasoning_tokens": 7326,
+        "unique_ghost_names": 14,
+        "with_ghost": 16
+      },
+      "ultramarine-1-flash@high": {
+        "completion_tokens": 121041,
+        "cost_per_1k_generations_usd": 0.3127815,
+        "cost_usd": 0.0625563,
+        "gen_share": 0.005,
+        "generations": 200,
+        "ghost_rate": 0.004149377593360996,
+        "ghosts": 1,
+        "length_capped_share": 0.01,
+        "mentions": 241,
+        "prompt_tokens": 13572,
+        "reasoning_effort": "high",
+        "reasoning_tokens": 32488,
         "unique_ghost_names": 1,
         "with_ghost": 1
       }
     },
-    "n_generations": 79
+    "n_generations": 600
   },
   "n_generations": 1199,
   "n_generations_aborted": 1,

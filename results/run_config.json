@@ -83,7 +83,7 @@
     "run_at": "2026-10-29T18:44:13Z"
   },
   "features": {
-    "built_at": "2026-10-30T17:38:29Z",
+    "built_at": "2026-10-30T19:03:11Z",
     "n_generations": 1199,
     "n_ghost": 172,
     "n_rows": 887,
@@ -127,7 +127,7 @@
       "precision_at_recall90": 0.7511961722488039,
       "recall_at_precision95": 0.1569767441860465
     },
-    "run_at": "2026-10-30T17:44:50Z",
+    "run_at": "2026-10-30T19:10:48Z",
     "tabpfn_version": "9.2.0",
     "threshold": {
       "n": 887,
@@ -140,9 +140,9 @@
       "tau": 0.5082217454910278
     },
     "timing_s": {
-      "final_fit": 0.11145149997901171,
-      "fit_total": 1.0121052998583764,
-      "predict_total": 21.917971600196324
+      "final_fit": 0.1020257999189198,
+      "fit_total": 1.0584450999740511,
+      "predict_total": 22.382584899896756
     }
   },
   "label_fixes": [
@@ -220,7 +220,7 @@
         "ghost_at_label": 161,
         "p_ghost>=0.5": 42
       },
-      "checked_at": "2026-10-30T17:46:42Z",
+      "checked_at": "2026-10-30T19:12:44Z",
       "failed_lookups": 0,
       "n_born_after_summoning_names": 7,
       "n_candidates": 210,
@@ -241,7 +241,7 @@
       "recent_downloads_month < 500",
       "summoned by >= 2 independent (model, sample) pairs"
     ],
-    "run_at": "2026-10-30T17:46:42Z"
+    "run_at": "2026-10-30T19:12:44Z"
   },
   "summon": {
     "aborted": [

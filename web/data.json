@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-30T17:54:24Z",
+ "generated_at": "2026-10-30T19:13:55Z",
  "source": "results/summary.json (every number on the site comes from there)",
  "headline": {
   "n_ghost_names": 161,
@@ -162,6 +162,30 @@
     "recall_at_precision95": 0.11627906976744186,
     "brier": 0.2126991880201134,
     "ece": 0.2413848107014523
+   },
+   {
+    "arm": "hosted_selfcheck",
+    "label": "Ultramarine asks itself (yes/no; hosted, not open)",
+    "auroc": 0.6381362823223289,
+    "auroc_lo": 0.6003895669642123,
+    "auroc_hi": 0.6780337563017537,
+    "auprc": 0.4077040455153247,
+    "precision_at_recall90": 0.1939120631341601,
+    "recall_at_precision95": 0.27906976744186046,
+    "brier": 0.14205186020293123,
+    "ece": 0.14205186020293123
+   },
+   {
+    "arm": "hosted_selfcheck_prob",
+    "label": "Ultramarine asks itself (P(no); hosted, not open)",
+    "auroc": 0.9505488697349165,
+    "auroc_lo": 0.9261985285000072,
+    "auroc_hi": 0.9729313161323171,
+    "auprc": 0.8795966472196183,
+    "precision_at_recall90": 0.5842696629213483,
+    "recall_at_precision95": 0.6162790697674418,
+    "brier": 0.06864093063694206,
+    "ece": 0.06676311203300155
    }
   ],
   "B": [
@@ -248,6 +272,30 @@
     "recall_at_precision95": 0.11627906976744186,
     "brier": 0.2126991880201134,
     "ece": 0.2413848107014523
+   },
+   {
+    "arm": "hosted_selfcheck",
+    "label": "Ultramarine asks itself (yes/no; hosted, not open)",
+    "auroc": 0.6381362823223289,
+    "auroc_lo": 0.6003895669642123,
+    "auroc_hi": 0.6780337563017537,
+    "auprc": 0.4077040455153247,
+    "precision_at_recall90": 0.1939120631341601,
+    "recall_at_precision95": 0.27906976744186046,
+    "brier": 0.14205186020293123,
+    "ece": 0.14205186020293123
+   },
+   {
+    "arm": "hosted_selfcheck_prob",
+    "label": "Ultramarine asks itself (P(no); hosted, not open)",
+    "auroc": 0.9505488697349165,
+    "auroc_lo": 0.9261985285000072,
+    "auroc_hi": 0.9729313161323171,
+    "auprc": 0.8795966472196183,
+    "precision_at_recall90": 0.5842696629213483,
+    "recall_at_precision95": 0.6162790697674418,
+    "brier": 0.06864093063694206,
+    "ece": 0.06676311203300155
    }
   ],
   "C": [
@@ -334,6 +382,30 @@
     "recall_at_precision95": 0.11627906976744186,
     "brier": 0.3106910017386013,
     "ece": 0.33800861562890994
+   },
+   {
+    "arm": "hosted_selfcheck",
+    "label": "Ultramarine asks itself (yes/no; hosted, not open)",
+    "auroc": 0.6366530393405267,
+    "auroc_lo": 0.5996464854177831,
+    "auroc_hi": 0.6753774277650211,
+    "auprc": 0.5068279786709683,
+    "precision_at_recall90": 0.33140655105973027,
+    "recall_at_precision95": 0.27906976744186046,
+    "brier": 0.24277456647398843,
+    "ece": 0.24277456647398843
+   },
+   {
+    "arm": "hosted_selfcheck_prob",
+    "label": "Ultramarine asks itself (P(no); hosted, not open)",
+    "auroc": 0.9500619931639971,
+    "auroc_lo": 0.9273531365343545,
+    "auroc_hi": 0.9708976550415879,
+    "auprc": 0.9061433716765792,
+    "precision_at_recall90": 0.8,
+    "recall_at_precision95": 0.6162790697674418,
+    "brier": 0.11731090306787621,
+    "ece": 0.11434862339909048
    }
   ]
  },
@@ -369,6 +441,18 @@
    "hi": 0.017883202156052675,
    "lo": 0.0017462960712361115,
    "share_a_better": 0.994
+  },
+  "A|hosted_selfcheck": {
+   "diff": 0.3364042933810375,
+   "hi": 0.3754378052381281,
+   "lo": 0.29516143797823974,
+   "share_a_better": 1.0
+  },
+  "A|hosted_selfcheck_prob": {
+   "diff": 0.023991705968449906,
+   "hi": 0.04927659619748647,
+   "lo": 0.0012827671664620568,
+   "share_a_better": 0.982
   },
   "A|llm_selfcheck": {
    "diff": 0.1251097739469832,
@@ -406,6 +490,18 @@
    "lo": 0.0002236395201426212,
    "share_a_better": 0.979
   },
+  "B|hosted_selfcheck": {
+   "diff": 0.3393885184582859,
+   "hi": 0.37746359891347414,
+   "lo": 0.2989709764604408,
+   "share_a_better": 1.0
+  },
+  "B|hosted_selfcheck_prob": {
+   "diff": 0.026975931045698287,
+   "hi": 0.05252427486217685,
+   "lo": 0.00398201092264636,
+   "share_a_better": 0.989
+  },
   "B|llm_selfcheck": {
    "diff": 0.12809399902423158,
    "hi": 0.1525139765573452,
@@ -441,6 +537,18 @@
    "hi": 0.02797857292240632,
    "lo": 0.001563788628541485,
    "share_a_better": 0.984
+  },
+  "C|hosted_selfcheck": {
+   "diff": 0.3111386636284432,
+   "hi": 0.353513142838562,
+   "lo": 0.26961987601726395,
+   "share_a_better": 1.0
+  },
+  "C|hosted_selfcheck_prob": {
+   "diff": -0.0022702901950271137,
+   "hi": 0.025890789191545138,
+   "lo": -0.024439537485636608,
+   "share_a_better": 0.432
   },
   "C|llm_selfcheck": {
    "diff": 0.2072079619328464,
@@ -498,7 +606,70 @@
    "median_p_no_real": 0.6620656718652888
   }
  },
- "hosted": null,
+ "hosted": {
+  "models": {
+   "ultramarine-1-flash": {
+    "reasoning_effort": "low",
+    "generations": 400,
+    "mentions": 496,
+    "ghosts": 16,
+    "ghost_rate": 0.03225806451612903,
+    "rate_lo": 0.015383141762452108,
+    "rate_hi": 0.05230125523012552,
+    "gen_share": 0.04,
+    "cost_usd": 0.06664210000000001,
+    "cost_per_1k_generations_usd": 0.16660525,
+    "reasoning_tokens": 7326
+   },
+   "ultramarine-1-flash@high": {
+    "reasoning_effort": "high",
+    "generations": 200,
+    "mentions": 241,
+    "ghosts": 1,
+    "ghost_rate": 0.004149377593360996,
+    "rate_lo": 0.0,
+    "rate_hi": 0.012987012987012988,
+    "gen_share": 0.005,
+    "cost_usd": 0.0625563,
+    "cost_per_1k_generations_usd": 0.3127815,
+    "reasoning_tokens": 32488
+   }
+  },
+  "ablation": {
+   "both": 1,
+   "n_prompts": 200,
+   "neither": 191,
+   "only_high": 0,
+   "only_low": 8,
+   "prompts_with_ghost": {
+    "ultramarine-1-flash": 9,
+    "ultramarine-1-flash@high": 1
+   },
+   "rates": {
+    "ultramarine-1-flash": {
+     "ghost_rate": 0.03571428571428571,
+     "ghosts": 9,
+     "mentions": 252
+    },
+    "ultramarine-1-flash@high": {
+     "ghost_rate": 0.004149377593360996,
+     "ghosts": 1,
+     "mentions": 241
+    }
+   },
+   "sample": 1
+  },
+  "spent_usd": 0.14090725000000015,
+  "selfcheck": {
+   "ghost_names": 161,
+   "ghost_names_said_exists": 60,
+   "model": "ultramarine-1-flash",
+   "n_names": 432,
+   "p_no_available": 432,
+   "real_names": 271,
+   "real_names_said_missing": 2
+  }
+ },
  "squat": {
   "n_candidates": 210,
   "n_ghosts_at_label": 161,
@@ -506,7 +677,7 @@
   "n_registered_during_study": 0,
   "n_possible_slopsquat": 2,
   "n_born_after_summoning_names": 7,
-  "checked_at": "2026-10-30T17:46:42Z",
+  "checked_at": "2026-10-30T19:12:44Z",
   "rule": "possible_slopsquat if ALL hold: exists on PyPI now; n_releases <= 3; first_release within the last 24 months; recent_downloads_month < 500; summoned by >= 2 independent (model, sample) pairs"
  },
  "registered_ghosts": [],
