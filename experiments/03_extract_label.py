@@ -15,13 +15,18 @@ import pandas as pd
 from rich.console import Console
 from rich.table import Table
 
-from phantom import config, generate, label, prompts, registry, runconfig
+from phantom import config, generate, hosted, label, prompts, registry, runconfig
 from phantom.http import MetadataError
 
 LABELLED_PATH = config.DATA / "labelled.parquet"
 GENERATIONS_PATH = config.DATA / "generations.parquet"  # the grid this run analysed (for stage 04)
 GHOST_COUNTS_PATH = config.PRIVATE / "ghost_counts.csv"
 SUMMARY_PATH = config.RESULTS / "label_summary.json"
+# Hosted (Ultramarine) rows: their own files, never mixed into the local study outputs above.
+LABELLED_HOSTED_PATH = config.DATA / "labelled_hosted.parquet"
+GENERATIONS_HOSTED_PATH = config.DATA / "generations_hosted.parquet"
+REGISTRY_HOSTED_PATH = config.DATA / "registry_hosted.parquet"
+GHOST_COUNTS_HOSTED_PATH = config.PRIVATE / "ghost_counts_hosted.csv"
 console = Console(highlight=False)
 
 
@@ -45,6 +50,34 @@ def lookup_all(names: list[str], refresh: bool) -> pd.DataFrame:
     return df
 
 
+def label_hosted(summon: dict, refresh: bool) -> dict:
+    """Extract and label the hosted rows for the planned prompts (separate files; aggregates only)."""
+    recs = hosted.hosted_in_plan(generate.read_records(hosted.HOSTED_RAW_PATH), summon["prompt_ids"])
+    gens = pd.DataFrame(recs)[["key", "model", "prompt_id", "sample", "arm"]]
+    mentions, _ = label.build_mentions(recs)
+    names = sorted(mentions.loc[mentions["source"].isin(label.LABEL_SOURCES), "name"].unique())
+    reg = lookup_all(names, refresh)
+    lab = label.label(mentions, reg)
+    gens.to_parquet(GENERATIONS_HOSTED_PATH, index=False)
+    reg.to_parquet(REGISTRY_HOSTED_PATH, index=False)
+    lab.to_parquet(LABELLED_HOSTED_PATH, index=False)
+    ghosts = lab[lab["y_ghost"]]
+    ghosts.groupby("name").agg(mentions=("key", "size"), models=("model", "nunique")).to_csv(GHOST_COUNTS_HOSTED_PATH)
+    stats = hosted.hosted_stats(lab, gens, recs)
+    table = Table(title="Hosted arms (Ultramarine; not open; subtypes excluded)")
+    for col in ("model", "generations", "mentions", "ghosts", "ghost rate", "gens with >=1 ghost", "cost $"):
+        table.add_column(col, justify="left" if col == "model" else "right")
+    for m, st in stats.items():
+        table.add_row(m, str(st["generations"]), str(st["mentions"]), str(st["ghosts"]), f"{st['ghost_rate']:.1%}",
+                      f"{st['gen_share']:.1%}", f"{st['cost_usd']:.4f}")
+    console.print(table)
+    out = {"models": stats, "n_generations": len(recs), "failed_lookups": int(reg["exists"].isna().sum())}
+    if {hosted.MODEL, hosted.MODEL_HIGH} <= set(stats):
+        out["ablation"] = hosted.ablation(lab, gens)
+        console.print(f"ablation (sample 1, same prompts): {out['ablation']}")
+    return out
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--fast", action="store_true", help="(cache is always used; kept for tasks.py)")
@@ -58,7 +91,7 @@ def main() -> None:
     if args.pilot:
         ids = prompts.pilot_ids(prompts.load_prompts(), args.pilot)
         summon.update(prompt_ids=ids, n_prompts=len(ids), pilot=args.pilot)
-    records = generate.in_plan(all_records, summon)
+    records = [r for r in generate.in_plan(all_records, summon) if r.get("arm") != "hosted"]  # local only
     console.print(f"{len(records)} generations in the planned grid "
                   f"({len(summon['models'])} models x {summon['n_prompts']} prompts x "
                   f"{len(summon['samples'])} samples); {len(all_records) - len(records)} rows outside it ignored")
@@ -144,6 +177,8 @@ def main() -> None:
         "ghosts_repeated_2plus": int((per_ghost["mentions"] >= 2).sum()),
         "ghosts_multi_model": int((per_ghost["models"] >= 2).sum()),
     }
+    if hosted.HOSTED_RAW_PATH.exists():
+        summary["hosted"] = label_hosted(summon, args.refresh)
     runconfig.save(summary, SUMMARY_PATH)
     console.print(f"Wrote {SUMMARY_PATH.relative_to(config.ROOT)} (aggregates only); "
                   f"per-name counts in {GHOST_COUNTS_PATH.relative_to(config.ROOT)} (private)")

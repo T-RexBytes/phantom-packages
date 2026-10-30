@@ -29,12 +29,16 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-from phantom import config, evaluate, features, generate, prompts, runconfig, selfcheck
+from phantom import config, evaluate, features, generate, hosted, prompts, runconfig, selfcheck
 
 ARMS = ["rule_top15k", "rule_editdist", "logreg", "hgb", "tabpfn", "llm_selfcheck", "llm_selfcheck_prob"]
 PROBABILISTIC = {"rule_top15k": True, "rule_editdist": False, "logreg": True, "hgb": True,
                  "tabpfn": True, "llm_selfcheck": True, "llm_selfcheck_prob": True}
 # llm_selfcheck: the spec's hard yes/no; llm_selfcheck_prob: P(no)/(P(no)+P(yes)) from gemma's top logprobs
+# hosted_selfcheck(_prob): the same question to Ultramarine (hosted, not open); added only when every
+# dataset name has a cached answer (missing ones are asked under the hosted spend ledger if a key is set).
+HOSTED_ARMS = ["hosted_selfcheck", "hosted_selfcheck_prob"]
+RATES_HOSTED_PATH = config.RESULTS / "rates_hosted.csv"
 LABELLED_PATH = config.DATA / "labelled.parquet"
 GENERATIONS_PATH = config.DATA / "generations.parquet"
 OOF_PATH = config.DATA / "oof_predictions.parquet"
@@ -177,6 +181,12 @@ def main() -> None:
     sc = {"llm_selfcheck": ds["selfcheck_answer"].map(selfcheck.score).to_numpy(float),
           "llm_selfcheck_prob": ds["name"].map(lambda n: selfcheck.prob_score(answers_prob[n])).to_numpy(float)}
     selfcheck_s = sum(answers[n]["latency_s"] for n in ds["name"].unique())
+    hosted_answers = hosted_selfcheck_answers(ds["name"])
+    if hosted_answers is not None:
+        sc["hosted_selfcheck"] = ds["name"].map(lambda n: selfcheck.score(hosted_answers[n]["answer"])).to_numpy(float)
+        sc["hosted_selfcheck_prob"] = ds["name"].map(lambda n: selfcheck.prob_score(hosted_answers[n])).to_numpy(float)
+        ARMS.extend(a for a in HOSTED_ARMS if a not in ARMS)
+        PROBABILISTIC.update({a: True for a in HOSTED_ARMS})
 
     all_cols = list(features.FEATURES)
     oof = {arm: np.full(len(ds), np.nan) for arm in ARMS}
@@ -274,7 +284,62 @@ def main() -> None:
                   final_fit_s, diff_rows, {
                       "tabpfn_version": tabpfn.__version__, "model_version": str(tabpfn_settings.tabpfn.model_version.value),
                       "device": "cuda" if torch.cuda.is_available() else "cpu", "torch": torch.__version__})
+    add_hosted_summary(niche, ds, hosted_answers)
     print_tables(eval_df, loo_df, timing_df, threshold)
+
+
+def hosted_selfcheck_answers(names) -> dict | None:
+    """Ultramarine self-check answers for every name, or None (arms skipped) if any is missing and
+    cannot be asked (no key, or the hosted spend cap would be exceeded)."""
+    names = sorted(set(names))
+    cached = hosted.cached_selfcheck(names)
+    missing = [n for n in names if n not in cached]
+    if not missing:
+        return cached
+    client = hosted.client_from_env()
+    if client is None:
+        if cached:
+            console.print(f"[yellow]hosted_selfcheck skipped: {len(missing)} names unanswered and no key")
+        return None
+    console.rule(f"hosted_selfcheck: asking {hosted.MODEL} about {len(missing)} new names")
+    try:
+        return hosted.ask_selfcheck(names, client, hosted.fetch_pricing(), hosted.Ledger())
+    except hosted.BudgetExceeded as exc:
+        console.print(f"[yellow]hosted_selfcheck skipped: {exc}")
+        return None
+
+
+def add_hosted_summary(niche, ds, hosted_answers) -> None:
+    """summary.json["hosted"]: Ultramarine rates with CIs, tokens, cost, the effort ablation and the
+    hosted self-check — reported next to, never inside, the local open-model numbers."""
+    lab_path, gens_path = config.DATA / "labelled_hosted.parquet", config.DATA / "generations_hosted.parquet"
+    if not (lab_path.exists() and gens_path.exists()):
+        return
+    lab_h, gens_h = pd.read_parquet(lab_path), pd.read_parquet(gens_path)
+    rates_h = rate_rows(lab_h, gens_h, niche)
+    rates_h = rates_h[rates_h["scope"] == "model"].assign(scope="hosted")
+    rates_h.to_csv(RATES_HOSTED_PATH, index=False)
+    label_summary = json.loads((config.RESULTS / "label_summary.json").read_text(encoding="utf-8"))
+    section = dict(label_summary.get("hosted", {}))
+    for row in rates_h.to_dict("records"):
+        section.setdefault("models", {}).setdefault(row["group"], {}).update(
+            {k: row[k] for k in ("rate_lo", "rate_hi", "gen_share_lo", "gen_share_hi")})
+    ledger = hosted.Ledger()
+    section["spend"] = {"ledger_spent_usd": ledger.spent, "cap_usd": ledger.cap_usd,
+                        "parts": ledger.data.get("parts", {})}
+    if hosted_answers is not None:
+        ghost_names = ds.loc[ds["y_ghost"], "name"].unique()
+        real_names = ds.loc[~ds["y_ghost"], "name"].unique()
+        section["selfcheck"] = {
+            "model": hosted.MODEL, "n_names": int(ds["name"].nunique()),
+            "ghost_names": int(len(ghost_names)),
+            "ghost_names_said_exists": int(sum(hosted_answers[n]["answer"] == "yes" for n in ghost_names)),
+            "real_names": int(len(real_names)),
+            "real_names_said_missing": int(sum(hosted_answers[n]["answer"] == "no" for n in real_names)),
+            "p_no_available": int(sum(hosted_answers[n].get("p_no") is not None for n in ds["name"].unique()))}
+    summary = json.loads(config.SUMMARY_PATH.read_text(encoding="utf-8"))  # reload right before saving
+    summary["hosted"] = section
+    runconfig.save(summary, config.SUMMARY_PATH)
 
 
 def write_summary(ds, y, unseen, eval_df, loo_df, timing_df, rates, threshold, answers, answers_prob, selfcheck_s,

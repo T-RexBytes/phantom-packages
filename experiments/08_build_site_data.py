@@ -21,10 +21,13 @@ ASSETS = WEB / "assets"
 DATA_JSON = WEB / "data.json"
 FIGURES = ["rates_by_model", "rates_by_niche", "calibration", "pr_curves", "repeat_hist"]
 DEMOS = {"demo_hook_blocks_ghost.gif": "demo-hook.gif", "demo_offline_check.gif": "demo-offline.gif"}
-ARMS = ["rule_top15k", "rule_editdist", "logreg", "hgb", "tabpfn", "llm_selfcheck", "llm_selfcheck_prob"]
+ARMS = ["rule_top15k", "rule_editdist", "logreg", "hgb", "tabpfn", "llm_selfcheck", "llm_selfcheck_prob",
+        "hosted_selfcheck", "hosted_selfcheck_prob"]  # hosted arms appear only if stage 05 produced them
 ARM_LABELS = {"rule_top15k": '"Not in top 15k" rule', "rule_editdist": "Edit-distance rule",
               "logreg": "Logistic regression", "hgb": "Gradient boosting", "tabpfn": "TabPFN-3.5",
-              "llm_selfcheck": "gemma4 asks itself (yes/no)", "llm_selfcheck_prob": "gemma4 asks itself (P(no))"}
+              "llm_selfcheck": "gemma4 asks itself (yes/no)", "llm_selfcheck_prob": "gemma4 asks itself (P(no))",
+              "hosted_selfcheck": "Ultramarine asks itself (yes/no; hosted, not open)",
+              "hosted_selfcheck_prob": "Ultramarine asks itself (P(no); hosted, not open)"}
 
 
 def tombstones(labelled: pd.DataFrame, still_unregistered: set[str]) -> list[dict]:
@@ -40,11 +43,24 @@ def tombstones(labelled: pd.DataFrame, still_unregistered: set[str]) -> list[dic
     return sorted(rows, key=lambda r: (-r["mentions"], -len(r["models"]), r["id"]))
 
 
+def hosted_section(summary: dict) -> dict | None:
+    """Ultramarine numbers for the site (aggregates only), or None if the hosted arm wasn't run."""
+    h = summary.get("hosted")
+    if not h:
+        return None
+    keep = ("reasoning_effort", "generations", "mentions", "ghosts", "ghost_rate", "rate_lo", "rate_hi",
+            "gen_share", "cost_usd", "cost_per_1k_generations_usd", "reasoning_tokens")
+    return {"models": {m: {k: v[k] for k in keep if k in v} for m, v in h.get("models", {}).items()},
+            "ablation": h.get("ablation"), "spent_usd": h.get("spend", {}).get("ledger_spent_usd"),
+            "selfcheck": h.get("selfcheck")}
+
+
 def eval_table(summary: dict) -> dict:
     """split -> rows of the headline metrics per arm."""
     keys = ("auroc", "auroc_lo", "auroc_hi", "auprc", "precision_at_recall90", "recall_at_precision95", "brier", "ece")
     return {split: [{"arm": arm, "label": ARM_LABELS[arm],
-                     **{k: summary["eval"][split][arm].get(k) for k in keys}} for arm in ARMS]
+                     **{k: summary["eval"][split][arm].get(k) for k in keys}}
+                    for arm in ARMS if arm in summary["eval"][split]]
             for split in ("A", "B", "C")}
 
 
@@ -93,6 +109,7 @@ def main() -> None:
                                                               "real_names", "real_names_said_missing")},
                       "prob": {k: summary["selfcheck"].get("prob", {}).get(k) for k in (
                           "p_no_available", "fallback_to_hard_answer", "median_p_no_ghost", "median_p_no_real")}},
+        "hosted": hosted_section(summary),
         "squat": {k: sq[k] for k in ("n_candidates", "n_ghosts_at_label", "n_still_unregistered",
                                      "n_registered_during_study", "n_possible_slopsquat",
                                      "n_born_after_summoning_names", "checked_at", "rule")},

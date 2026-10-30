@@ -316,7 +316,9 @@ uv run phantom check --offline requests      # no network: TabPFN estimate only<
 
     // per-model table
     document.querySelector("#t-models tbody").innerHTML = Object.entries(pm).map(([m, r]) =>
-      `<tr><td><span class="dot" style="background:${COLORS[m]}"></span>${esc(m)}</td><td>${int(r.ghosts)}</td><td>${int(r.mentions)}</td><td>${pct(r.ghost_rate)}</td><td>${pct(r.rate_lo)}–${pct(r.rate_hi)}</td><td>${pct(r.gen_share)}</td></tr>`).join("");
+      `<tr><td><span class="dot" style="background:${COLORS[m]}"></span>${esc(m)}</td><td>${int(r.ghosts)}</td><td>${int(r.mentions)}</td><td>${pct(r.ghost_rate)}</td><td>${pct(r.rate_lo)}–${pct(r.rate_hi)}</td><td>${pct(r.gen_share)}</td></tr>`).join("")
+      + (d.hosted ? Object.entries(d.hosted.models).map(([m, r]) =>
+      `<tr><td><span class="dot" style="background:var(--muted)"></span>${esc(m)} <small>(hosted, not open; reasoning ${esc(r.reasoning_effort)})</small></td><td>${int(r.ghosts)}</td><td>${int(r.mentions)}</td><td>${pct(r.ghost_rate)}</td><td>${r.rate_lo == null ? "–" : pct(r.rate_lo) + "–" + pct(r.rate_hi)}</td><td>${pct(r.gen_share)}</td></tr>`).join("") : "");
 
     // eval table with split tabs
     const evalBody = document.querySelector("#t-eval tbody");

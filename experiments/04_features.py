@@ -13,7 +13,7 @@ import pandas as pd
 from rich.console import Console
 from rich.table import Table
 
-from phantom import config, features, generate, prompts, runconfig, topnames
+from phantom import config, features, generate, hosted, prompts, runconfig, topnames
 from phantom.charlm import CharTrigramLM
 
 LABELLED_PATH = config.DATA / "labelled.parquet"
@@ -25,8 +25,7 @@ console = Console(highlight=False)
 
 def main() -> None:
     argparse.ArgumentParser(description=__doc__).parse_known_args()  # accepts --fast
-    labelled = pd.read_parquet(LABELLED_PATH)
-    gens = pd.read_parquet(GENERATIONS_PATH)
+    labelled, gens = hosted.local_only(pd.read_parquet(LABELLED_PATH), pd.read_parquet(GENERATIONS_PATH))
     wanted = set(gens["key"])
     records = {r["key"]: r for r in generate.read_records(config.RAW_GENERATIONS_PATH) if r["key"] in wanted}
 

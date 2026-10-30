@@ -4,6 +4,7 @@ Subcommands:
   tags                      write results/models.json from GET /api/tags
   smoke --models a,b,c      5 prompts per model -> latency, ETA (results/smoke.json)
   run   [--samples 2]       resumable full run -> data/raw_generations.jsonl
+  hosted [--parts ACB]      Ultramarine arms -> data/raw_generations_hosted.jsonl (ledger-capped)
   status                    counts of finished generations (also used by --fast)
 
 Raw outputs never go to results/: they can contain unregistered ghost names.
@@ -172,33 +173,84 @@ def cmd_run(args) -> int:
     return 1 if failures else 0
 
 
-def cmd_hosted(args) -> int:
-    """Ultramarine arm, sample 1. Refuses to spend without --confirm-spend."""
+HOSTED_SAMPLES = {"A": (1, 2), "B": (1,)}  # part A: low effort x2 samples; B: high effort, sample 1
+
+
+def _hosted_plan(part: str, rows: list[dict]) -> tuple[str, list[tuple[dict, int]], str, int]:
     from phantom import hosted
 
-    key = config.get_settings().paperinstruments_api_key
-    if not key:
-        sys.exit("PAPERINSTRUMENTS_API_KEY not set: Ultramarine arm skipped")
-    rows = prompts.load_prompts()[: args.prompt_limit or None]
-    done = generate.done_keys(config.RAW_GENERATIONS_PATH)
-    todo = [r for r in rows if generate.generation_key(hosted.MODEL, r["id"], 1) not in done]
-    card = hosted.fetch_pricing()
-    bound = hosted.max_cost_usd(len(todo), 120, card)
-    console.print(f"{len(todo)} hosted calls; worst-case spend ${bound:.4f} "
-                  f"(rates saved to {hosted.PRICING_PATH.relative_to(config.ROOT)})")
-    if not args.confirm_spend:
-        console.print("dry run: re-run with --confirm-spend after the user approves")
-        return 0
-    from openai import OpenAI
+    label = hosted.MODEL if part == "A" else hosted.MODEL_HIGH
+    effort = "low" if part == "A" else "high"
+    cap = hosted.MAX_COMPLETION_TOKENS if part == "A" else hosted.MAX_COMPLETION_TOKENS_HIGH
+    samples = HOSTED_SAMPLES[part]
+    return label, [(r, s) for s in samples for r in rows], effort, cap
 
-    client = OpenAI(base_url=hosted.BASE_URL, api_key=key)
-    spent = 0.0
-    for i, r in enumerate(todo, 1):
-        rec = hosted.ultramarine_record(client, r["id"], r["text"], card)
-        generate.append_record(config.RAW_GENERATIONS_PATH, rec)
-        spent += rec["cost_usd"]
-        console.print(f"[{i}/{len(todo)}] {r['id']} {rec['latency_s']:.1f}s "
-                      f"tok={rec['eval_count']} {rec['done_reason']} | spent ${spent:.4f}")
+
+def cmd_hosted(args) -> int:
+    """Ultramarine parts A (low effort, 2 samples), C (self-check), B (high effort). Sequential,
+    resumable by key, ledger-capped; dry run (worst-case cost only) unless --confirm-spend."""
+    from phantom import hosted
+
+    rows = prompts.load_prompts()[: args.prompt_limit or None]
+    card = hosted.fetch_pricing()
+    ledger = hosted.Ledger()
+    done = generate.done_keys(hosted.HOSTED_RAW_PATH)
+    parts = [p for p in args.parts.upper() if p in "ABC"]
+    plan = {}
+    for part in parts:
+        if part == "C":
+            import pandas as pd
+
+            names = sorted(pd.read_parquet(args.names_from)["name"].unique())
+            todo = [n for n in names if n not in hosted.cached_selfcheck(names)]
+            worst = len(todo) * hosted.cost_usd(80, 0, hosted.SELFCHECK_MAX_COMPLETION_TOKENS, card)
+        else:
+            label, pairs, effort, cap = _hosted_plan(part, rows)
+            todo = [(r, s) for r, s in pairs if generate.generation_key(label, r["id"], s) not in done]
+            worst = hosted.max_cost_usd(len(todo), hosted.PROMPT_TOKENS_ESTIMATE, card, cap)
+        plan[part] = (todo, worst)
+        console.print(f"part {part}: {len(todo)} calls to make, worst case ${worst:.4f}")
+    console.print(f"ledger: spent ${ledger.spent:.4f} of cap ${ledger.cap_usd:.2f}; "
+                  f"worst case after all parts ${ledger.spent + sum(w for _, w in plan.values()):.4f}")
+    if not args.confirm_spend:
+        console.print("dry run: re-run with --confirm-spend (spend approved by the user)")
+        return 0
+    client = hosted.client_from_env()
+    if client is None:
+        sys.exit("PAPERINSTRUMENTS_API_KEY not set: Ultramarine arm skipped")
+    for part in parts:
+        todo, _ = plan[part]
+        console.rule(f"part {part}")
+        try:
+            if part == "C":
+                hosted.ask_selfcheck(todo, client, card, ledger, progress=lambda i, n, spent: (
+                    i % 25 == 0 or i == n) and console.print(f"  [C {i}/{n}] spent ${spent:.4f}"))
+                continue
+            label, _pairs, effort, cap = _hosted_plan(part, rows)
+            worst_one = hosted.cost_usd(hosted.PROMPT_TOKENS_ESTIMATE, 0, cap, card)
+            failures = 0
+            for i, (r, s) in enumerate(todo, 1):
+                ledger.check(worst_one)
+                try:
+                    rec = hosted.ultramarine_record(client, r["id"], r["text"], card, sample=s, effort=effort,
+                                                    max_completion=cap, label=label)
+                except Exception as exc:  # already retried with backoff inside
+                    failures += 1
+                    console.print(f"[yellow]  {r['id']} s{s}: {type(exc).__name__}: {str(exc)[:160]}")
+                    if failures >= hosted.MAX_CONSECUTIVE_FAILURES:
+                        console.print("[red]stopping part: too many consecutive failures (resume later)")
+                        break
+                    continue
+                failures = 0
+                generate.append_record(hosted.HOSTED_RAW_PATH, rec)
+                ledger.add(f"{part}_{effort}", rec["cost_usd"], rec["usage"])
+                console.print(f"  [{part} {i}/{len(todo)}] {r['id']} s{s} {rec['latency_s']:.1f}s "
+                              f"out={rec['usage']['completion_tokens']} (reason {rec['usage']['reasoning_tokens']}) "
+                              f"{rec['done_reason']} | spent ${ledger.spent:.4f}")
+        except hosted.BudgetExceeded as exc:
+            console.print(f"[red]budget cap reached: {exc}")
+            return 1
+    console.print(f"done; ledger spent ${ledger.spent:.4f}")
     return 0
 
 
@@ -233,8 +285,11 @@ def main() -> int:
     p.add_argument("--samples", type=int, default=2)
     p.add_argument("--prompt-limit", type=int, default=0, help="first N prompts only (scope cut)")
     p.add_argument("--pilot", type=int, default=0, help="balanced subset of N prompts (prompts.pilot_ids)")
-    p = sub.add_parser("hosted", help="Ultramarine arm (sample 1); dry run unless --confirm-spend")
+    p = sub.add_parser("hosted", help="Ultramarine parts A/C/B; dry run unless --confirm-spend")
     p.add_argument("--confirm-spend", action="store_true")
+    p.add_argument("--parts", default="ACB", help="A=low-effort gen x2, C=self-check, B=high-effort gen")
+    p.add_argument("--names-from", default=str(config.DATA / "runs" / "run1" / "dataset.parquet"),
+                   help="dataset whose names part C asks about")
     p.add_argument("--prompt-limit", type=int, default=0)
     sub.add_parser("status")
     args = parser.parse_args()

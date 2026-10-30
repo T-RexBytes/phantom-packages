@@ -83,14 +83,27 @@ def fig_rates_by_model(rates: pd.DataFrame, summary: dict) -> None:
     r = rates[rates["scope"] == "model"].set_index("group").loc[list(MODEL_COLORS)]
     allr = rates[rates["scope"] == "overall"].iloc[0]
     labels = [f"{m}\n{int(row.ghosts)} of {int(row.mentions)}" for m, row in r.iterrows()] + \
-             [f"all models\n{int(allr.ghosts)} of {int(allr.mentions):,}"]
-    fig, ax = plt.subplots(figsize=(9, 5.2))
-    bar_with_ci(ax, labels, list(r["ghost_rate"]) + [allr.ghost_rate], np.r_[r["rate_lo"], allr.rate_lo],
-                np.r_[r["rate_hi"], allr.rate_hi], [*MODEL_COLORS.values(), BASELINE_GREYS[1]])
+             [f"all local\n{int(allr.ghosts)} of {int(allr.mentions):,}"]
+    vals, lo, hi = list(r["ghost_rate"]) + [allr.ghost_rate], [*r["rate_lo"], allr.rate_lo], [*r["rate_hi"], allr.rate_hi]
+    colors = [*MODEL_COLORS.values(), BASELINE_GREYS[1]]
+    hosted = {m: h for m, h in summary.get("hosted", {}).get("models", {}).items() if "rate_lo" in h}
+    for m, h in hosted.items():  # comparison only: never part of "all local"
+        effort = m.split("@")[1] if "@" in m else "low"
+        labels.append(f"Ultramarine {effort}*\n{h['ghosts']} of {h['mentions']}")
+        vals.append(h["ghost_rate"])
+        lo.append(h["rate_lo"])
+        hi.append(h["rate_hi"])
+        colors.append(BASELINE_GREYS[2])
+    fig, ax = plt.subplots(figsize=(9 + 1.6 * len(hosted), 5.4))
+    bar_with_ci(ax, labels, vals, np.array(lo), np.array(hi), colors)
+    for patch in ax.patches[len(MODEL_COLORS) + 1:]:
+        patch.set_hatch("//")
     ax.set_title("Ghost rate by model")
     ax.set_ylabel("install suggestions that don't exist on PyPI")
-    finish(fig, ax, FIGS["rates_by_model"],
-           f"{summary['study']['n_generations']:,} generations, 200 prompts · whiskers: 95% bootstrap CI by prompt")
+    sub = f"{summary['study']['n_generations']:,} local generations, 200 prompts · whiskers: 95% bootstrap CI by prompt"
+    if hosted:
+        sub += " · *hatched: Ultramarine, hosted (not open), by reasoning effort"
+    finish(fig, ax, FIGS["rates_by_model"], sub)
 
 
 def fig_rates_by_niche(rates: pd.DataFrame) -> None:

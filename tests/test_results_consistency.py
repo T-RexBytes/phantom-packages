@@ -50,9 +50,11 @@ def test_study_counts(s):
 def test_eval_table_is_complete_and_brackets(s):
     ev = pd.read_csv(R / "eval.csv")
     wide = ev.pivot_table(index=["split", "arm"], columns="metric", values="value")
-    assert set(wide.index) == {(sp, a) for sp in "ABC" for a in
-                               ("rule_top15k", "rule_editdist", "logreg", "hgb", "tabpfn", "llm_selfcheck",
-                                         "llm_selfcheck_prob")}
+    required = {"rule_top15k", "rule_editdist", "logreg", "hgb", "tabpfn", "llm_selfcheck", "llm_selfcheck_prob"}
+    optional = {"hosted_selfcheck", "hosted_selfcheck_prob"}  # present once the hosted self-check is cached
+    arms = set(wide.index.get_level_values("arm"))
+    assert required <= arms <= required | optional
+    assert set(wide.index) == {(sp, a) for sp in "ABC" for a in arms}
     assert (wide["auroc_lo"] <= wide["auroc"]).all() and (wide["auroc"] <= wide["auroc_hi"]).all()
     for (sp, arm), row in wide.iterrows():
         assert s["eval"][sp][arm]["auroc"] == pytest.approx(row["auroc"])

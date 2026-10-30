@@ -15,7 +15,8 @@ import pytest
 
 from phantom import config, privacy
 
-PRIVATE_LISTS = [config.PRIVATE / "ghost_counts.csv", config.PRIVATE / "unregistered_repeated.csv"]
+PRIVATE_LISTS = [config.PRIVATE / "ghost_counts.csv", config.PRIVATE / "unregistered_repeated.csv",
+                 config.PRIVATE / "ghost_counts_hosted.csv"]
 SQUAT_FULL = config.PRIVATE / "squat_full.csv"
 
 
