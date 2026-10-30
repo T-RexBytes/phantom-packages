@@ -22,6 +22,8 @@ STAGES: dict[str, tuple[str, int]] = {
     "features": ("04_features.py", 4),
     "eval": ("05_eval.py", 5),
     "guard-model": ("05b_guard_model.py", 7),
+    "public-dataset": ("12_public_dataset.py", 9),
+    "eval-public": ("12b_eval_public.py", 9),
     "squat": ("06_squat_check.py", 6),
     "replay": ("09_replay.py", 9),
     "ghost-types": ("10_ghost_types.py", 9),

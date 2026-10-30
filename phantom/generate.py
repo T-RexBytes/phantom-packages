@@ -70,8 +70,17 @@ def ollama_chat(
     num_predict: int = config.NUM_PREDICT,
     num_ctx: int = config.NUM_CTX,
     system: str | None = config.SYSTEM_PROMPT,
+    top_logprobs: int | None = None,
 ) -> dict[str, Any]:
-    """Call ``/api/chat`` once (non-streaming) and return the generation fields."""
+    """Call ``/api/chat`` once (non-streaming) and return the generation fields.
+
+    With ``top_logprobs=k`` the result also has ``"top_logprobs"``: per output position
+    ``[token, logprob, [[alternative, logprob], ...]]`` (k most likely tokens). Verified
+    2026-10-30 at https://docs.ollama.com/api/chat: request ``top_logprobs`` (integer, "Number
+    of most likely tokens to return at each token position when logprobs are enabled"); the
+    response's top-level ``logprobs`` entries carry ``token``, ``logprob``, ``bytes`` and a
+    ``top_logprobs`` array of ``{token, logprob, bytes}``.
+    """
     messages = [{"role": "system", "content": system}] if system else []
     body: dict[str, Any] = {
         "model": model,
@@ -82,6 +91,8 @@ def ollama_chat(
         },
         "logprobs": True,
     }
+    if top_logprobs:
+        body["top_logprobs"] = top_logprobs
     if supports_thinking:
         body["think"] = False
     start = time.perf_counter()
@@ -91,7 +102,7 @@ def ollama_chat(
     content = message.get("content", "")
     output = strip_thinking(content)
     logprobs = data.get("logprobs")
-    return {
+    out: dict[str, Any] = {
         "output": output,
         "thinking_chars": len(message.get("thinking") or "") + len(content) - len(output),
         "done_reason": data.get("done_reason"),
@@ -102,6 +113,11 @@ def ollama_chat(
         "prompt_eval_count": data.get("prompt_eval_count"),
         "logprobs": [[t.get("token"), t.get("logprob")] for t in logprobs] if logprobs else None,
     }
+    if top_logprobs:
+        out["top_logprobs"] = [[t.get("token"), t.get("logprob"),
+                                [[a.get("token"), a.get("logprob")] for a in t.get("top_logprobs") or []]]
+                               for t in logprobs or []]
+    return out
 
 
 def local_record(

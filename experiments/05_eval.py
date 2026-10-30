@@ -31,9 +31,10 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from phantom import config, evaluate, features, generate, prompts, runconfig, selfcheck
 
-ARMS = ["rule_top15k", "rule_editdist", "logreg", "hgb", "tabpfn", "llm_selfcheck"]
+ARMS = ["rule_top15k", "rule_editdist", "logreg", "hgb", "tabpfn", "llm_selfcheck", "llm_selfcheck_prob"]
 PROBABILISTIC = {"rule_top15k": True, "rule_editdist": False, "logreg": True, "hgb": True,
-                 "tabpfn": True, "llm_selfcheck": True}
+                 "tabpfn": True, "llm_selfcheck": True, "llm_selfcheck_prob": True}
+# llm_selfcheck: the spec's hard yes/no; llm_selfcheck_prob: P(no)/(P(no)+P(yes)) from gemma's top logprobs
 LABELLED_PATH = config.DATA / "labelled.parquet"
 GENERATIONS_PATH = config.DATA / "generations.parquet"
 OOF_PATH = config.DATA / "oof_predictions.parquet"
@@ -80,7 +81,7 @@ def make_model(arm: str, cols: list[str]):
 
 
 def fit_predict(arm: str, Xtr: pd.DataFrame, ytr: np.ndarray, Xte: pd.DataFrame,
-                selfcheck_score: np.ndarray) -> tuple[np.ndarray, float, float, Any]:
+                llm_scores: dict[str, np.ndarray]) -> tuple[np.ndarray, float, float, Any]:
     """Scores for the test rows, fit seconds, predict seconds, fitted object (or tuned tau)."""
     if arm == "rule_top15k":
         return 1.0 - Xte["in_top15k"].to_numpy(float), 0.0, 0.0, None
@@ -88,8 +89,8 @@ def fit_predict(arm: str, Xtr: pd.DataFrame, ytr: np.ndarray, Xte: pd.DataFrame,
         t0 = time.perf_counter()
         tau = evaluate.threshold_for_recall(ytr, Xtr["nn_lev"].to_numpy(float))["tau"]  # tuned on train
         return Xte["nn_lev"].to_numpy(float), time.perf_counter() - t0, 0.0, tau
-    if arm == "llm_selfcheck":
-        return selfcheck_score, 0.0, 0.0, None
+    if arm in llm_scores:  # no training: the model's own answer for the test rows
+        return llm_scores[arm], 0.0, 0.0, None
     model = make_model(arm, list(Xtr.columns))
     t0 = time.perf_counter()
     model.fit(Xtr.to_numpy(float) if arm == "tabpfn" else Xtr, ytr)
@@ -101,13 +102,13 @@ def fit_predict(arm: str, Xtr: pd.DataFrame, ytr: np.ndarray, Xte: pd.DataFrame,
 # ---------------------------------------------------------------- splits
 
 def run_fold(frame: pd.DataFrame, train: np.ndarray, test: np.ndarray, cols: list[str],
-             sc: np.ndarray, label: str) -> tuple[dict[str, np.ndarray], list[dict], dict[str, Any]]:
+             sc: dict[str, np.ndarray], label: str) -> tuple[dict[str, np.ndarray], list[dict], dict[str, Any]]:
     """All arms on one train/test split."""
     X = features.feature_matrix(frame)[cols]
     y = frame["y_ghost"].to_numpy(int)
     scores, timing, fitted = {}, [], {}
     for arm in ARMS:
-        s, fit_s, pred_s, obj = fit_predict(arm, X[train], y[train], X[test], sc[test])
+        s, fit_s, pred_s, obj = fit_predict(arm, X[train], y[train], X[test], {a: v[test] for a, v in sc.items()})
         scores[arm], fitted[arm] = s, obj
         timing.append({"fold": label, "arm": arm, "fit_s": fit_s, "predict_s": pred_s,
                        "n_train": int(train.sum()), "n_test": int(test.sum())})
@@ -169,9 +170,12 @@ def main() -> None:
     ds["fold"] = ds["prompt_id"].map(folds)
 
     console.rule(f"llm_selfcheck: asking {selfcheck.MODEL} about {ds['name'].nunique()} names (cached)")
-    answers = selfcheck.ask_all(ds["name"], progress=lambda i, n: i % 100 == 0 and console.print(f"  {i}/{n}"))
+    show = lambda i, n: i % 100 == 0 and console.print(f"  {i}/{n}")  # noqa: E731
+    answers = selfcheck.ask_all(ds["name"], progress=show)
+    answers_prob = selfcheck.ask_all(ds["name"], progress=show, top_k=selfcheck.TOP_K)
     ds["selfcheck_answer"] = ds["name"].map(lambda n: answers[n]["answer"])
-    sc = ds["selfcheck_answer"].map(selfcheck.score).to_numpy(float)
+    sc = {"llm_selfcheck": ds["selfcheck_answer"].map(selfcheck.score).to_numpy(float),
+          "llm_selfcheck_prob": ds["name"].map(lambda n: selfcheck.prob_score(answers_prob[n])).to_numpy(float)}
     selfcheck_s = sum(answers[n]["latency_s"] for n in ds["name"].unique())
 
     all_cols = list(features.FEATURES)
@@ -266,14 +270,14 @@ def main() -> None:
     niche = {p["id"]: p["niche_level"] for p in prompts.load_prompts()}
     rates = rate_rows(labelled, gens, niche)
     rates.to_csv(RATES_PATH, index=False)
-    write_summary(ds, y, unseen, eval_df, loo_df, timing_df, rates, threshold, answers, selfcheck_s,
+    write_summary(ds, y, unseen, eval_df, loo_df, timing_df, rates, threshold, answers, answers_prob, selfcheck_s,
                   final_fit_s, diff_rows, {
                       "tabpfn_version": tabpfn.__version__, "model_version": str(tabpfn_settings.tabpfn.model_version.value),
                       "device": "cuda" if torch.cuda.is_available() else "cpu", "torch": torch.__version__})
     print_tables(eval_df, loo_df, timing_df, threshold)
 
 
-def write_summary(ds, y, unseen, eval_df, loo_df, timing_df, rates, threshold, answers, selfcheck_s,
+def write_summary(ds, y, unseen, eval_df, loo_df, timing_df, rates, threshold, answers, answers_prob, selfcheck_s,
                   final_fit_s, diff_rows, tabpfn_info) -> None:
     """Merge every headline number into results/summary.json (other stages add their own sections)."""
     label_summary = json.loads((config.RESULTS / "label_summary.json").read_text(encoding="utf-8"))
@@ -339,9 +343,24 @@ def write_summary(ds, y, unseen, eval_df, loo_df, timing_df, rates, threshold, a
                       "answers": pd.Series([a["answer"] for a in answers.values()]).value_counts().to_dict(),
                       "ghost_names": int(len(ghost_names)), "ghost_names_said_exists": int(said_yes),
                       "real_names": int(len(real_names)), "real_names_said_missing": int(real_said_no),
-                      "total_latency_s": selfcheck_s},
+                      "total_latency_s": selfcheck_s,
+                      "prob": selfcheck_prob_summary(answers, answers_prob, ghost_names, real_names)},
     })
     runconfig.save(summary, config.SUMMARY_PATH)
+
+
+def selfcheck_prob_summary(answers, answers_prob, ghost_names, real_names) -> dict:
+    """How the probabilistic self-check was scored, and how it relates to the hard answers."""
+    recs = list(answers_prob.values())
+    p = lambda names: [answers_prob[n]["p_no"] for n in names if answers_prob[n].get("p_no") is not None]  # noqa: E731
+    return {"score": "P(no) / (P(no) + P(yes)) over the first answer token's top-k alternatives",
+            "top_k": selfcheck.TOP_K, "n_names": len(recs),
+            "p_no_available": sum(r.get("p_no") is not None for r in recs),
+            "fallback_to_hard_answer": sum(r.get("p_no") is None for r in recs),
+            "hard_answer_same_as_first_ask": sum(answers_prob[n]["answer"] == answers[n]["answer"] for n in answers_prob),
+            "median_p_no_ghost": float(np.median(p(ghost_names))) if p(ghost_names) else None,
+            "median_p_no_real": float(np.median(p(real_names))) if p(real_names) else None,
+            "total_latency_s": sum(r["latency_s"] for r in recs)}
 
 
 def print_tables(eval_df, loo_df, timing_df, threshold) -> None:

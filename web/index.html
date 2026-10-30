@@ -284,6 +284,7 @@ uv run phantom check --offline requests      # no network: TabPFN estimate only<
   const f3 = v => v == null ? "–" : v.toFixed(3);
   const int = v => Math.round(v).toLocaleString("en-US");
   const set = (k, text) => document.querySelectorAll(`[data-k="${k}"]`).forEach(el => { el.textContent = text; });
+  const arm = (rows, name) => rows.find(r => r.arm === name);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
 
   fetch("data.json").then(r => r.json()).then(d => {
@@ -307,8 +308,8 @@ uv run phantom check --offline requests      # no network: TabPFN estimate only<
     const alts = {
       rates_by_model: `Bar chart of ghost rate by model with 95% confidence intervals: ${Object.entries(pm).map(([m, r]) => `${m} ${pct(r.ghost_rate)}`).join(", ")}; all models ${pct(h.ghost_rate)}.`,
       rates_by_niche: `Bar chart of ghost rate by task niche level: L1 ${pct(n.L1.ghost_rate)}, L2 ${pct(n.L2.ghost_rate)}, L3 ${pct(n.L3.ghost_rate)}.`,
-      calibration: `Calibration plot: TabPFN's predicted probabilities track the observed ghost share closely (ECE ${f3(d.eval.A[4].ece)}), closer than gradient boosting (ECE ${f3(d.eval.A[3].ece)}).`,
-      pr_curves: `Precision-recall curves, out of fold: TabPFN AUPRC ${d.eval.A[4].auprc.toFixed(2)}, gradient boosting ${d.eval.A[3].auprc.toFixed(2)}, logistic regression ${d.eval.A[2].auprc.toFixed(2)}, edit-distance rule ${d.eval.A[1].auprc.toFixed(2)}.`,
+      calibration: `Calibration plot: TabPFN's predicted probabilities track the observed ghost share closely (ECE ${f3(arm(d.eval.A, "tabpfn").ece)}), closer than gradient boosting (ECE ${f3(arm(d.eval.A, "hgb").ece)}).`,
+      pr_curves: `Precision-recall curves, out of fold: TabPFN AUPRC ${arm(d.eval.A, "tabpfn").auprc.toFixed(2)}, gradient boosting ${arm(d.eval.A, "hgb").auprc.toFixed(2)}, logistic regression ${arm(d.eval.A, "logreg").auprc.toFixed(2)}, edit-distance rule ${arm(d.eval.A, "rule_editdist").auprc.toFixed(2)}.`,
       repeat_hist: `Histogram: ${h.n_ghost_names - h.repeated_2plus} ghost names were suggested once and ${h.repeated_2plus} were suggested two or more times.`
     };
     document.querySelectorAll("img[data-alt]").forEach(img => { img.alt = alts[img.dataset.alt] || img.alt; });
@@ -336,10 +337,10 @@ uv run phantom check --offline requests      # no network: TabPFN estimate only<
     document.getElementById("honest-list").innerHTML = [
       `<strong>Wins, narrowly:</strong> TabPFN has the best AUROC on every split, but its lead over gradient boosting is ${diff("A|hgb")} by prompt.`,
       `<strong>Not significant on unseen names:</strong> vs. gradient boosting ${diff("C|hgb")}, vs. the edit-distance rule ${diff("C|rule_editdist")}.`,
-      `<strong>Loses on precision at 90% recall:</strong> ${f3(A[4].precision_at_recall90)} vs. ${esc(bA.label.toLowerCase())} ${f3(bA.precision_at_recall90)} by prompt; ${f3(C[4].precision_at_recall90)} vs. ${esc(bC.label.toLowerCase())} ${f3(bC.precision_at_recall90)} on unseen names.`,
+      `<strong>Loses on precision at 90% recall:</strong> ${f3(arm(A, "tabpfn").precision_at_recall90)} vs. ${esc(bA.label.toLowerCase())} ${f3(bA.precision_at_recall90)} by prompt; ${f3(arm(C, "tabpfn").precision_at_recall90)} vs. ${esc(bC.label.toLowerCase())} ${f3(bC.precision_at_recall90)} on unseen names.`,
       `<strong>Loses on speed:</strong> about 20 s per test fold on a laptop CPU, against under 0.1 s for gradient boosting.`,
-      `<strong>Wins clearly on calibration:</strong> ECE ${f3(A[4].ece)} vs. ${f3(A[3].ece)} for gradient boosting, so its probabilities can be read at face value.`,
-      `<strong>Asking the model fails:</strong> gemma4 said ${d.selfcheck.ghost_names_said_exists} of ${d.selfcheck.ghost_names} ghosts exist, but also said ${d.selfcheck.real_names_said_missing} of ${d.selfcheck.real_names} real packages don't.`
+      `<strong>Wins clearly on calibration:</strong> ECE ${f3(arm(A, "tabpfn").ece)} vs. ${f3(arm(A, "hgb").ece)} for gradient boosting, so its probabilities can be read at face value.`,
+      `<strong>Asking the model loses:</strong> gemma4 said ${d.selfcheck.ghost_names_said_exists} of ${d.selfcheck.ghost_names} ghosts exist, but also said ${d.selfcheck.real_names_said_missing} of ${d.selfcheck.real_names} real packages don't. Scored by its own confidence, P(no), instead of the yes/no word: AUROC ${f3(arm(A, "llm_selfcheck_prob").auroc)} (yes/no: ${f3(arm(A, "llm_selfcheck").auroc)}; TabPFN: ${f3(arm(A, "tabpfn").auroc)}).`
     ].map(t => `<li>${t}</li>`).join("");
 
     // graveyard

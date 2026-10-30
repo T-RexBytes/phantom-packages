@@ -38,7 +38,9 @@ def test_tombstones_are_anonymised(data):
 def test_site_numbers_match_summary(data):
     summary = json.loads(config.SUMMARY_PATH.read_text(encoding="utf-8"))
     assert data["headline"]["ghost_rate"] == summary["rates"]["overall"]["ghost_rate"]
-    assert data["eval"]["A"][4]["auroc"] == summary["eval"]["A"]["tabpfn"]["auroc"]
+    tabpfn = next(r for r in data["eval"]["A"] if r["arm"] == "tabpfn")
+    assert tabpfn["auroc"] == summary["eval"]["A"]["tabpfn"]["auroc"]
+    assert {r["arm"] for r in data["eval"]["A"]} == set(summary["eval"]["A"])
     assert data["threshold"]["tau"] == summary["threshold"]["tau"]
 
 

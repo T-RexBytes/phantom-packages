@@ -51,12 +51,14 @@ def test_eval_table_is_complete_and_brackets(s):
     ev = pd.read_csv(R / "eval.csv")
     wide = ev.pivot_table(index=["split", "arm"], columns="metric", values="value")
     assert set(wide.index) == {(sp, a) for sp in "ABC" for a in
-                               ("rule_top15k", "rule_editdist", "logreg", "hgb", "tabpfn", "llm_selfcheck")}
+                               ("rule_top15k", "rule_editdist", "logreg", "hgb", "tabpfn", "llm_selfcheck",
+                                         "llm_selfcheck_prob")}
     assert (wide["auroc_lo"] <= wide["auroc"]).all() and (wide["auroc"] <= wide["auroc_hi"]).all()
     for (sp, arm), row in wide.iterrows():
         assert s["eval"][sp][arm]["auroc"] == pytest.approx(row["auroc"])
     loo = pd.read_csv(R / "loo.csv")
-    assert len(loo) == 18 and loo.groupby("held_out_model")["n"].first().sum() == s["dataset"]["n_rows"]
+    assert len(loo) == s["study"]["n_models"] * wide.index.get_level_values("arm").nunique()
+    assert loo.groupby("held_out_model")["n"].first().sum() == s["dataset"]["n_rows"]
 
 
 def test_calibration_bins_cover_every_row(s):

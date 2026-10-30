@@ -21,10 +21,10 @@ ASSETS = WEB / "assets"
 DATA_JSON = WEB / "data.json"
 FIGURES = ["rates_by_model", "rates_by_niche", "calibration", "pr_curves", "repeat_hist"]
 DEMOS = {"demo_hook_blocks_ghost.gif": "demo-hook.gif", "demo_offline_check.gif": "demo-offline.gif"}
-ARMS = ["rule_top15k", "rule_editdist", "logreg", "hgb", "tabpfn", "llm_selfcheck"]
+ARMS = ["rule_top15k", "rule_editdist", "logreg", "hgb", "tabpfn", "llm_selfcheck", "llm_selfcheck_prob"]
 ARM_LABELS = {"rule_top15k": '"Not in top 15k" rule', "rule_editdist": "Edit-distance rule",
               "logreg": "Logistic regression", "hgb": "Gradient boosting", "tabpfn": "TabPFN-3.5",
-              "llm_selfcheck": "gemma4 asks itself"}
+              "llm_selfcheck": "gemma4 asks itself (yes/no)", "llm_selfcheck_prob": "gemma4 asks itself (P(no))"}
 
 
 def tombstones(labelled: pd.DataFrame, still_unregistered: set[str]) -> list[dict]:
@@ -89,8 +89,10 @@ def main() -> None:
                         "auroc": summary["guard_model"]["oof_split_a"]["auroc"],
                         "ece": summary["guard_model"]["oof_split_a"]["ece"],
                         **{k: summary["guard_model"]["threshold"][k] for k in ("tau", "recall", "precision")}},
-        "selfcheck": {k: summary["selfcheck"][k] for k in ("ghost_names", "ghost_names_said_exists",
-                                                           "real_names", "real_names_said_missing")},
+        "selfcheck": {**{k: summary["selfcheck"][k] for k in ("ghost_names", "ghost_names_said_exists",
+                                                              "real_names", "real_names_said_missing")},
+                      "prob": {k: summary["selfcheck"].get("prob", {}).get(k) for k in (
+                          "p_no_available", "fallback_to_hard_answer", "median_p_no_ghost", "median_p_no_real")}},
         "squat": {k: sq[k] for k in ("n_candidates", "n_ghosts_at_label", "n_still_unregistered",
                                      "n_registered_during_study", "n_possible_slopsquat",
                                      "n_born_after_summoning_names", "checked_at", "rule")},

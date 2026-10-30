@@ -32,7 +32,7 @@ MODEL_COLORS = {"gemma4:e4b": "#d95926", "phi4-mini:3.8b": "#9085e9", "qwen3:4b-
 BASELINE_GREYS = ["#b8b2c4", "#8a8497", "#6c6679"]
 ARM_LABELS = {"rule_top15k": '"not in top 15k" rule', "rule_editdist": "edit-distance rule",
               "logreg": "logistic regression", "hgb": "gradient boosting", "tabpfn": "TabPFN-3.5",
-              "llm_selfcheck": "gemma4 asks itself"}
+              "llm_selfcheck": "gemma4 asks itself", "llm_selfcheck_prob": "gemma4 asks itself, P(no)"}
 FIGS = {name: config.RESULTS / f"{name}.png"
         for name in ("rates_by_model", "rates_by_niche", "calibration", "pr_curves", "repeat_hist")}
 REPEAT_CSV = config.RESULTS / "repeat_counts.csv"
@@ -143,14 +143,19 @@ def fig_pr_curves(oof: pd.DataFrame, summary: dict) -> None:
     fig, ax = plt.subplots(figsize=(8.4, 6.4))
     ax.axvline(0.9, color=MUTED, linewidth=1, linestyle=(0, (4, 4)), zorder=1)
     ax.text(0.9, 0.06, " 90% recall\n (guard target)", color=MUTED, fontsize=10, va="bottom")
-    curves = [("rule_editdist", BASELINE_GREYS[2], 1.6), ("logreg", BASELINE_GREYS[1], 1.6),
-              ("hgb", BASELINE_GREYS[0], 1.6), ("tabpfn", ACCENT, 2.8)]
-    label_y = {"tabpfn": 0.40, "hgb": 0.33, "logreg": 0.27, "rule_editdist": 0.21}
-    for arm, color, lw in curves:
+    curves = [("rule_editdist", BASELINE_GREYS[2], 1.6, "-"), ("logreg", BASELINE_GREYS[1], 1.6, "-"),
+              ("hgb", BASELINE_GREYS[0], 1.6, "-"), ("llm_selfcheck_prob", MODEL_COLORS["gemma4:e4b"], 1.6, "--"),
+              ("tabpfn", ACCENT, 2.8, "-")]
+    label_y = {"tabpfn": 0.40, "hgb": 0.33, "logreg": 0.27, "rule_editdist": 0.21, "llm_selfcheck_prob": 0.15}
+    for arm, color, lw, ls in curves:
+        if f"A_{arm}" not in oof:  # older OOF files predate the P(no) arm
+            continue
         p, r, _ = precision_recall_curve(y, oof[f"A_{arm}"])
-        ax.plot(r, p, color=color, linewidth=lw, zorder=3 if arm == "tabpfn" else 2, drawstyle="steps-post")
+        ax.plot(r, p, color=color, linewidth=lw, linestyle=ls, zorder=3 if arm == "tabpfn" else 2,
+                drawstyle="steps-post")
         auprc = summary["eval"]["A"][arm]["auprc"]
-        ax.plot([0.04, 0.09], [label_y[arm] + 0.012] * 2, color=color, linewidth=lw, transform=ax.transAxes)
+        ax.plot([0.04, 0.09], [label_y[arm] + 0.012] * 2, color=color, linewidth=lw, linestyle=ls,
+                transform=ax.transAxes)
         ax.text(0.11, label_y[arm], f"{ARM_LABELS[arm]}  AUPRC {auprc:.2f}", color=INK if arm == "tabpfn" else INK2,
                 fontsize=11, fontweight="bold" if arm == "tabpfn" else "normal", transform=ax.transAxes)
     for arm, marker in (("rule_top15k", "s"), ("llm_selfcheck", "D")):

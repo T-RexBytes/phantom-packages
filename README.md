@@ -161,12 +161,24 @@ uv run phantom check requirements.txt --offline
 copy .env.example .env   # fill TABPFN_TOKEN and PHANTOM_ANON_KEY (any long random string); Ultramarine key optional
 uv run tasks.py env      # check Ollama, models, keys
 uv run tasks.py test     # pytest
-uv run tasks.py <stage>  # prompts | summon | extract | features | eval | guard-model | squat | replay | ghost-types | error-analysis | figures | halloween | site | all
+uv run tasks.py <stage>  # prompts | summon | extract | features | eval | guard-model | public-dataset | eval-public | squat | replay | ghost-types | error-analysis | figures | halloween | site | all
 uv run tasks.py all --fast   # every stage from the cache, no model calls (about 6 minutes on a laptop CPU)
 ```
 
 `--fast` needs the gitignored `data/` cache from a real run (generations, PyPI lookups, self-check answers).
 Without it, the committed `results/` are the record.
+
+### Rerun the evaluation without the private data
+
+`results/public/dataset.csv` is the study's modelling table (888 rows) with every package name replaced by a
+keyed id (`HMAC-SHA256(PHANTOM_ANON_KEY, name)[:8]`). The id can't be reversed or confirmed without the secret,
+but it is enough to recompute the per-fold `global_freq` and the unseen-name split.
+`uv run python experiments/12b_eval_public.py` reruns split A (by prompt) and split C (unseen names) for
+TabPFN-3.5 and gradient boosting from that file alone and prints them next to `results/eval.csv`; they match
+exactly. Column dictionary: [`results/public/README.md`](results/public/README.md).
+
+The self-check baseline is reported two ways: the spec's yes/no answer (`llm_selfcheck`), and P(no) from
+gemma4's top-20 first-token logprobs (`llm_selfcheck_prob`).
 
 ## The Ghost Registry (local site)
 

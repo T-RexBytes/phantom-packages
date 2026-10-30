@@ -12,6 +12,12 @@
       "lo": 0.10297727014114232,
       "share_a_better": 1.0
     },
+    "A|llm_selfcheck_prob": {
+      "diff": 0.04288774809006024,
+      "hi": 0.06232874265017114,
+      "lo": 0.026787949733569908,
+      "share_a_better": 1.0
+    },
     "A|logreg": {
       "diff": 0.007445733457294268,
       "hi": 0.013153757781242828,
@@ -40,6 +46,12 @@
       "diff": 0.1282307288087634,
       "hi": 0.15270814862329285,
       "lo": 0.10635296659605364,
+      "share_a_better": 1.0
+    },
+    "B|llm_selfcheck_prob": {
+      "diff": 0.04611342414810615,
+      "hi": 0.06530749460128624,
+      "lo": 0.02996681999603888,
       "share_a_better": 1.0
     },
     "B|logreg": {
@@ -72,6 +84,12 @@
       "lo": 0.17219299157995838,
       "share_a_better": 1.0
     },
+    "C|llm_selfcheck_prob": {
+      "diff": 0.07369942196531787,
+      "hi": 0.10532893239573834,
+      "lo": 0.04565101308912624,
+      "share_a_better": 1.0
+    },
     "C|logreg": {
       "diff": 0.011710185369742776,
       "hi": 0.021583558708113806,
@@ -101,7 +119,7 @@
     "n_unseen_rows_split_c": 521
   },
   "error_analysis": {
-    "generated_at": "2026-10-30T12:56:45Z",
+    "generated_at": "2026-10-30T13:23:02Z",
     "guard_model_split_a": {
       "confusion": {
         "fn": {
@@ -460,7 +478,7 @@
       },
       "tau": 0.5062171220779419
     },
-    "registry_checked_at": "2026-10-29T20:54:03+00:00"
+    "registry_checked_at": "2026-10-30T13:15:11+00:00"
   },
   "eval": {
     "A": {
@@ -487,6 +505,18 @@
         "n_ghost": 173.0,
         "precision_at_recall90": 0.4523809523809524,
         "recall_at_precision95": 0.0
+      },
+      "llm_selfcheck_prob": {
+        "auprc": 0.7436026871297414,
+        "auroc": 0.9315817130846032,
+        "auroc_hi": 0.9503655705823644,
+        "auroc_lo": 0.911420331067647,
+        "brier": 0.2125197606092639,
+        "ece": 0.2411433663050027,
+        "n": 888.0,
+        "n_ghost": 173.0,
+        "precision_at_recall90": 0.5551601423487544,
+        "recall_at_precision95": 0.11560693641618497
       },
       "logreg": {
         "auprc": 0.8211712119844943,
@@ -563,6 +593,18 @@
         "precision_at_recall90": 0.4523809523809524,
         "recall_at_precision95": 0.0
       },
+      "llm_selfcheck_prob": {
+        "auprc": 0.7436026871297414,
+        "auroc": 0.9315817130846032,
+        "auroc_hi": 0.9503655705823644,
+        "auroc_lo": 0.911420331067647,
+        "brier": 0.2125197606092639,
+        "ece": 0.2411433663050027,
+        "n": 888.0,
+        "n_ghost": 173.0,
+        "precision_at_recall90": 0.5551601423487544,
+        "recall_at_precision95": 0.11560693641618497
+      },
       "logreg": {
         "auprc": 0.8470707775608237,
         "auroc": 0.9706536238328146,
@@ -634,6 +676,18 @@
         "n_ghost": 173.0,
         "precision_at_recall90": 0.49279538904899134,
         "recall_at_precision95": 0.0
+      },
+      "llm_selfcheck_prob": {
+        "auprc": 0.760565805300214,
+        "auroc": 0.8740449139592054,
+        "auroc_hi": 0.9066216808971218,
+        "auroc_lo": 0.8381847394074354,
+        "brier": 0.3096007632782372,
+        "ece": 0.33676352780469593,
+        "n": 521.0,
+        "n_ghost": 173.0,
+        "precision_at_recall90": 0.5735294117647058,
+        "recall_at_precision95": 0.11560693641618497
       },
       "logreg": {
         "auprc": 0.828307979999041,
@@ -784,9 +838,9 @@
       "tau": 0.5061126351356506
     },
     "timing_s": {
-      "final_fit": 0.10836020007263869,
-      "fit_total": 0.7593591000186279,
-      "predict_total": 21.377461500116624
+      "final_fit": 0.09869110002182424,
+      "fit_total": 0.8075104999588802,
+      "predict_total": 19.091107800020836
     }
   },
   "loo": {
@@ -803,6 +857,14 @@
       "auroc": 0.8947368421052632,
       "auroc_hi": 0.9176035343751345,
       "auroc_lo": 0.8692932425399029,
+      "n": 299,
+      "n_ghost": 33
+    },
+    "gemma4:e4b|llm_selfcheck_prob": {
+      "auprc": 0.5805047838223205,
+      "auroc": 0.9460013670539986,
+      "auroc_hi": 0.9689962123160157,
+      "auroc_lo": 0.9182555901127654,
       "n": 299,
       "n_ghost": 33
     },
@@ -854,6 +916,14 @@
       "n": 326,
       "n_ghost": 75
     },
+    "phi4-mini:3.8b|llm_selfcheck_prob": {
+      "auprc": 0.8298540165600042,
+      "auroc": 0.9426294820717132,
+      "auroc_hi": 0.9650187804611421,
+      "auroc_lo": 0.9135266323801936,
+      "n": 326,
+      "n_ghost": 75
+    },
     "phi4-mini:3.8b|logreg": {
       "auprc": 0.8803524536122692,
       "auroc": 0.9688180610889774,
@@ -899,6 +969,14 @@
       "auroc": 0.8281662781662782,
       "auroc_hi": 0.8642616421568627,
       "auroc_lo": 0.7930124787337466,
+      "n": 263,
+      "n_ghost": 65
+    },
+    "qwen3:4b-instruct|llm_selfcheck_prob": {
+      "auprc": 0.7136647472847188,
+      "auroc": 0.8970473970473971,
+      "auroc_hi": 0.93237421123445,
+      "auroc_lo": 0.8563718565046827,
       "n": 263,
       "n_ghost": 65
     },
@@ -1179,7 +1257,7 @@
       }
     },
     "registry": "label-time PyPI answers (data/registry.parquet)",
-    "run_at": "2026-10-30T12:56:43Z",
+    "run_at": "2026-10-30T13:22:58Z",
     "tau": 0.5061126351356506
   },
   "selfcheck": {
@@ -1191,6 +1269,17 @@
     "ghost_names_said_exists": 2,
     "model": "gemma4:e4b",
     "n_names": 433,
+    "prob": {
+      "fallback_to_hard_answer": 0,
+      "hard_answer_same_as_first_ask": 433,
+      "median_p_no_ghost": 0.9994127735121844,
+      "median_p_no_real": 0.6620656718652888,
+      "n_names": 433,
+      "p_no_available": 433,
+      "score": "P(no) / (P(no) + P(yes)) over the first answer token's top-k alternatives",
+      "top_k": 20,
+      "total_latency_s": 271.089
+    },
     "prompt": "Does a package named `{name}` exist on PyPI? Answer only yes or no.",
     "real_names": 271,
     "real_names_said_missing": 143,
@@ -1203,7 +1292,7 @@
       "ghost_at_label": 162,
       "p_ghost>=0.5": 42
     },
-    "checked_at": "2026-10-29T20:35:51Z",
+    "checked_at": "2026-10-30T13:22:07Z",
     "failed_lookups": 0,
     "n_born_after_summoning_names": 7,
     "n_candidates": 211,
@@ -1248,13 +1337,13 @@
   },
   "tabpfn": {
     "device": "cpu",
-    "final_fit_s": 0.3572044000029564,
-    "fit_s_total": 2.610098199918866,
+    "final_fit_s": 0.3025924999965355,
+    "fit_s_total": 2.4691563001833856,
     "ignore_pretraining_limits": false,
     "max_train_rows": 726,
     "model_version": "v3.5",
     "n_fits": 9,
-    "predict_s_total": 159.25801220000722,
+    "predict_s_total": 151.65694589994382,
     "subsampled": false,
     "tabpfn_version": "9.2.0",
     "torch": "2.15.0+cpu"
@@ -1271,19 +1360,23 @@
   },
   "timing_s": {
     "hgb": {
-      "fit_s": 3.5940861999988556,
-      "predict_s": 0.09009960002731532
+      "fit_s": 3.076092900009826,
+      "predict_s": 0.08289209997747093
     },
     "llm_selfcheck": {
       "fit_s": 0.0,
       "predict_s": 0.0
     },
+    "llm_selfcheck_prob": {
+      "fit_s": 0.0,
+      "predict_s": 0.0
+    },
     "logreg": {
-      "fit_s": 0.21170379989780486,
-      "predict_s": 0.05091399990487844
+      "fit_s": 0.20601480011828244,
+      "predict_s": 0.04829969978891313
     },
     "rule_editdist": {
-      "fit_s": 0.001451399875804782,
+      "fit_s": 0.0014467999571934342,
       "predict_s": 0.0
     },
     "rule_top15k": {
@@ -1291,9 +1384,9 @@
       "predict_s": 0.0
     },
     "tabpfn": {
-      "fit_s": 2.610098199918866,
-      "predict_s": 159.25801220000722
+      "fit_s": 2.4691563001833856,
+      "predict_s": 151.65694589994382
     }
   },
-  "updated_at": "2026-10-29T18:43:59Z"
+  "updated_at": "2026-10-30T13:19:41Z"
 }

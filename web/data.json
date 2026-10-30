@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-29T20:35:52Z",
+ "generated_at": "2026-10-30T13:23:19Z",
  "source": "results/summary.json (every number on the site comes from there)",
  "headline": {
   "n_ghost_names": 162,
@@ -141,7 +141,7 @@
    },
    {
     "arm": "llm_selfcheck",
-    "label": "gemma4 asks itself",
+    "label": "gemma4 asks itself (yes/no)",
     "auroc": 0.849464408423946,
     "auroc_lo": 0.8253426225339013,
     "auroc_hi": 0.8728034377866244,
@@ -150,6 +150,18 @@
     "recall_at_precision95": 0.0,
     "brier": 0.23536036036036037,
     "ece": 0.2353603603603604
+   },
+   {
+    "arm": "llm_selfcheck_prob",
+    "label": "gemma4 asks itself (P(no))",
+    "auroc": 0.9315817130846032,
+    "auroc_lo": 0.911420331067647,
+    "auroc_hi": 0.9503655705823644,
+    "auprc": 0.7436026871297414,
+    "precision_at_recall90": 0.5551601423487544,
+    "recall_at_precision95": 0.11560693641618497,
+    "brier": 0.2125197606092639,
+    "ece": 0.2411433663050027
    }
   ],
   "B": [
@@ -215,7 +227,7 @@
    },
    {
     "arm": "llm_selfcheck",
-    "label": "gemma4 asks itself",
+    "label": "gemma4 asks itself (yes/no)",
     "auroc": 0.849464408423946,
     "auroc_lo": 0.8253426225339013,
     "auroc_hi": 0.8728034377866244,
@@ -224,6 +236,18 @@
     "recall_at_precision95": 0.0,
     "brier": 0.23536036036036037,
     "ece": 0.2353603603603604
+   },
+   {
+    "arm": "llm_selfcheck_prob",
+    "label": "gemma4 asks itself (P(no))",
+    "auroc": 0.9315817130846032,
+    "auroc_lo": 0.911420331067647,
+    "auroc_hi": 0.9503655705823644,
+    "auprc": 0.7436026871297414,
+    "precision_at_recall90": 0.5551601423487544,
+    "recall_at_precision95": 0.11560693641618497,
+    "brier": 0.2125197606092639,
+    "ece": 0.2411433663050027
    }
   ],
   "C": [
@@ -289,7 +313,7 @@
    },
    {
     "arm": "llm_selfcheck",
-    "label": "gemma4 asks itself",
+    "label": "gemma4 asks itself (yes/no)",
     "auroc": 0.7413460899607999,
     "auroc_lo": 0.7039573019258282,
     "auroc_hi": 0.7772743862099161,
@@ -298,6 +322,18 @@
     "recall_at_precision95": 0.0,
     "brier": 0.3416506717850288,
     "ece": 0.3416506717850288
+   },
+   {
+    "arm": "llm_selfcheck_prob",
+    "label": "gemma4 asks itself (P(no))",
+    "auroc": 0.8740449139592054,
+    "auroc_lo": 0.8381847394074354,
+    "auroc_hi": 0.9066216808971218,
+    "auprc": 0.760565805300214,
+    "precision_at_recall90": 0.5735294117647058,
+    "recall_at_precision95": 0.11560693641618497,
+    "brier": 0.3096007632782372,
+    "ece": 0.33676352780469593
    }
   ]
  },
@@ -340,6 +376,12 @@
    "lo": 0.10297727014114232,
    "share_a_better": 1.0
   },
+  "A|llm_selfcheck_prob": {
+   "diff": 0.04288774809006024,
+   "hi": 0.06232874265017114,
+   "lo": 0.026787949733569908,
+   "share_a_better": 1.0
+  },
   "A|logreg": {
    "diff": 0.007445733457294268,
    "hi": 0.013153757781242828,
@@ -370,6 +412,12 @@
    "lo": 0.10635296659605364,
    "share_a_better": 1.0
   },
+  "B|llm_selfcheck_prob": {
+   "diff": 0.04611342414810615,
+   "hi": 0.06530749460128624,
+   "lo": 0.02996681999603888,
+   "share_a_better": 1.0
+  },
   "B|logreg": {
    "diff": 0.007041513399894783,
    "hi": 0.01326152308278152,
@@ -398,6 +446,12 @@
    "diff": 0.20639824596372336,
    "hi": 0.24069485256929463,
    "lo": 0.17219299157995838,
+   "share_a_better": 1.0
+  },
+  "C|llm_selfcheck_prob": {
+   "diff": 0.07369942196531787,
+   "hi": 0.10532893239573834,
+   "lo": 0.04565101308912624,
    "share_a_better": 1.0
   },
   "C|logreg": {
@@ -436,7 +490,13 @@
   "ghost_names": 162,
   "ghost_names_said_exists": 2,
   "real_names": 271,
-  "real_names_said_missing": 143
+  "real_names_said_missing": 143,
+  "prob": {
+   "p_no_available": 433,
+   "fallback_to_hard_answer": 0,
+   "median_p_no_ghost": 0.9994127735121844,
+   "median_p_no_real": 0.6620656718652888
+  }
  },
  "squat": {
   "n_candidates": 211,
@@ -445,7 +505,7 @@
   "n_registered_during_study": 0,
   "n_possible_slopsquat": 2,
   "n_born_after_summoning_names": 7,
-  "checked_at": "2026-10-29T20:35:51Z",
+  "checked_at": "2026-10-30T13:22:07Z",
   "rule": "possible_slopsquat if ALL hold: exists on PyPI now; n_releases <= 3; first_release within the last 24 months; recent_downloads_month < 500; summoned by >= 2 independent (model, sample) pairs"
  },
  "registered_ghosts": [],
