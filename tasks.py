@@ -30,6 +30,7 @@ STAGES: dict[str, tuple[str, int]] = {
     "error-analysis": ("11_error_analysis.py", 9),
     "figures": ("07_figures.py", 8),
     "halloween": ("07b_halloween_figures.py", 8),
+    "halloween-more": ("07c_halloween_more.py", 9),
     "site": ("08_build_site_data.py", 8),
 }
 UTILITY = {

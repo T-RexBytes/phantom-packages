@@ -41,10 +41,28 @@ PLOT_X = 0.105
 PANEL_X = 0.76           # right-hand text column
 MODELS = ["gemma4:e4b", "phi4-mini:3.8b", "qwen3:4b-instruct"]
 MODEL_COLORS = {"gemma4:e4b": "#e0703f", "phi4-mini:3.8b": "#a79cf0", "qwen3:4b-instruct": "#3fbf8f"}
-FONTS = {k: f"C:/Windows/Fonts/{v}" for k, v in {
-    "chiller": "CHILLER.TTF", "onyx": "ONYX.TTF", "viner": "VINERITC.TTF", "georgia": "georgiab.ttf",
-    "georgia_r": "georgia.ttf", "jokerman": "JOKERMAN.TTF", "body": "segoeuib.ttf", "body_r": "segoeui.ttf",
-    "body_sb": "seguisb.ttf"}.items()}
+_WIN = "C:/Windows/Fonts/"
+_REPO = config.ROOT / "assets" / "fonts"  # SIL OFL / Apache Google Fonts, licences alongside
+FONTS = {
+    # display fonts (titles): Windows ships these four; the rest are in the repo
+    "chiller": _WIN + "CHILLER.TTF", "onyx": _WIN + "ONYX.TTF", "viner": _WIN + "VINERITC.TTF",
+    "jokerman": _WIN + "JOKERMAN.TTF",
+    **{k: str(_REPO / f) for k, f in {
+        "creepster": "Creepster-Regular.ttf", "nosifer": "Nosifer-Regular.ttf", "eater": "Eater-Regular.ttf",
+        "metalmania": "MetalMania-Regular.ttf", "mysteryquest": "MysteryQuest-Regular.ttf",
+        "griffy": "Griffy-Regular.ttf", "specialelite": "SpecialElite-Regular.ttf",
+        "hennypenny": "HennyPenny-Regular.ttf"}.items()},
+}
+BODY_KEYS = ("body", "body_r", "body_sb")
+
+
+def set_body(key: str) -> None:
+    """Every non-title text in the next figure (ticks, labels, panels, footer) uses this themed font."""
+    for k in BODY_KEYS:
+        FONTS[k] = FONTS[key]
+
+
+set_body("specialelite")
 DECOR = "decor"  # gid for decorative text the validator ignores (board letters, runes)
 
 
@@ -116,37 +134,44 @@ def fog(ax, x0, x1, y0, y1, color, alpha, seed, z):
               zorder=z, interpolation="bilinear", aspect="auto")
 
 
-def canvas(stops: list[str]):
-    """Figure with a full-bleed background axes (0..160 x 0..100) and a vertical gradient."""
-    fig = plt.figure(figsize=(W, H), dpi=DPI)
+def canvas(stops: list[str], hu: float = 100, wu: float = 160, width_in: float = W):
+    """Figure with a full-bleed background axes (0..wu x 0..hu units, 10 units per inch) and a gradient."""
+    fig = plt.figure(figsize=(width_in, width_in * hu / wu), dpi=DPI)
     bg = fig.add_axes([0, 0, 1, 1], zorder=0)
-    bg.set_xlim(0, 160)
-    bg.set_ylim(0, 100)
+    bg.set_xlim(0, wu)
+    bg.set_ylim(0, hu)
     bg.set_autoscale_on(False)
     bg.axis("off")
     cmap = matplotlib.colors.LinearSegmentedColormap.from_list("bg", stops[::-1])
-    bg.imshow(np.linspace(0, 1, 512)[:, None], extent=[0, 160, 0, 100], origin="lower", cmap=cmap,
+    bg.imshow(np.linspace(0, 1, 512)[:, None], extent=[0, wu, 0, hu], origin="lower", cmap=cmap,
               aspect="auto", zorder=0)
     fig._keepout = []  # background-unit boxes that labels must not cover
+    fig._units = (wu, hu)
     return fig, bg
+
+
+def _extent(bg):
+    return [0, bg.get_xlim()[1], 0, bg.get_ylim()[1]]
 
 
 def vignette(bg, strength=0.55):
     yy, xx = np.mgrid[-1:1:300j, -1:1:480j]
     a = np.clip(np.sqrt((xx * 0.9) ** 2 + (yy * 1.05) ** 2) - 0.55, 0, 1) ** 1.6 * strength
-    bg.imshow(rgba_image((0, 0, 0), a), extent=[0, 160, 0, 100], zorder=1.8, interpolation="bilinear",
+    bg.imshow(rgba_image((0, 0, 0), a), extent=_extent(bg), zorder=1.8, interpolation="bilinear",
               aspect="auto")
 
 
 def grain(bg, seed=1, alpha=0.05):
-    n = np.random.default_rng(seed).random((1200, 1920))  # one value per output pixel: fine, not blocky
-    bg.imshow(rgba_image((1, 1, 1), (n - 0.5) * 2 * alpha), extent=[0, 160, 0, 100], zorder=1.9,
+    w, h = (int(round(v)) for v in bg.figure.get_size_inches() * DPI)
+    n = np.random.default_rng(seed).random((h, w))  # one value per output pixel: fine, not blocky
+    bg.imshow(rgba_image((1, 1, 1), (n - 0.5) * 2 * alpha), extent=_extent(bg), zorder=1.9,
               interpolation="antialiased", aspect="auto")
 
 
 def stars(bg, n=160, ymin=50, color="#fff6e0", seed=31):
     rng = np.random.default_rng(seed)
-    x, y = rng.uniform(0, 160, n), rng.uniform(ymin, 100, n)
+    wu, hu = bg.get_xlim()[1], bg.get_ylim()[1]
+    x, y = rng.uniform(0, wu, n), rng.uniform(ymin, hu, n)
     s = rng.power(3, n) * 9 + 0.4
     bg.scatter(x, y, s=s, color=color, alpha=0.75, linewidths=0, zorder=1.1)
     for i in np.argsort(s)[-6:]:  # a few twinkles
@@ -193,9 +218,9 @@ def dead_tree(ax, x, y, length, angle, depth, width, color, rng, z=1.5):
                   width * 0.66, color, rng, z)
 
 
-def title(fig, text, sub, key, color, sub_color, size, sub_y):
-    fig.text(MARGIN, 0.94, text, color=color, va="top", path_effects=outline(7), **fp(key, size))
-    fig.text(MARGIN, sub_y, sub, color=sub_color, va="top", path_effects=outline(4), **fp("body_r", 18))
+def title(fig, text, sub, key, color, sub_color, size, sub_y, x=MARGIN, ha="left", top=0.94, sub_size=18):
+    fig.text(x, top, text, color=color, va="top", ha=ha, path_effects=outline(7), **fp(key, size))
+    fig.text(x, sub_y, sub, color=sub_color, va="top", ha=ha, path_effects=outline(4), **fp("body_r", sub_size))
 
 
 def footer(fig, color):
@@ -220,15 +245,15 @@ def data_axes(fig, rect, ink, grid, xlim, ylim):
     return ax
 
 
-def ticks(ax, ink, size=15):
+def ticks(ax, ink, size=15, stroke="#07040a"):
     for lab in ax.get_xticklabels() + ax.get_yticklabels():
         lab.set_fontproperties(font_manager.FontProperties(fname=FONTS["body"], size=size))
         lab.set_color(ink)
-        lab.set_path_effects(outline(3))
+        lab.set_path_effects(outline(3, stroke) if stroke else [])
 
 
-def axis_label(ax, which, text, color):
-    kw = {"color": color, **fp("body_r", 16)}
+def axis_label(ax, which, text, color, size=16):
+    kw = {"color": color, **fp("body_r", size)}
     (ax.set_xlabel if which == "x" else ax.set_ylabel)(text, **kw)
 
 
@@ -275,7 +300,8 @@ def validate(fig, name: str) -> list[str]:
             if ov is not None and ov.width > 3 and ov.height > 3:
                 issues.append(f"overlap: {t1.get_text()[:30]!r} x {t2.get_text()[:30]!r}")
     for label, (x0, y0, x1, y1) in getattr(fig, "_keepout", []):
-        kb = Bbox.from_extents(x0 / 160 * fw, y0 / 100 * fh, x1 / 160 * fw, y1 / 100 * fh)
+        wu, hu = getattr(fig, "_units", (160, 100))
+        kb = Bbox.from_extents(x0 / wu * fw, y0 / hu * fh, x1 / wu * fw, y1 / hu * fh)
         for t, b in boxes:
             ov = Bbox.intersection(b, kb)
             if ov is not None and ov.width > 3 and ov.height > 3:
@@ -302,6 +328,7 @@ def tombstone_path(x0, x1, y0, y1, cap):
 
 
 def graveyard(rates: pd.DataFrame, summary: dict, problems: dict) -> None:
+    set_body("mysteryquest")
     fig, bg = canvas(["#13314a", "#0a1a2a", "#050b12"])
     stars(bg)
     moon(fig, bg, 136, 76, 11)
@@ -327,24 +354,45 @@ def graveyard(rates: pd.DataFrame, summary: dict, problems: dict) -> None:
     vals = [*r["ghost_rate"], allr.ghost_rate]
     lo, hi = [*r["rate_lo"], allr.rate_lo], [*r["rate_hi"], allr.rate_hi]
     counts = [f"{int(a.ghosts)} of {int(a.mentions)}" for a in r.itertuples()] + [f"{int(allr.ghosts)} of {int(allr.mentions):,}"]
-    names, glows = MODELS + ["all models"], [MODEL_COLORS[m] for m in MODELS] + ["#d8d2e2"]
+    names, glows = MODELS + ["all 3 local"], [MODEL_COLORS[m] for m in MODELS] + ["#d8d2e2"]
+    hosted_path = config.RESULTS / "rates_hosted.csv"
+    n_local = len(vals)
+    if hosted_path.exists():  # hosted comparison: drawn as translucent "ghost" stones, never pooled
+        hr = pd.read_csv(hosted_path).set_index("group")
+        for m, label in (("ultramarine-1-flash", "Ultramarine low"), ("ultramarine-1-flash@high", "Ultramarine high")):
+            if m in hr.index:
+                x = hr.loc[m]
+                vals.append(x.ghost_rate)
+                lo.append(x.rate_lo)
+                hi.append(x.rate_hi)
+                counts.append(f"{int(x.ghosts)} of {int(x.mentions)}")
+                names.append(label)
+                glows.append("#b9a8ff")
 
-    ax = data_axes(fig, [PLOT_X, 0.2, 0.64, 0.52], "#d9d4e4", "#22384c", (-0.55, 3.55), (0, 0.30))
+    ax = data_axes(fig, [PLOT_X, 0.2, 0.66, 0.52], "#d9d4e4", "#22384c", (-0.55, len(vals) - 0.45), (0, 0.30))
     ax.yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0, decimals=0))
-    ax.set_xticks(range(4), [f"{n}\n{c}" for n, c in zip(names, counts)])
+    ax.set_xticks(range(len(vals)), [f"{n}\n{c}" for n, c in zip(names, counts)])
     ticks(ax, "#eee9f5")
     ax.tick_params(axis="x", length=0, pad=14)
     ax.grid(axis="x", visible=False)
     axis_label(ax, "y", "install suggestions that don't exist on PyPI", "#d9d4e4")
+    if len(vals) > n_local:
+        ax.axvline(n_local - 0.5, color="#b9a8ff", lw=1.4, linestyle=(0, (4, 4)), alpha=0.7, zorder=3)
+        ax.text(n_local + 0.5, 0.283, "hosted, not open (Ultramarine)", ha="center", va="top", color="#cfc3ff",
+                zorder=10, path_effects=outline(4), **fp("body", 16))
     for i, (v, l, h, g) in enumerate(zip(vals, lo, hi, glows)):
+        hosted = i >= n_local
         radial_glow(ax, i, 0.0, 0.55, g, alpha=0.55, z=3.5, ry=0.05, power=1.6)  # lantern light on the grass
         cap = min(0.035, v * 0.42)
         x0, x1 = i - 0.27, i + 0.27
         stone = PathPatch(tombstone_path(x0, x1, 0, v, cap), facecolor="none", edgecolor="none", zorder=4)
         ax.add_patch(stone)
-        fill_gradient(ax, stone, [x0, x1, 0, v], "#6d6878", "#b4afbb", 4, horizontal=True, noise=0.035, seed=i)
+        colours = ("#5d6a9a", "#c8d0f4") if hosted else ("#6d6878", "#b4afbb")
+        im = fill_gradient(ax, stone, [x0, x1, 0, v], *colours, 4, horizontal=True, noise=0.035, seed=i)
+        if hosted:
+            im.set_alpha(0.55)  # a ghost of a gravestone: hosted, not one of the open models
         ax.add_patch(PathPatch(tombstone_path(x0, x1, 0, v, cap), facecolor="none", edgecolor="#1d1a22", lw=2.5,
-                               zorder=4.2))
+                               zorder=4.2, linestyle="--" if hosted else "-"))
         inner = tombstone_path(x0 + 0.035, x1 - 0.035, 0.01, v - 0.008, cap * 0.85)
         ax.add_patch(PathPatch(inner, facecolor="none", edgecolor="#56515e", lw=1.2, zorder=4.3, alpha=0.8))
         crack = np.c_[np.linspace(x1 - 0.07, x1 - 0.13, 5), np.linspace(v - cap * 0.55, v * 0.68, 5)]  # above R.I.P.
@@ -354,14 +402,15 @@ def graveyard(rates: pd.DataFrame, summary: dict, problems: dict) -> None:
             mx = x0 + 0.02 + k * (x1 - x0 - 0.04) / 13
             ax.add_patch(Ellipse((mx, 0.004), 0.05, 0.010 + 0.006 * (k % 3), color="#2f4a2a", zorder=4.5, lw=0))
         ax.plot([x0 + 0.02, x1 - 0.02], [0.0035, 0.0035], color=g, lw=5, zorder=4.6, alpha=0.95)
-        ax.text(i, v * 0.5, "R.I.P.", ha="center", va="center", color="#3e3946", zorder=5, alpha=0.9,
-                **fp("georgia", 19 if v > 0.1 else 15))
+        if v > 0.02:
+            ax.text(i, v * 0.5, "R.I.P.", ha="center", va="center", color="#3e3946", zorder=5, alpha=0.9,
+                    **fp("metalmania", 19 if v > 0.1 else 14))
         ci_whisker(ax, i + 0.36, l, h, "#f4ecd0", 0.04)
         ax.text(i, v + 0.008, f"{v:.1%}", ha="center", va="bottom", color="#fff6e0", zorder=10,
                 path_effects=outline(5), **fp("body", 27))
-    fog(ax, -0.55, 3.55, 0, 0.03, "#b8cadb", 0.35, 9, 6)
+    fog(ax, -0.55, len(vals) - 0.45, 0, 0.03, "#b8cadb", 0.35, 9, 6)
     title(fig, "Where the ghosts are buried", f"Ghost rate by model · {summary['study']['n_generations']:,} "
-          "generations of 200 coding tasks · whiskers: 95% bootstrap CI by prompt", "chiller", "#eef4f8",
+          "local generations of 200 coding tasks · whiskers: 95% bootstrap CI by prompt", "chiller", "#eef4f8",
           "#c9d6df", 82, 0.795)
     footer(fig, "#9fb2c0")
     save(fig, "halloween_ghost_rate_by_model.png", problems)
@@ -377,6 +426,7 @@ def flame_shape(x, y, w, h):
 
 
 def candles(rates: pd.DataFrame, problems: dict) -> None:
+    set_body("metalmania")
     fig, bg = canvas(["#3a0f28", "#1d0714", "#080206"])
     rng = np.random.default_rng(11)
     for _ in range(55):  # embers
@@ -436,14 +486,14 @@ def candles(rates: pd.DataFrame, problems: dict) -> None:
         ax.text(i, v + fh + 0.022, f"{v:.1%}", ha="center", va="bottom", color="#fff2dc", zorder=10,
                 path_effects=outline(5), **fp("body", 28))
     l1, l3 = r.loc["L1", "ghost_rate"], r.loc["L3", "ghost_rate"]
-    panel(fig, 0.75, [(f"{l3 / l1:.0f}×", "onyx", 96, "#ffcf7a", 0.175),
+    panel(fig, 0.75, [(f"{l3 / l1:.0f}×", "metalmania", 80, "#ffcf7a", 0.19),
                       ("On obscure tasks the\nmodels invented this\nmany more packages\nthan on everyday ones.",
                        "body_sb", 20, "#f6e3cf", 0.19),
                       (f"everyday: {l1:.1%}\nobscure: {l3:.1%}", "body", 20, "#ffd18a", 0.11),
                       ("gold whiskers: 95% CI\nthe wax line marks the rate;\nflames are decoration", "body_r", 15,
                        "#d9bfae", 0.0)])
     title(fig, "The darker the task, the brighter they burn", "Ghost rate by how niche the task was · all "
-          "three models pooled", "onyx", "#ffe2b6", "#ecd2bd", 74, 0.82)
+          "three models pooled", "metalmania", "#ffe2b6", "#ecd2bd", 60, 0.82)
     footer(fig, "#c9a99a")
     save(fig, "halloween_ghost_rate_by_niche.png", problems)
 
@@ -486,6 +536,7 @@ def spider(ax, x, y, s, k, body="#ff8a2a", legs="#efe2cc", z=7, thread_top=None)
 
 
 def web(calib: pd.DataFrame, problems: dict) -> None:
+    set_body("specialelite")
     fig, bg = canvas(["#151622", "#0b0b13", "#040407"])
     stars(bg, n=90, ymin=40, color="#dfe4ff", seed=8)
     moon(fig, bg, 143, 80, 11, c0="#f4f5fb", c1="#c9ccdc", glow="#bfc8ff", glow_size=2.6)
@@ -500,6 +551,7 @@ def web(calib: pd.DataFrame, problems: dict) -> None:
 
     rect = [PLOT_X, 0.13, 0.52, 0.6]
     ax = data_axes(fig, rect, "#dcdce6", "#262636", (0, 1), (0, 1.04))
+    ax.set_yticks([0.2, 0.4, 0.6, 0.8, 1.0])
     ticks(ax, "#ececf4")
     k = (rect[2] * W) / (rect[3] * H) * (1.04 / 1.0)  # makes a unit circle look round on these axes
     ax.plot([0, 1], [0, 1], color="#e8e8f0", lw=1.6, alpha=0.85, zorder=3, linestyle=(0, (1.5, 3)))
@@ -554,85 +606,124 @@ def sun(bg, x, y, r, color="#e9c98a"):
             color="#5a3720", lw=2, zorder=1.61)
 
 
-def crescent(bg, x, y, r, color="#e9c98a", board="#4a2c18"):
-    bg.add_patch(Circle((x, y), r, color=color, zorder=1.6, lw=0))
-    bg.add_patch(Circle((x + r * 0.45, y + r * 0.15), r * 0.9, color=board, zorder=1.61, lw=0))
+def pointer(ax, start, end, color, style):
+    """A leader line from a label to its point; drawn separately so it never counts as label area."""
+    ax.annotate("", end, xytext=start, gid=DECOR, zorder=8,
+                arrowprops={"arrowstyle": style, "color": color, "lw": 1.3, "shrinkA": 0, "shrinkB": 0})
+
+
+def crescent_poly(x, y, r, phase=0.55):
+    """A crescent moon as one polygon (outer arc minus an offset inner arc)."""
+    t = np.linspace(np.pi / 2, 3 * np.pi / 2, 60)  # left half: the lit limb
+    outer = np.c_[x + r * np.cos(t), y + r * np.sin(t)]
+    inner = np.c_[x + r * phase * np.cos(t[::-1]), y + r * np.sin(t[::-1])]
+    return np.vstack([outer, inner])
 
 
 def ouija(oof: pd.DataFrame, summary: dict, problems: dict) -> None:
-    fig, bg = canvas(["#2a160a", "#1a0d05", "#0c0603"])
-    board = FancyBboxPatch((2.5, 2.5), 155, 95, boxstyle="round,pad=0,rounding_size=6", facecolor="none",
-                           edgecolor="none", zorder=1.1)
+    """An oval talking board; the chart sits on a parchment card laid across it."""
+    set_body("specialelite")
+    hu = 120
+    fig, bg = canvas(["#1c1009", "#120a05", "#070302"], hu=hu)
+    cx, cy, rx, ry = 80, 60, 79, 59
+    board = Ellipse((cx, cy), 2 * rx, 2 * ry, facecolor="none", edgecolor="none", zorder=1.1)
     bg.add_patch(board)
-    fill_gradient(bg, board, [2.5, 157.5, 2.5, 97.5], "#3a2212", "#6b4426", 1.1, center=0.45, noise=0.02, seed=7)
+    fill_gradient(bg, board, [cx - rx, cx + rx, cy - ry, cy + ry], "#3a2212", "#7a4e2c", 1.1, center=0.45,
+                  noise=0.02, seed=7)
     rng = np.random.default_rng(5)
-    xs = np.linspace(2.5, 157.5, 300)
-    for yy in np.linspace(4, 96, 70):  # wood grain
+    xs = np.linspace(cx - rx, cx + rx, 320)
+    for yy in np.linspace(cy - ry, cy + ry, 80):  # wood grain, clipped to the oval
         line = bg.plot(xs, yy + 0.5 * np.sin(xs / rng.uniform(5, 12) + rng.uniform(0, 6)) + 0.3 * np.sin(xs / 2.3),
                        color="#2a170a", alpha=rng.uniform(0.12, 0.3), lw=rng.uniform(0.6, 1.6), zorder=1.15)[0]
         line.set_clip_path(board)
-    for pad, lw in ((1.6, 2.2), (2.6, 1.0)):
-        bg.add_patch(FancyBboxPatch((2.5 + pad, 2.5 + pad), 155 - 2 * pad, 95 - 2 * pad,
-                                    boxstyle="round,pad=0,rounding_size=5", fill=False, edgecolor="#c9a46a",
-                                    lw=lw, alpha=0.7, zorder=1.3))
-    for k, ch in enumerate("ABCDEFGHIJKLM"):  # two letter arcs between subtitle and chart, like a real board
-        a = np.pi * (0.8 - 0.6 * k / 12)
-        bg.text(62 + 54 * np.cos(a), 58 + 20 * np.sin(a), ch, color="#e8d2a8", alpha=0.42, ha="center", va="center",
-                rotation=np.degrees(a) - 90, gid=DECOR, zorder=1.4, **fp("georgia", 22))
+    for scale, lw in ((0.985, 2.6), (0.962, 1.1)):  # gilded double rim
+        bg.add_patch(Ellipse((cx, cy), 2 * rx * scale, 2 * ry * scale, fill=False, edgecolor="#d4ae6e", lw=lw,
+                             alpha=0.8, zorder=1.3))
+    for k, ch in enumerate("ABCDEFGHIJKLM"):  # the board's two letter arcs, above the card
+        a = np.pi * (0.85 - 0.7 * k / 12)
+        bg.text(cx + 37 * np.cos(a), 66 + 22 * np.sin(a), ch, color="#ecd6aa", alpha=0.5, ha="center", va="center",
+                rotation=np.degrees(a) - 90, gid=DECOR, zorder=1.4, **fp("metalmania", 24))
     for k, ch in enumerate("NOPQRSTUVWXYZ"):
-        a = np.pi * (0.78 - 0.56 * k / 12)
-        bg.text(62 + 48 * np.cos(a), 55 + 16 * np.sin(a), ch, color="#e8d2a8", alpha=0.42, ha="center", va="center",
-                rotation=np.degrees(a) - 90, gid=DECOR, zorder=1.4, **fp("georgia", 22))
-    sun(bg, 147, 73.5, 3.2)
-    crescent(bg, 146, 52, 3.4, board="#5a3820")
-    for k, ch in enumerate("1234567890"):
-        bg.text(118 + k * 3.6, 7.2, ch, color="#e8d2a8", alpha=0.4, ha="center", gid=DECOR, zorder=1.4,
-                **fp("georgia", 20))
-    bg.text(127, 12.6, "GOOD BYE", color="#e8d2a8", alpha=0.45, ha="center", gid=DECOR, zorder=1.4, **fp("georgia", 22))
-    vignette(bg, 0.5)
-    grain(bg, alpha=0.04)
+        a = np.pi * (0.82 - 0.64 * k / 12)
+        bg.text(cx + 27 * np.cos(a), 66 + 14 * np.sin(a), ch, color="#ecd6aa", alpha=0.5, ha="center", va="center",
+                rotation=np.degrees(a) - 90, gid=DECOR, zorder=1.4, **fp("metalmania", 24))
+    sun(bg, 15.5, 94, 3.2)
+    bg.add_patch(Polygon(crescent_poly(146, 94, 4.0), closed=True, color="#e9c98a", zorder=1.6, lw=0))
+    bg.text(cx, 4.2, "GOOD BYE", color="#ecd6aa", alpha=0.55, ha="center", va="center", gid=DECOR, zorder=1.4,
+            **fp("metalmania", 24))
+    card = FancyBboxPatch((13, 9), 134, 62, boxstyle="round,pad=0,rounding_size=2.5", facecolor="none",
+                          edgecolor="none", zorder=1.45)
+    bg.add_patch(card)
+    fill_gradient(bg, card, [13, 147, 9, 71], "#d6bd91", "#f6ebcf", 1.45, center=0.5, noise=0.012, seed=9)
+    bg.add_patch(FancyBboxPatch((13, 9), 134, 62, boxstyle="round,pad=0,rounding_size=2.5", fill=False,
+                                edgecolor="#7b5530", lw=2.2, zorder=1.46))
+    vignette(bg, 0.45)
+    grain(bg, alpha=0.035)
 
+    ink, ink2 = "#2a1608", "#5a3a1c"
     y = oof["y_ghost"].to_numpy(int)
-    rect = [PLOT_X, 0.13, 0.58, 0.5]
-    ax = data_axes(fig, rect, "#f0dcb4", "#6a4428", (0, 1.02), (0, 1.03))
-    ticks(ax, "#f7e8c8")
-    k = (rect[2] * W / 1.02) / (rect[3] * H / 1.03)
-    ax.axvline(0.9, color="#f0dcb4", lw=1.4, linestyle=(0, (4, 4)), alpha=0.8, zorder=3)
-    ax.text(0.89, 0.03, "90% recall: the guard's target", ha="right", va="bottom", color="#f0dcb4",
-            zorder=8, path_effects=outline(3, "#24140a"), **fp("body_r", 13))
-    styles = [("rule_editdist", "#a7835a", 2.2, "edit-distance rule"), ("logreg", "#cfae7c", 2.2, "logistic regression"),
-              ("hgb", "#f0d6a0", 2.2, "gradient boosting"), ("tabpfn", "#ff9b2e", 4.6, "TabPFN-3.5")]
-    for j, (arm, color, lw, label) in enumerate(styles):
+    rect = [21 / 160, 19 / hu, 124 / 160, 47 / hu]
+    ax = data_axes(fig, rect, ink, "#b99c6c", (0, 1.02), (0, 1.03))
+    ax.grid(True, color="#b99c6c", linewidth=1, alpha=0.55)
+    ax.set_yticks([0.2, 0.4, 0.6, 0.8, 1.0])
+    ticks(ax, ink, size=15, stroke=None)
+    k = (rect[2] * W / 1.02) / (rect[3] * W * hu / 160 / 1.03)
+    ax.axvline(0.9, color=ink2, lw=1.4, linestyle=(0, (4, 4)), alpha=0.8, zorder=3)
+    ax.text(0.893, 1.0, "the guard's target: 90% recall", ha="right", va="top", color=ink2, zorder=8,
+            **fp("body_r", 13))
+    curves = [("tabpfn", "#c2410c", 4.4, "-", "TabPFN-3.5 (offline, open)"),
+              ("hosted_selfcheck_prob", "#5b2a86", 2.6, (0, (6, 3)), "Ultramarine asks itself, P(no) (hosted)"),
+              ("hgb", "#2f2418", 2.2, (0, (3, 2)), "gradient boosting"),
+              ("logreg", "#6b4a24", 2.2, (0, (6, 2, 1, 2)), "logistic regression"),
+              ("rule_editdist", "#9c7a4a", 2.4, (0, (1, 2)), "edit-distance rule")]
+    curves = [c for c in curves if f"A_{c[0]}" in oof.columns and c[0] in summary["eval"]["A"]]
+    p_t, r_t, _ = precision_recall_curve(y, oof["A_tabpfn"])
+    ax.fill_between(r_t, p_t, step="post", color="#f08a3c", alpha=0.16, zorder=2)
+    order = sorted(curves, key=lambda c: -summary["eval"]["A"][c[0]]["auprc"])
+    for j, (arm, color, lw, ls, label) in enumerate(order):
         p, r, _ = precision_recall_curve(y, oof[f"A_{arm}"])
-        ax.plot(r, p, color=color, lw=lw, drawstyle="steps-post", zorder=5 if arm == "tabpfn" else 4,
-                path_effects=outline(lw + 3, "#24140a"))
-        yy = 0.31 - 0.07 * (3 - j)
-        ax.plot([0.04, 0.1], [yy] * 2, color=color, lw=lw, transform=ax.transAxes, zorder=6,
-                path_effects=outline(lw + 3, "#24140a"))
-        ax.text(0.12, yy, f"{label}   AUPRC {summary['eval']['A'][arm]['auprc']:.2f}", transform=ax.transAxes,
-                va="center", color="#fff1d6", zorder=8, path_effects=outline(4, "#24140a"),
-                **fp("body" if arm == "tabpfn" else "body_r", 15))
-    for arm, label, at in (("rule_top15k", '"not in top 15k" rule', (0.66, 0.6)),
-                           ("llm_selfcheck", "gemma4 asks itself", (0.66, 0.42))):
+        ax.plot(r, p, color=color, lw=lw, linestyle=ls, drawstyle="steps-post", zorder=6 if arm == "tabpfn" else 5)
+        yy = 0.33 - 0.06 * j
+        ax.plot([0.03, 0.085], [yy] * 2, color=color, lw=lw, linestyle=ls, transform=ax.transAxes, zorder=7)
+        ax.text(0.1, yy, f"{label}  ·  AUPRC {summary['eval']['A'][arm]['auprc']:.2f}", transform=ax.transAxes,
+                va="center", color=color if arm in ("tabpfn", "hosted_selfcheck_prob") else ink, zorder=8,
+                **fp("body", 14))
+    thr = summary["threshold"]
+    ax.plot([thr["recall"]], [thr["precision"]], marker="*", ms=22, color="#c2410c", mec=ink, mew=1.4, zorder=9)
+    ax.text(0.36, 0.64, f"TabPFN at the guard's threshold:\ncatches {thr['recall']:.0%} of ghosts, "
+            f"{thr['precision']:.0%} of flags are real ghosts", ha="left", va="center", color=ink, zorder=9,
+            **fp("body_r", 15))
+    pointer(ax, (0.7, 0.67), (thr["recall"] - 0.012, thr["precision"] - 0.012), ink, "-|>")
+    for arm, label, at in (("rule_top15k", '"not in top 15k" rule (yes/no)', (0.88, 0.16)),
+                           ("llm_selfcheck", "gemma4 asks itself (yes/no)", (0.88, 0.47))):
         flag = oof[f"A_{arm}"].to_numpy() >= 0.5
         tp = int((flag & (y == 1)).sum())
         rec, prec = tp / y.sum(), tp / max(int(flag.sum()), 1)
-        planchette(ax, rec, prec, 0.028, k)
-        ax.annotate(f"{label} (yes/no)\nrecall {rec:.2f} · precision {prec:.2f}", (rec - 0.035, prec), xytext=at,
-                    ha="right", va="center", color="#fff1d6", zorder=8, path_effects=outline(4, "#24140a"),
-                    arrowprops={"arrowstyle": "-", "color": "#f0dcb4", "lw": 1.3, "alpha": 0.85}, **fp("body_r", 14))
-    axis_label(ax, "x", "recall (share of ghosts caught)", "#f0dcb4")
-    axis_label(ax, "y", "precision (share of flags that are ghosts)", "#f0dcb4")
-    sc, auprc = summary["selfcheck"], summary["eval"]["A"]["tabpfn"]["auprc"]
-    for x0, y0, big, small in ((0.775, 0.735, "YES", f"Is it a ghost? TabPFN\nanswers before PyPI:\nAUPRC {auprc:.2f}."),
-                               (0.775, 0.52, "NO", f"gemma4 said NO (doesn't\nexist) to {sc['real_names_said_missing']} of "
-                                                  f"{sc['real_names']}\nreal packages.")):
-        fig.text(x0, y0, big, color="#f3e2c0", va="center", path_effects=outline(5, "#24140a"), **fp("georgia", 50))
-        fig.text(x0, y0 - 0.06, small, color="#ffd9a0", va="top", linespacing=1.3, path_effects=outline(4, "#24140a"),
-                 **fp("georgia_r", 18))
-    title(fig, "Ask the board: is it a ghost?", "Precision vs. recall before asking PyPI · out-of-fold, split A "
-          "(GroupKFold by prompt) · 888 names, 173 ghosts", "georgia", "#fbe9c6", "#ead2a8", 54, 0.835)
-    footer(fig, "#d8bf96")
+        planchette(ax, rec, prec, 0.026, k)
+        ax.text(*at, f"{label}\nrecall {rec:.2f} · precision {prec:.2f}", ha="right", va="center", color=ink,
+                zorder=8, **fp("body_r", 14))
+        pointer(ax, (at[0] + 0.005, at[1]), (rec - 0.03, prec), ink2, "-")
+    axis_label(ax, "x", "recall: share of the 172 ghosts caught", ink)
+    axis_label(ax, "y", "precision: share of flags that are ghosts", ink)
+    sc, h = summary["selfcheck"], summary.get("hosted", {}).get("selfcheck") or {}
+    fig.text(15.5 / 160, 86 / hu, "YES", color="#f3e2c0", ha="center", va="center", path_effects=outline(5, "#24140a"),
+             **fp("creepster", 48))
+    fig.text(144.5 / 160, 86 / hu, "NO", color="#f3e2c0", ha="center", va="center", path_effects=outline(5, "#24140a"),
+             **fp("creepster", 48))
+    fig.text(15.5 / 160, 81 / hu, f"TabPFN, before PyPI:\nAUPRC {summary['eval']['A']['tabpfn']['auprc']:.2f}",
+             color="#ffe0a8", ha="center", va="top", linespacing=1.25, path_effects=outline(4, "#24140a"),
+             **fp("body", 14))
+    no_text = f"gemma4: NO to {sc['real_names_said_missing']}\nof {sc['real_names']} real packages"
+    if h:
+        no_text += f"\nUltramarine: YES to\n{h['ghost_names_said_exists']} of {h['ghost_names']} ghosts"
+    fig.text(144.5 / 160, 81 / hu, no_text, color="#ffe0a8", ha="center", va="top", linespacing=1.25,
+             path_effects=outline(4, "#24140a"), **fp("body", 14))
+    fig._keepout += [("letters", (44, 66, 116, 89))]
+    title(fig, "Ask the board: is it a ghost?", f"Precision vs. recall before asking PyPI · out-of-fold, "
+          f"split by prompt · {summary['dataset']['n_rows']} names, {summary['dataset']['n_ghost']} ghosts",
+          "creepster", "#fbe9c6", "#ead2a8", 50, 103.5 / hu, x=0.5, ha="center", top=114 / hu, sub_size=16)
+    fig.text(0.985, 0.006, "Phantom Packages · data: results/summary.json, eval.csv", ha="right", va="bottom",
+             color="#d8bf96", alpha=0.9, path_effects=outline(3), **fp("body_r", 12))
     save(fig, "halloween_precision_recall.png", problems)
 
 
@@ -701,6 +792,7 @@ def haunted_house(fig, bg, x, y, s):
 
 
 def pumpkin_patch(counts: pd.DataFrame, summary: dict, problems: dict) -> None:
+    set_body("griffy")
     fig, bg = canvas(["#3a1606", "#1e0a08", "#080305"])
     stars(bg, n=110, ymin=58, color="#ffe2b0", seed=12)
     moon(fig, bg, 147, 88, 7.5, c0="#ffe3ad", c1="#e7a65a", glow="#ff9a40", glow_size=3.0)
@@ -741,11 +833,11 @@ def pumpkin_patch(counts: pd.DataFrame, summary: dict, problems: dict) -> None:
     axis_label(ax, "x", "times the same ghost name was suggested", "#f6dcc0")
     axis_label(ax, "y", "ghost names", "#f6dcc0")
     rep = summary["repeat"]
-    panel(fig, 0.72, [(f"{rep['repeated_2plus']} of {rep['n_unique_ghost_names']}", "jokerman", 44, "#ffb347", 0.1),
+    panel(fig, 0.75, [(f"{rep['repeated_2plus']} of {rep['n_unique_ghost_names']}", "jokerman", 44, "#ffb347", 0.1),
                       ("ghosts came back", "jokerman", 28, "#ffb347", 0.1),
                       ("white: suggested by one model\norange: by two or more models", "body_sb", 16, "#fde8d0", 0.1),
                       ("Every repeat came from the\nsame task. A predictable\nghost is a name worth\nsquatting.",
-                       "body_r", 16, "#f6dcc0", 0.0)])
+                       "body_r", 15, "#f6dcc0", 0.0)])
     title(fig, "The ghosts that keep coming back", f"{rep['n_unique_ghost_names']} unregistered ghost names by "
           "how often a model suggested them · names withheld", "jokerman", "#ffcf7a", "#f0d2b4", 54, 0.825)
     footer(fig, "#c8a07a")
