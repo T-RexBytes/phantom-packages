@@ -97,7 +97,15 @@ def test_ghost_blocks_with_the_spec_message():
     assert code == 2
     assert msg == (f"phantom-packages: blocked `pip install {GHOST}`: {GHOST} does not exist on PyPI "
                    f"(P(ghost)=0.97). Did you mean `ghostlib`? Never install unverified names.")
-    assert g.calls == [{"names": [GHOST], "offline": False, "prob": "auto"}]
+    assert g.calls == [{"names": [GHOST], "offline": False, "prob": "registry-first"}]
+
+
+def test_hook_is_registry_first_by_default_and_prob_on_request():
+    g = FakeGuard([FakeVerdict(GHOST, "GHOST")])
+    run(payload(f"pip install {GHOST}"), g)
+    assert g.calls[-1]["prob"] == "registry-first"  # PyPI decides: no torch/TabPFN for a 404
+    run(payload(f"pip install {GHOST}"), g, PHANTOM_HOOK_PROB="1")
+    assert g.calls[-1]["prob"] == "auto"  # old behaviour: P(ghost) in the block message
 
 
 @pytest.mark.parametrize("nearest,lev,expected", [

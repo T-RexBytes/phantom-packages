@@ -30,7 +30,7 @@ from phantom.extract import STDLIB, normalize, requirement_name
 from phantom.http import MetadataClient, MetadataError
 
 VERDICTS = ("OK", "OK_UNVERIFIED", "SUSPECT", "GHOST_LIKELY", "GHOST")
-PROB_MODES = ("auto", "always", "never")
+PROB_MODES = ("auto", "always", "never", "registry-first")
 REGISTRY_NAMESPACE = "guard/"
 GUARD_SQUAT_CHECKS = [c for c in squat.CHECKS if c != "repeated"]  # "repeated" needs study data
 STDLIB_REASON = "standard library: no install needed"
@@ -183,7 +183,9 @@ def check(names: Iterable[str], offline: bool = False, band: bool = False, prob:
     """Verdicts for unique normalized ``names`` in the order given.
 
     ``prob``: "auto" computes P(ghost) only where it matters (offline, PyPI unreachable, 404s,
-    young existing names); "always" for every non-stdlib name; "never" skips the model.
+    young existing names); "registry-first" is "auto" minus 404s, i.e. only where P(ghost) can change
+    the verdict (the hook's default: a ghost is blocked without loading torch/TabPFN); "always" for
+    every non-stdlib name; "never" skips the model.
     ``model`` (default ``phantom.model.GuardModel``), ``clients``, ``index`` and ``now`` are
     injectable for tests.
     """
@@ -229,6 +231,8 @@ def check(names: Iterable[str], offline: bool = False, band: bool = False, prob:
         if prob == "always":
             return True
         row = rows.get(n)
+        if prob == "registry-first":  # model only where it can change the verdict (the hook's default)
+            return row is None or (row["exists"] and squat.checks(row, 0, now)["young"])
         return row is None or not row["exists"] or squat.checks(row, 0, now)["young"]
 
     wanted = [n for n in given if needs_p(n)]

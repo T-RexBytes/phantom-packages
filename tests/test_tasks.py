@@ -15,7 +15,7 @@ spec.loader.exec_module(tasks)
 
 def test_stage_order_matches_pipeline():
     assert list(tasks.STAGES) == [
-        "prompts", "summon", "extract", "features", "eval", "guard-model", "squat", "figures", "halloween", "site",
+        "prompts", "summon", "extract", "features", "eval", "guard-model", "squat", "replay", "ghost-types", "error-analysis", "figures", "halloween", "site",
     ]
 
 

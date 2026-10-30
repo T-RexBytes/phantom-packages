@@ -100,6 +100,368 @@
     "n_unseen_ghost_rows_split_c": 173,
     "n_unseen_rows_split_c": 521
   },
+  "error_analysis": {
+    "generated_at": "2026-10-30T12:56:45Z",
+    "guard_model_split_a": {
+      "confusion": {
+        "fn": {
+          "names": 17,
+          "rows": 17
+        },
+        "fp": {
+          "names": 47,
+          "rows": 52
+        },
+        "tn": {
+          "names": 224,
+          "rows": 663
+        },
+        "tp": {
+          "names": 145,
+          "rows": 156
+        }
+      },
+      "false_negatives": {
+        "all": {
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -0.5599320501581004,
+          "median_consistency": 0.5,
+          "median_cross_model": 1.0,
+          "median_global_freq": 1.0,
+          "median_in_top15k": 0.0,
+          "median_len": 5.0,
+          "median_n_parts": 1.0,
+          "median_nn_lev": 2.0,
+          "median_p": 0.43069371581077576,
+          "names": 17,
+          "rows": 17
+        },
+        "by_category": {
+          "py_affixed": {
+            "median_affix_of_real": 0.0,
+            "median_char_lp_z": 0.03589820013321862,
+            "median_consistency": 0.5,
+            "median_cross_model": 1.0,
+            "median_global_freq": 1.0,
+            "median_in_top15k": 0.0,
+            "median_len": 6.0,
+            "median_n_parts": 1.0,
+            "median_nn_lev": 1.0,
+            "median_p": 0.4218713641166687,
+            "names": 9,
+            "rows": 9
+          },
+          "short_word": {
+            "median_affix_of_real": 0.0,
+            "median_char_lp_z": -1.5744489533348416,
+            "median_consistency": 0.75,
+            "median_cross_model": 1.0,
+            "median_global_freq": 1.5,
+            "median_in_top15k": 0.0,
+            "median_len": 4.0,
+            "median_n_parts": 1.0,
+            "median_nn_lev": 2.0,
+            "median_p": 0.4383103549480438,
+            "names": 8,
+            "rows": 8
+          }
+        }
+      },
+      "false_positives": {
+        "all": {
+          "downloads": {
+            "100-499": 4,
+            "500-9,999": 12,
+            "<100": 21,
+            ">=10,000": 13,
+            "unknown": 2
+          },
+          "in_top15k_share": 0.0,
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -0.7567699294650864,
+          "median_consistency": 0.5,
+          "median_cross_model": 1.0,
+          "median_global_freq": 1.0,
+          "median_in_top15k": 0.0,
+          "median_len": 9.0,
+          "median_n_parts": 1.0,
+          "median_nn_lev": 3.0,
+          "median_p": 0.664731502532959,
+          "names": 47,
+          "rows": 52
+        },
+        "by_category": {
+          "established": {
+            "downloads": {
+              "500-9,999": 8,
+              ">=10,000": 13
+            },
+            "median_affix_of_real": 0.0,
+            "median_char_lp_z": -0.7573964192418056,
+            "median_consistency": 0.5,
+            "median_cross_model": 1.0,
+            "median_first_release_year": 2016.0,
+            "median_global_freq": 1.0,
+            "median_in_top15k": 0.0,
+            "median_len": 8.0,
+            "median_n_parts": 1.0,
+            "median_nn_lev": 2.0,
+            "median_p": 0.6711957454681396,
+            "names": 19,
+            "rows": 21
+          },
+          "no_files": {
+            "downloads": {
+              "unknown": 2
+            },
+            "median_affix_of_real": 0.5,
+            "median_char_lp_z": 0.011131158927403254,
+            "median_consistency": 0.75,
+            "median_cross_model": 1.0,
+            "median_first_release_year": null,
+            "median_global_freq": 1.5,
+            "median_in_top15k": 0.0,
+            "median_len": 7.0,
+            "median_n_parts": 1.0,
+            "median_nn_lev": 2.5,
+            "median_p": 0.5719557106494904,
+            "names": 2,
+            "rows": 2
+          },
+          "registry_quiet": {
+            "downloads": {
+              "100-499": 3,
+              "500-9,999": 3,
+              "<100": 14
+            },
+            "median_affix_of_real": 0.0,
+            "median_char_lp_z": -0.29116126716532625,
+            "median_consistency": 0.5,
+            "median_cross_model": 1.0,
+            "median_first_release_year": 2019.0,
+            "median_global_freq": 1.0,
+            "median_in_top15k": 0.0,
+            "median_len": 8.0,
+            "median_n_parts": 1.0,
+            "median_nn_lev": 3.0,
+            "median_p": 0.6451176106929779,
+            "names": 19,
+            "rows": 20
+          },
+          "young": {
+            "downloads": {
+              "100-499": 1,
+              "500-9,999": 1,
+              "<100": 7
+            },
+            "median_affix_of_real": 0.0,
+            "median_char_lp_z": -1.4203937507526472,
+            "median_consistency": 0.5,
+            "median_cross_model": 1.0,
+            "median_first_release_year": 2025.0,
+            "median_global_freq": 1.0,
+            "median_in_top15k": 0.0,
+            "median_len": 13.0,
+            "median_n_parts": 2.0,
+            "median_nn_lev": 6.0,
+            "median_p": 0.8336541056632996,
+            "names": 7,
+            "rows": 9
+          }
+        },
+        "rescued_online_names": 40,
+        "rescued_online_rows": 43
+      },
+      "tau": 0.5061126351356506
+    },
+    "phase5_tabpfn_split_a": {
+      "confusion": {
+        "fn": {
+          "names": 17,
+          "rows": 17
+        },
+        "fp": {
+          "names": 46,
+          "rows": 50
+        },
+        "tn": {
+          "names": 225,
+          "rows": 665
+        },
+        "tp": {
+          "names": 146,
+          "rows": 156
+        }
+      },
+      "false_negatives": {
+        "all": {
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -0.9860696416170718,
+          "median_consistency": 0.5,
+          "median_cross_model": 1.0,
+          "median_global_freq": 1.0,
+          "median_in_top15k": 0.0,
+          "median_len": 6.0,
+          "median_n_parts": 1.0,
+          "median_nn_lev": 2.0,
+          "median_p": 0.3769102692604065,
+          "names": 17,
+          "rows": 17
+        },
+        "by_category": {
+          "py_affixed": {
+            "median_affix_of_real": 0.0,
+            "median_char_lp_z": -0.6620410333418304,
+            "median_consistency": 0.5,
+            "median_cross_model": 1.0,
+            "median_global_freq": 1.0,
+            "median_in_top15k": 0.0,
+            "median_len": 5.0,
+            "median_n_parts": 1.0,
+            "median_nn_lev": 1.0,
+            "median_p": 0.3810689151287079,
+            "names": 6,
+            "rows": 6
+          },
+          "short_word": {
+            "median_affix_of_real": 0.0,
+            "median_char_lp_z": -1.272055750485768,
+            "median_consistency": 1.0,
+            "median_cross_model": 1.0,
+            "median_global_freq": 2.0,
+            "median_in_top15k": 0.0,
+            "median_len": 7.5,
+            "median_n_parts": 1.0,
+            "median_nn_lev": 2.0,
+            "median_p": 0.34170565009117126,
+            "names": 10,
+            "rows": 10
+          },
+          "vendor_style": {
+            "median_affix_of_real": 0.0,
+            "median_char_lp_z": -0.9860696416170718,
+            "median_consistency": 1.0,
+            "median_cross_model": 2.0,
+            "median_global_freq": 2.0,
+            "median_in_top15k": 0.0,
+            "median_len": 30.0,
+            "median_n_parts": 3.0,
+            "median_nn_lev": 7.0,
+            "median_p": 0.4439612627029419,
+            "names": 1,
+            "rows": 1
+          }
+        }
+      },
+      "false_positives": {
+        "all": {
+          "downloads": {
+            "100-499": 6,
+            "500-9,999": 11,
+            "<100": 20,
+            ">=10,000": 12,
+            "unknown": 1
+          },
+          "in_top15k_share": 0.0,
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -0.7567699294650864,
+          "median_consistency": 0.5,
+          "median_cross_model": 1.0,
+          "median_global_freq": 1.0,
+          "median_in_top15k": 0.0,
+          "median_len": 8.0,
+          "median_n_parts": 1.0,
+          "median_nn_lev": 3.0,
+          "median_p": 0.6483021676540375,
+          "names": 46,
+          "rows": 50
+        },
+        "by_category": {
+          "established": {
+            "downloads": {
+              "500-9,999": 7,
+              ">=10,000": 12
+            },
+            "median_affix_of_real": 0.0,
+            "median_char_lp_z": -0.7561434396883672,
+            "median_consistency": 0.5,
+            "median_cross_model": 1.0,
+            "median_first_release_year": 2016.0,
+            "median_global_freq": 1.0,
+            "median_in_top15k": 0.0,
+            "median_len": 8.0,
+            "median_n_parts": 1.0,
+            "median_nn_lev": 2.0,
+            "median_p": 0.6485429406166077,
+            "names": 17,
+            "rows": 19
+          },
+          "no_files": {
+            "downloads": {
+              "unknown": 1
+            },
+            "median_affix_of_real": 0.0,
+            "median_char_lp_z": -2.7555227620925393,
+            "median_consistency": 1.0,
+            "median_cross_model": 1.0,
+            "median_first_release_year": null,
+            "median_global_freq": 2.0,
+            "median_in_top15k": 0.0,
+            "median_len": 4.0,
+            "median_n_parts": 1.0,
+            "median_nn_lev": 2.0,
+            "median_p": 0.5298230051994324,
+            "names": 1,
+            "rows": 1
+          },
+          "registry_quiet": {
+            "downloads": {
+              "100-499": 5,
+              "500-9,999": 3,
+              "<100": 13
+            },
+            "median_affix_of_real": 0.0,
+            "median_char_lp_z": -0.5815907711350831,
+            "median_consistency": 0.5,
+            "median_cross_model": 1.0,
+            "median_first_release_year": 2018.0,
+            "median_global_freq": 1.0,
+            "median_in_top15k": 0.0,
+            "median_len": 8.0,
+            "median_n_parts": 1.0,
+            "median_nn_lev": 3.0,
+            "median_p": 0.6075234413146973,
+            "names": 21,
+            "rows": 21
+          },
+          "young": {
+            "downloads": {
+              "100-499": 1,
+              "500-9,999": 1,
+              "<100": 7
+            },
+            "median_affix_of_real": 0.0,
+            "median_char_lp_z": -1.4203937507526472,
+            "median_consistency": 0.5,
+            "median_cross_model": 1.0,
+            "median_first_release_year": 2025.0,
+            "median_global_freq": 1.0,
+            "median_in_top15k": 0.0,
+            "median_len": 13.0,
+            "median_n_parts": 2.0,
+            "median_nn_lev": 6.0,
+            "median_p": 0.858700156211853,
+            "names": 7,
+            "rows": 9
+          }
+        },
+        "rescued_online_names": 39,
+        "rescued_online_rows": 41
+      },
+      "tau": 0.5062171220779419
+    },
+    "registry_checked_at": "2026-10-29T20:54:03+00:00"
+  },
   "eval": {
     "A": {
       "hgb": {
@@ -322,6 +684,59 @@
         "precision_at_recall90": 0.7572815533980582,
         "recall_at_precision95": 0.04046242774566474
       }
+    }
+  },
+  "ghost_types": {
+    "by_type": {
+      "affix_of_real": {
+        "by_2plus_models": 1,
+        "n_mentions": 17,
+        "n_names": 14,
+        "repeated_2plus": 3,
+        "share_of_mentions": 0.0798,
+        "share_of_names": 0.0864
+      },
+      "import_or_brand": {
+        "by_2plus_models": 0,
+        "n_mentions": 4,
+        "n_names": 2,
+        "repeated_2plus": 2,
+        "share_of_mentions": 0.0188,
+        "share_of_names": 0.0123
+      },
+      "invented": {
+        "by_2plus_models": 0,
+        "n_mentions": 51,
+        "n_names": 45,
+        "repeated_2plus": 6,
+        "share_of_mentions": 0.2394,
+        "share_of_names": 0.2778
+      },
+      "near_real_name": {
+        "by_2plus_models": 1,
+        "n_mentions": 12,
+        "n_names": 9,
+        "repeated_2plus": 2,
+        "share_of_mentions": 0.0563,
+        "share_of_names": 0.0556
+      },
+      "task_words": {
+        "by_2plus_models": 8,
+        "n_mentions": 129,
+        "n_names": 92,
+        "repeated_2plus": 27,
+        "share_of_mentions": 0.6056,
+        "share_of_names": 0.5679
+      }
+    },
+    "n_ghost_mentions": 213,
+    "n_ghost_names": 162,
+    "rules_in_order": {
+      "affix_of_real": "a real package name plus or minus one common affix (python-, py, -py, -api, -sdk, -parser ...)",
+      "import_or_brand": "the import name or bare brand of a real package that is installed under another name",
+      "invented": "none of the rules above",
+      "near_real_name": "one or two edits from a real package name (a typo of it, or a coincidence)",
+      "task_words": "every non-generic part of the name is a word of the task (or an abbreviation of one)"
     }
   },
   "guard_model": {
@@ -618,6 +1033,154 @@
     "n_unique_ghost_names": 162,
     "repeated_2plus": 40,
     "repeated_2plus_share": 0.24691358024691357
+  },
+  "replay": {
+    "install_sources": [
+      "pip_line",
+      "uv_line",
+      "requirements_block"
+    ],
+    "overall": {
+      "generations": 1199,
+      "generations_with_install": 1198,
+      "ghost_mentions": 213,
+      "install_mentions": 1413,
+      "offline": {
+        "generations_blocked": 262,
+        "ghost_recall": 0.9014084507042254,
+        "ghosts_caught": 192,
+        "ghosts_missed": 21,
+        "precision": 0.7413127413127413,
+        "real_flagged": 67,
+        "real_flagged_share": 0.05756013745704467
+      },
+      "online": {
+        "generations_blocked": 232,
+        "generations_blocked_share": 0.19365609348914858,
+        "ghosts_blocked": 213,
+        "real_blocked": 13,
+        "real_blocked_share": 0.011168384879725086,
+        "suspect_mentions": 13
+      },
+      "real_mentions": 1164,
+      "subtype_mentions": {
+        "module_name_confusion": {
+          "GHOST": 3,
+          "OK": 4
+        },
+        "stdlib_confusion": {
+          "GHOST": 3,
+          "OK": 26
+        }
+      },
+      "subtype_total": 36
+    },
+    "p_ghost": "out-of-fold guard fold models (folds.json)",
+    "per_model": {
+      "gemma4:e4b": {
+        "generations": 400,
+        "generations_with_install": 399,
+        "ghost_mentions": 39,
+        "install_mentions": 492,
+        "offline": {
+          "generations_blocked": 57,
+          "ghost_recall": 0.8974358974358975,
+          "ghosts_caught": 35,
+          "ghosts_missed": 4,
+          "precision": 0.6363636363636364,
+          "real_flagged": 20,
+          "real_flagged_share": 0.046189376443418015
+        },
+        "online": {
+          "generations_blocked": 48,
+          "generations_blocked_share": 0.12030075187969924,
+          "ghosts_blocked": 39,
+          "real_blocked": 4,
+          "real_blocked_share": 0.009237875288683603,
+          "suspect_mentions": 4
+        },
+        "real_mentions": 433,
+        "subtype_mentions": {
+          "module_name_confusion": {
+            "GHOST": 3,
+            "OK": 2
+          },
+          "stdlib_confusion": {
+            "GHOST": 2,
+            "OK": 13
+          }
+        },
+        "subtype_total": 20
+      },
+      "phi4-mini:3.8b": {
+        "generations": 399,
+        "generations_with_install": 399,
+        "ghost_mentions": 78,
+        "install_mentions": 465,
+        "offline": {
+          "generations_blocked": 90,
+          "ghost_recall": 0.8717948717948718,
+          "ghosts_caught": 68,
+          "ghosts_missed": 10,
+          "precision": 0.7640449438202247,
+          "real_flagged": 21,
+          "real_flagged_share": 0.05526315789473684
+        },
+        "online": {
+          "generations_blocked": 82,
+          "generations_blocked_share": 0.20551378446115287,
+          "ghosts_blocked": 78,
+          "real_blocked": 3,
+          "real_blocked_share": 0.007894736842105263,
+          "suspect_mentions": 3
+        },
+        "real_mentions": 380,
+        "subtype_mentions": {
+          "module_name_confusion": {},
+          "stdlib_confusion": {
+            "GHOST": 1,
+            "OK": 6
+          }
+        },
+        "subtype_total": 7
+      },
+      "qwen3:4b-instruct": {
+        "generations": 400,
+        "generations_with_install": 400,
+        "ghost_mentions": 96,
+        "install_mentions": 456,
+        "offline": {
+          "generations_blocked": 115,
+          "ghost_recall": 0.9270833333333334,
+          "ghosts_caught": 89,
+          "ghosts_missed": 7,
+          "precision": 0.7739130434782608,
+          "real_flagged": 26,
+          "real_flagged_share": 0.07407407407407407
+        },
+        "online": {
+          "generations_blocked": 102,
+          "generations_blocked_share": 0.255,
+          "ghosts_blocked": 96,
+          "real_blocked": 6,
+          "real_blocked_share": 0.017094017094017096,
+          "suspect_mentions": 6
+        },
+        "real_mentions": 351,
+        "subtype_mentions": {
+          "module_name_confusion": {
+            "OK": 2
+          },
+          "stdlib_confusion": {
+            "OK": 7
+          }
+        },
+        "subtype_total": 9
+      }
+    },
+    "registry": "label-time PyPI answers (data/registry.parquet)",
+    "run_at": "2026-10-30T12:56:43Z",
+    "tau": 0.5061126351356506
   },
   "selfcheck": {
     "answers": {

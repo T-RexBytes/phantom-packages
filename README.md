@@ -89,6 +89,11 @@ Add this to `<your project>/.claude/settings.json` (also in
 | *(default)* | Block GHOST and SUSPECT. If PyPI can't be reached or the guard fails, allow the call and print a warning (fail-open). |
 | `PHANTOM_FAIL_CLOSED=1` | Also block when PyPI can't be reached, the guard fails, or the hook input is malformed. |
 | `PHANTOM_OFFLINE=1` | Never ask PyPI; block names the TabPFN estimate calls ghost-likely. |
+| `PHANTOM_HOOK_PROB=1` | Also print the model's P(ghost) in every block message (adds about 10–15 s on a CPU laptop). |
+
+**Speed.** By default the hook asks PyPI first and loads the TabPFN model only when the model can
+change the outcome: offline (`PHANTOM_OFFLINE=1`), when PyPI can't be reached, or for an existing
+package that is young. A name PyPI returns 404 for is blocked in about 2 seconds without loading torch.
 
 The hook contract (stdin JSON, `tool_input.command`, exit 2 = block) was checked against the
 [Claude Code hooks reference](https://code.claude.com/docs/en/hooks) on 2026-10-30.
@@ -156,7 +161,7 @@ uv run phantom check requirements.txt --offline
 copy .env.example .env   # fill TABPFN_TOKEN and PHANTOM_ANON_KEY (any long random string); Ultramarine key optional
 uv run tasks.py env      # check Ollama, models, keys
 uv run tasks.py test     # pytest
-uv run tasks.py <stage>  # prompts | summon | extract | features | eval | guard-model | squat | figures | halloween | site | all
+uv run tasks.py <stage>  # prompts | summon | extract | features | eval | guard-model | squat | replay | ghost-types | error-analysis | figures | halloween | site | all
 uv run tasks.py all --fast   # every stage from the cache, no model calls (about 6 minutes on a laptop CPU)
 ```
 

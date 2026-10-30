@@ -1,0 +1,362 @@
+{
+  "generated_at": "2026-10-30T12:56:45Z",
+  "guard_model_split_a": {
+    "confusion": {
+      "fn": {
+        "names": 17,
+        "rows": 17
+      },
+      "fp": {
+        "names": 47,
+        "rows": 52
+      },
+      "tn": {
+        "names": 224,
+        "rows": 663
+      },
+      "tp": {
+        "names": 145,
+        "rows": 156
+      }
+    },
+    "false_negatives": {
+      "all": {
+        "median_affix_of_real": 0.0,
+        "median_char_lp_z": -0.5599320501581004,
+        "median_consistency": 0.5,
+        "median_cross_model": 1.0,
+        "median_global_freq": 1.0,
+        "median_in_top15k": 0.0,
+        "median_len": 5.0,
+        "median_n_parts": 1.0,
+        "median_nn_lev": 2.0,
+        "median_p": 0.43069371581077576,
+        "names": 17,
+        "rows": 17
+      },
+      "by_category": {
+        "py_affixed": {
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": 0.03589820013321862,
+          "median_consistency": 0.5,
+          "median_cross_model": 1.0,
+          "median_global_freq": 1.0,
+          "median_in_top15k": 0.0,
+          "median_len": 6.0,
+          "median_n_parts": 1.0,
+          "median_nn_lev": 1.0,
+          "median_p": 0.4218713641166687,
+          "names": 9,
+          "rows": 9
+        },
+        "short_word": {
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -1.5744489533348416,
+          "median_consistency": 0.75,
+          "median_cross_model": 1.0,
+          "median_global_freq": 1.5,
+          "median_in_top15k": 0.0,
+          "median_len": 4.0,
+          "median_n_parts": 1.0,
+          "median_nn_lev": 2.0,
+          "median_p": 0.4383103549480438,
+          "names": 8,
+          "rows": 8
+        }
+      }
+    },
+    "false_positives": {
+      "all": {
+        "downloads": {
+          "100-499": 4,
+          "500-9,999": 12,
+          "<100": 21,
+          ">=10,000": 13,
+          "unknown": 2
+        },
+        "in_top15k_share": 0.0,
+        "median_affix_of_real": 0.0,
+        "median_char_lp_z": -0.7567699294650864,
+        "median_consistency": 0.5,
+        "median_cross_model": 1.0,
+        "median_global_freq": 1.0,
+        "median_in_top15k": 0.0,
+        "median_len": 9.0,
+        "median_n_parts": 1.0,
+        "median_nn_lev": 3.0,
+        "median_p": 0.664731502532959,
+        "names": 47,
+        "rows": 52
+      },
+      "by_category": {
+        "established": {
+          "downloads": {
+            "500-9,999": 8,
+            ">=10,000": 13
+          },
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -0.7573964192418056,
+          "median_consistency": 0.5,
+          "median_cross_model": 1.0,
+          "median_first_release_year": 2016.0,
+          "median_global_freq": 1.0,
+          "median_in_top15k": 0.0,
+          "median_len": 8.0,
+          "median_n_parts": 1.0,
+          "median_nn_lev": 2.0,
+          "median_p": 0.6711957454681396,
+          "names": 19,
+          "rows": 21
+        },
+        "no_files": {
+          "downloads": {
+            "unknown": 2
+          },
+          "median_affix_of_real": 0.5,
+          "median_char_lp_z": 0.011131158927403254,
+          "median_consistency": 0.75,
+          "median_cross_model": 1.0,
+          "median_first_release_year": null,
+          "median_global_freq": 1.5,
+          "median_in_top15k": 0.0,
+          "median_len": 7.0,
+          "median_n_parts": 1.0,
+          "median_nn_lev": 2.5,
+          "median_p": 0.5719557106494904,
+          "names": 2,
+          "rows": 2
+        },
+        "registry_quiet": {
+          "downloads": {
+            "100-499": 3,
+            "500-9,999": 3,
+            "<100": 14
+          },
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -0.29116126716532625,
+          "median_consistency": 0.5,
+          "median_cross_model": 1.0,
+          "median_first_release_year": 2019.0,
+          "median_global_freq": 1.0,
+          "median_in_top15k": 0.0,
+          "median_len": 8.0,
+          "median_n_parts": 1.0,
+          "median_nn_lev": 3.0,
+          "median_p": 0.6451176106929779,
+          "names": 19,
+          "rows": 20
+        },
+        "young": {
+          "downloads": {
+            "100-499": 1,
+            "500-9,999": 1,
+            "<100": 7
+          },
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -1.4203937507526472,
+          "median_consistency": 0.5,
+          "median_cross_model": 1.0,
+          "median_first_release_year": 2025.0,
+          "median_global_freq": 1.0,
+          "median_in_top15k": 0.0,
+          "median_len": 13.0,
+          "median_n_parts": 2.0,
+          "median_nn_lev": 6.0,
+          "median_p": 0.8336541056632996,
+          "names": 7,
+          "rows": 9
+        }
+      },
+      "rescued_online_names": 40,
+      "rescued_online_rows": 43
+    },
+    "tau": 0.5061126351356506
+  },
+  "phase5_tabpfn_split_a": {
+    "confusion": {
+      "fn": {
+        "names": 17,
+        "rows": 17
+      },
+      "fp": {
+        "names": 46,
+        "rows": 50
+      },
+      "tn": {
+        "names": 225,
+        "rows": 665
+      },
+      "tp": {
+        "names": 146,
+        "rows": 156
+      }
+    },
+    "false_negatives": {
+      "all": {
+        "median_affix_of_real": 0.0,
+        "median_char_lp_z": -0.9860696416170718,
+        "median_consistency": 0.5,
+        "median_cross_model": 1.0,
+        "median_global_freq": 1.0,
+        "median_in_top15k": 0.0,
+        "median_len": 6.0,
+        "median_n_parts": 1.0,
+        "median_nn_lev": 2.0,
+        "median_p": 0.3769102692604065,
+        "names": 17,
+        "rows": 17
+      },
+      "by_category": {
+        "py_affixed": {
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -0.6620410333418304,
+          "median_consistency": 0.5,
+          "median_cross_model": 1.0,
+          "median_global_freq": 1.0,
+          "median_in_top15k": 0.0,
+          "median_len": 5.0,
+          "median_n_parts": 1.0,
+          "median_nn_lev": 1.0,
+          "median_p": 0.3810689151287079,
+          "names": 6,
+          "rows": 6
+        },
+        "short_word": {
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -1.272055750485768,
+          "median_consistency": 1.0,
+          "median_cross_model": 1.0,
+          "median_global_freq": 2.0,
+          "median_in_top15k": 0.0,
+          "median_len": 7.5,
+          "median_n_parts": 1.0,
+          "median_nn_lev": 2.0,
+          "median_p": 0.34170565009117126,
+          "names": 10,
+          "rows": 10
+        },
+        "vendor_style": {
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -0.9860696416170718,
+          "median_consistency": 1.0,
+          "median_cross_model": 2.0,
+          "median_global_freq": 2.0,
+          "median_in_top15k": 0.0,
+          "median_len": 30.0,
+          "median_n_parts": 3.0,
+          "median_nn_lev": 7.0,
+          "median_p": 0.4439612627029419,
+          "names": 1,
+          "rows": 1
+        }
+      }
+    },
+    "false_positives": {
+      "all": {
+        "downloads": {
+          "100-499": 6,
+          "500-9,999": 11,
+          "<100": 20,
+          ">=10,000": 12,
+          "unknown": 1
+        },
+        "in_top15k_share": 0.0,
+        "median_affix_of_real": 0.0,
+        "median_char_lp_z": -0.7567699294650864,
+        "median_consistency": 0.5,
+        "median_cross_model": 1.0,
+        "median_global_freq": 1.0,
+        "median_in_top15k": 0.0,
+        "median_len": 8.0,
+        "median_n_parts": 1.0,
+        "median_nn_lev": 3.0,
+        "median_p": 0.6483021676540375,
+        "names": 46,
+        "rows": 50
+      },
+      "by_category": {
+        "established": {
+          "downloads": {
+            "500-9,999": 7,
+            ">=10,000": 12
+          },
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -0.7561434396883672,
+          "median_consistency": 0.5,
+          "median_cross_model": 1.0,
+          "median_first_release_year": 2016.0,
+          "median_global_freq": 1.0,
+          "median_in_top15k": 0.0,
+          "median_len": 8.0,
+          "median_n_parts": 1.0,
+          "median_nn_lev": 2.0,
+          "median_p": 0.6485429406166077,
+          "names": 17,
+          "rows": 19
+        },
+        "no_files": {
+          "downloads": {
+            "unknown": 1
+          },
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -2.7555227620925393,
+          "median_consistency": 1.0,
+          "median_cross_model": 1.0,
+          "median_first_release_year": null,
+          "median_global_freq": 2.0,
+          "median_in_top15k": 0.0,
+          "median_len": 4.0,
+          "median_n_parts": 1.0,
+          "median_nn_lev": 2.0,
+          "median_p": 0.5298230051994324,
+          "names": 1,
+          "rows": 1
+        },
+        "registry_quiet": {
+          "downloads": {
+            "100-499": 5,
+            "500-9,999": 3,
+            "<100": 13
+          },
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -0.5815907711350831,
+          "median_consistency": 0.5,
+          "median_cross_model": 1.0,
+          "median_first_release_year": 2018.0,
+          "median_global_freq": 1.0,
+          "median_in_top15k": 0.0,
+          "median_len": 8.0,
+          "median_n_parts": 1.0,
+          "median_nn_lev": 3.0,
+          "median_p": 0.6075234413146973,
+          "names": 21,
+          "rows": 21
+        },
+        "young": {
+          "downloads": {
+            "100-499": 1,
+            "500-9,999": 1,
+            "<100": 7
+          },
+          "median_affix_of_real": 0.0,
+          "median_char_lp_z": -1.4203937507526472,
+          "median_consistency": 0.5,
+          "median_cross_model": 1.0,
+          "median_first_release_year": 2025.0,
+          "median_global_freq": 1.0,
+          "median_in_top15k": 0.0,
+          "median_len": 13.0,
+          "median_n_parts": 2.0,
+          "median_nn_lev": 6.0,
+          "median_p": 0.858700156211853,
+          "names": 7,
+          "rows": 9
+        }
+      },
+      "rescued_online_names": 39,
+      "rescued_online_rows": 41
+    },
+    "tau": 0.5062171220779419
+  },
+  "registry_checked_at": "2026-10-29T20:54:03+00:00"
+}

@@ -18,6 +18,8 @@ Hook contract, verified 2026-10-30 against https://code.claude.com/docs/en/hooks
 Policy: fail closed on GHOST/SUSPECT, fail open (with a warning) when PyPI can't be reached or the
 guard itself fails, unless PHANTOM_FAIL_CLOSED=1. PHANTOM_OFFLINE=1 skips PyPI and blocks names the
 offline TabPFN estimate calls ghost-likely. Commands without installs exit 0 without loading the model.
+The model also stays unloaded when PyPI already decides (404 -> blocked, mature package -> allowed);
+PHANTOM_HOOK_PROB=1 computes P(ghost) for blocked ghosts too (adds ~10 s on a CPU laptop).
 """
 
 from __future__ import annotations
@@ -91,7 +93,10 @@ def decide(payload: Any, env: Mapping[str, str], guard: Any = None) -> tuple[int
     offline = env.get("PHANTOM_OFFLINE") == "1"
     fail_closed = env.get("PHANTOM_FAIL_CLOSED") == "1"
     blocks, warnings = [], []
-    for v in guard.check(names, offline=offline, prob="auto"):
+    # PyPI's 404 already decides a ghost, so by default the model (torch + TabPFN, ~10 s cold) runs only
+    # where it can change the verdict; PHANTOM_HOOK_PROB=1 adds P(ghost) to every block message.
+    prob = "auto" if env.get("PHANTOM_HOOK_PROB") == "1" else "registry-first"
+    for v in guard.check(names, offline=offline, prob=prob):
         if v.verdict == "GHOST":
             blocks.append(ghost_message(v))
         elif v.verdict == "SUSPECT":

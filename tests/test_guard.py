@@ -66,6 +66,25 @@ def run(tmp_path, names, fail=False, **kw):
     return guard.check(names, clients=fake_clients(tmp_path, fail), index=INDEX, now=NOW, **kw)
 
 
+def test_registry_first_skips_the_model_when_pypi_decides(tmp_path):
+    model = FakeModel({"zzq-freshlib": 0.9})
+    verdicts = run(tmp_path, ["zzq-ghostlib", "requests", "zzq-freshlib"], model=model, prob="registry-first")
+    by = {v.name: v for v in verdicts}
+    assert by["zzq-ghostlib"].verdict == "GHOST" and by["zzq-ghostlib"].p_ghost is None  # 404 decides
+    assert by["requests"].verdict == "OK" and by["requests"].p_ghost is None
+    assert model.calls == [["zzq-freshlib"]]  # only the young existing name can change verdict
+    assert by["zzq-freshlib"].verdict == "SUSPECT"
+
+
+def test_registry_first_still_uses_the_model_offline_or_unreachable(tmp_path):
+    model = FakeModel({"zzq-ghostlib": 0.9})
+    [v] = run(tmp_path, ["zzq-ghostlib"], fail=True, model=model, prob="registry-first")
+    assert v.verdict == "GHOST_LIKELY" and model.calls == [["zzq-ghostlib"]]
+    model = FakeModel({"zzq-ghostlib": 0.9})
+    [v] = run(tmp_path, ["zzq-ghostlib"], model=model, prob="registry-first", offline=True)
+    assert v.verdict == "GHOST_LIKELY" and model.calls == [["zzq-ghostlib"]]
+
+
 def test_ghost_on_404_with_nearest_real_name(tmp_path):
     model = FakeModel({"zzq-ghostlib": 0.97})
     [v] = run(tmp_path, ["zzq-ghostlib"], model=model)
